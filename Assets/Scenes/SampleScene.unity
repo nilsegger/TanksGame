@@ -130,16 +130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 91026895191818388, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_Depth
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 91026895191818388, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: field of view
-      value: 60
-      objectReference: {fileID: 0}
     - target: {fileID: 2351304855017289254, guid: 18f0c5f13eba0dc45983164d5961cbaf,
         type: 3}
       propertyPath: m_RootOrder
@@ -197,8 +187,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3460585608670055714, guid: 18f0c5f13eba0dc45983164d5961cbaf,
         type: 3}
+      propertyPath: shell
+      value: 
+      objectReference: {fileID: 1066459294751720287, guid: 24c0ae3cd47adfb4789d39d7b690b61c,
+        type: 3}
+    - target: {fileID: 3460585608670055714, guid: 18f0c5f13eba0dc45983164d5961cbaf,
+        type: 3}
       propertyPath: fogOfWarCasts
-      value: 20
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 3460585608670055714, guid: 18f0c5f13eba0dc45983164d5961cbaf,
         type: 3}
@@ -209,31 +205,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerTank
-      objectReference: {fileID: 0}
-    - target: {fileID: 4557215045209203363, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4557215045209203363, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4557215045209203363, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.8660254
-      objectReference: {fileID: 0}
-    - target: {fileID: 4557215045209203363, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4557215045209203363, guid: 18f0c5f13eba0dc45983164d5961cbaf,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18f0c5f13eba0dc45983164d5961cbaf, type: 3}
