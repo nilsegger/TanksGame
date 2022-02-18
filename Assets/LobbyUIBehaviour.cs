@@ -40,5 +40,23 @@ public class LobbyUIBehaviour : NetworkBehaviour
     {
         m_MissingPlayersCountText.text = "Waiting for " + newCount + " players.";
     }
-    
+
+    private IEnumerator WaitToLoadGameScene(float timeToWait)
+    {
+        // Note sometimes the timeToWait will be negative on the server or the receiving clients if a message got delayed by the network for a long time. This usually happens only in rare cases. Custom logic could be implemented to deal with that scenario.
+        if (timeToWait > 0)
+        {
+            yield return new WaitForSeconds(timeToWait);
+        }
+        
+        Debug.Log("Ready to load new scene!");
+    }
+        
+    [ClientRpc]
+    public void StartGameBeginCountdownClientRpc(double time)
+    {  
+        var timeToWait = time - NetworkManager.ServerTime.Time;
+        StartCoroutine(WaitToLoadGameScene((float)timeToWait));
+    }
+
 }

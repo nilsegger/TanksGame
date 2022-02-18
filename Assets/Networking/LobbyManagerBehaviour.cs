@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 
 public class LobbyManagerBehaviour : NetworkBehaviour
 {
@@ -52,7 +53,8 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     private void OnServerStarted()
     {
         if (!NetworkManager.Singleton.IsServer) return;
-        
+
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
         _approvedClients = new List<ulong>();
         ui.SetConnectedType("Server", false);
@@ -80,9 +82,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         //ulong? prefabHash = NetworkSpawnManager.GetPrefabHashFromGenerator("MyPrefabHashGenerator");
     
         //If approve is true, the connection gets added. If it's false. The client gets disconnected
-        callback(createPlayerObject, null, approve, Vector3.zero, Quaternion.identity);
-        
-        UpdateMissingPlayersCount();
+        callback(createPlayerObject, null, approve, new Vector3(Random.Range(-10.0f, 10.0f), 0.0f, Random.Range(-5.0f, 5.0f)), Quaternion.Euler(0.0f, 180.0f, 0.0f));
     }
     
     private IEnumerator WaitToDisconnect(ulong clientId)
@@ -105,18 +105,43 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         _instance.ui.SetConnectedStatus(status, true);
     }
 
+    private void OnClientConnect(ulong cliendId)
+    {
+        if (!NetworkManager.IsServer) return;
+        
+        UpdateMissingPlayersCount();
+        if (LobbyReadyForGame())
+        {
+            ui.StartGameBeginCountdownClientRpc(NetworkManager.Singleton.ServerTime.Time + 3.0);
+            NetworkManager.SceneManager.LoadScene("SampleScene", LoadSceneMode.Additive);
+            NetworkManager.SceneManager.OnLoadEventCompleted += OnSceneLoadEventComplete;
+        }
+    }
+
+    private void OnSceneLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+       Debug.Log("All clients have loaded the scene " + sceneName); 
+    }
+
     private void OnClientDisconnect(ulong clientId)
     {
         if (NetworkManager.Singleton.IsServer)
         {
             _approvedClients.Remove(clientId);
+            UpdateMissingPlayersCount();
         } 
+    }
+
+    private bool LobbyReadyForGame()
+    {
+        return _approvedClients.Count == playersPerTeam * 2;
     }
 
     private void UpdateMissingPlayersCount()
     {
         ui.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
-        Debug.Log("Updated _missingPlayerCount to " + ui.missingPlayersCount.Value);
     }
+    
+    
 }
 
