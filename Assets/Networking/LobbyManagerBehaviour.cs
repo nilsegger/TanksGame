@@ -16,6 +16,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         Undefined,
         Success,                  //client successfully connected. This may also be a successful reconnect.
         ServerFull,               //can't join, server is already at capacity.
+        GameStarted,              // Game has already started and is not accepting new players 
         UserRequestedDisconnect,  //Intentional Disconnect triggered by the user.
         GenericDisconnect,        //server disconnected, but no specific reason given.
     }
@@ -25,6 +26,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     
     public GameObject lobby;
 
+    private bool _gameStarted = false;
     private Dictionary<Vector3, ulong> _spawnPointsToClientid;
 
     private List<ulong> _approvedClients;
@@ -117,6 +119,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 UpdateMissingPlayersCount();
                 if (IsLobbyReadyForGame())
                 {
+                    _gameStarted = true;
                     NetworkManager.SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
                 }
             } else if (NetworkManager.Singleton.IsClient)
@@ -156,6 +159,13 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         if (_approvedClients.Count >= playersPerTeam * 2)
         {
             SendServerToClientConnectResult(clientId, ConnectStatus.ServerFull);
+            StartCoroutine(WaitToDisconnect(clientId));
+            return;
+        }
+        
+        if (_gameStarted) /* TODO check if it is a player which is reconnecting */
+        {
+            SendServerToClientConnectResult(clientId, ConnectStatus.GameStarted);
             StartCoroutine(WaitToDisconnect(clientId));
             return;
         }
@@ -207,6 +217,13 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                     _instance.ui.SetDisconnectButtonVisibility(false);
                     break;
                 }
+                case ConnectStatus.GameStarted:
+                {
+                    _instance.ui.SetNetworkStatusText("Game has already begun.");
+                    _instance.ui.SetPlayButtonVisibility(true);
+                    _instance.ui.SetDisconnectButtonVisibility(false);
+                    break;
+                }
                 default:
                 {
                     _instance.ui.SetNetworkStatusText(status.ToString());
@@ -220,6 +237,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     
     private void OnSceneLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
+        // TODO begin countdown to start game
        Debug.Log("All clients have loaded the scene " + sceneName); 
     }
 
