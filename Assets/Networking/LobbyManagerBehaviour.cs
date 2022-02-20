@@ -147,6 +147,17 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 } 
             }
             UpdateMissingPlayersCount();
+            if (_gameStarted && _approvedClients.Count == 0)
+            {
+                Debug.Log("All Players have disconnected.");
+                NetworkManager.Singleton.Shutdown();
+                
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            } 
         } else if (NetworkManager.Singleton.IsClient)
         {
             Debug.Log("Client disconnect log on client side");
@@ -238,7 +249,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     private void OnSceneLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         // TODO begin countdown to start game
-       Debug.Log("All clients have loaded the scene " + sceneName); 
+       Debug.Log("All clients have loaded the scene " + sceneName);
+       var camera = GameObject.FindWithTag("ServerCamera");
+       camera.SetActive(true);
     }
 
     private bool IsLobbyReadyForGame()
@@ -248,7 +261,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
 
     private void UpdateMissingPlayersCount()
     {
-        ui.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
+        if (!_gameStarted)
+        {
+            ui.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
+        }
     }
     
     
