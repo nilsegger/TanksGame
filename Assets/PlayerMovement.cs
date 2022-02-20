@@ -15,7 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject shell; 
     
-    private Camera _camera;
+    public Camera _camera;
+    
     private FogOfWarBehaviour _fogOfWarBehaviour;
     private UnityEngine.AI.NavMeshAgent _agent;
     
@@ -35,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _camera = Camera.main;
         _fogOfWarBehaviour = _camera.GetComponent<FogOfWarBehaviour>();
         _agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         _turret = transform.Find("Tank").Find("TankRenderers").Find("TankTurret");
