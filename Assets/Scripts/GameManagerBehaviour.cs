@@ -26,7 +26,7 @@ public class GameManagerBehaviour : NetworkBehaviour
             FindSpawnPosition();
         } else if (NetworkManager.Singleton.IsClient)
         {
-            Debug.Log("Have i loaded?");
+            
         }
     }
 
