@@ -62,11 +62,5 @@ public class GameManagerBehaviour : NetworkBehaviour
         _gameStartServerTime = beginCountdownAt + gameStartCountdownDurationS;
         m_GameUi.SetGameCountdownClientRpc(beginCountdownAt, gameStartCountdownDurationS); // Start a countdown of 5 seconds in 3 seconds
     }
-    
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
