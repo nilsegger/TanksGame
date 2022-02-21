@@ -22,8 +22,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     }
 
     public int playersPerTeam = 1;
-    public LobbyUIBehaviour ui;
-    
+    public LobbyUIBehaviour lobbyUi;
     public GameObject lobby;
 
     private bool _gameStarted = false;
@@ -42,8 +41,8 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
         
-        ui.AddOnClickPlayListener(OnPlayClick);
-        ui.AddOnClickDisconnectListener(OnDisconnectClick);
+        lobbyUi.AddOnClickPlayListener(OnPlayClick);
+        lobbyUi.AddOnClickDisconnectListener(OnDisconnectClick);
         AddSpawnPoints();
     }
 
@@ -52,7 +51,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         _spawnPointsToClientid = new Dictionary<Vector3, ulong>();
         foreach (Transform childTransform  in lobby.transform)
         {
-            if (childTransform.gameObject.tag == "SpawnPoint")
+            if (childTransform.gameObject.CompareTag("SpawnPoint"))
             {
                 _spawnPointsToClientid.Add(childTransform.position, 0);
                 childTransform.gameObject.SetActive(false);
@@ -68,9 +67,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
         NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);
         NetworkManager.Singleton.SceneManager.OnLoad += ClientOnSceneLoadEvent;
-        ui.SetPlayButtonVisibility(false);
-        ui.SetDisconnectButtonVisibility(false);
-        ui.SetNetworkStatusText("Connecting...");
+        lobbyUi.SetPlayButtonVisibility(false);
+        lobbyUi.SetDisconnectButtonVisibility(false);
+        lobbyUi.SetNetworkStatusText("Connecting...");
     }
 
     private void OnDisconnectClick()
@@ -85,9 +84,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         ui.SetNetworkStatusText("Disconnecting...");
         */
         
-        ui.SetDisconnectButtonVisibility(false); 
-        ui.SetPlayButtonVisibility(true); 
-        ui.SetNetworkStatusText("Disconnected");
+        lobbyUi.SetDisconnectButtonVisibility(false); 
+        lobbyUi.SetPlayButtonVisibility(true); 
+        lobbyUi.SetNetworkStatusText("Disconnected");
                     
         NetworkManager.Singleton.SceneManager.OnLoad -= ClientOnSceneLoadEvent;
         NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage));
@@ -102,14 +101,12 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     {
         if (!NetworkManager.Singleton.IsServer) return;
         
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadEventComplete;
-        
         _approvedClients = new List<ulong>();
         UpdateMissingPlayersCount();
         
-        ui.SetNetworkStatusText("SERVER");
-        ui.SetPlayButtonVisibility(false);
-        ui.SetDisconnectButtonVisibility(false);
+        lobbyUi.SetNetworkStatusText("SERVER");
+        lobbyUi.SetPlayButtonVisibility(false);
+        lobbyUi.SetDisconnectButtonVisibility(false);
     } 
     
     private void OnClientConnect(ulong cliendId)
@@ -124,9 +121,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 }
             } else if (NetworkManager.Singleton.IsClient)
             {
-               ui.SetDisconnectButtonVisibility(true); 
-               ui.SetPlayButtonVisibility(false); 
-               ui.SetNetworkStatusText("Connected as client");
+               lobbyUi.SetDisconnectButtonVisibility(true); 
+               lobbyUi.SetPlayButtonVisibility(false); 
+               lobbyUi.SetNetworkStatusText("Connected as client");
             }
         }
     
@@ -223,35 +220,25 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             {
                 case ConnectStatus.ServerFull:
                 {
-                    _instance.ui.SetNetworkStatusText("Server is full.");
-                    _instance.ui.SetPlayButtonVisibility(true);
-                    _instance.ui.SetDisconnectButtonVisibility(false);
+                    _instance.lobbyUi.SetNetworkStatusText("Server is full.");
+                    _instance.lobbyUi.SetPlayButtonVisibility(true);
+                    _instance.lobbyUi.SetDisconnectButtonVisibility(false);
                     break;
                 }
                 case ConnectStatus.GameStarted:
                 {
-                    _instance.ui.SetNetworkStatusText("Game has already begun.");
-                    _instance.ui.SetPlayButtonVisibility(true);
-                    _instance.ui.SetDisconnectButtonVisibility(false);
+                    _instance.lobbyUi.SetNetworkStatusText("Game has already begun.");
+                    _instance.lobbyUi.SetPlayButtonVisibility(true);
+                    _instance.lobbyUi.SetDisconnectButtonVisibility(false);
                     break;
                 }
                 default:
                 {
-                    _instance.ui.SetNetworkStatusText(status.ToString());
+                    _instance.lobbyUi.SetNetworkStatusText(status.ToString());
                     break;
                 }
             }
         }
-    }
-
-    
-    
-    private void OnSceneLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-    {
-        // TODO begin countdown to start game
-       Debug.Log("All clients have loaded the scene " + sceneName);
-       var camera = GameObject.FindWithTag("ServerCamera");
-       camera.SetActive(true);
     }
 
     private bool IsLobbyReadyForGame()
@@ -263,7 +250,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     {
         if (!_gameStarted)
         {
-            ui.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
+            lobbyUi.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
         }
     }
     

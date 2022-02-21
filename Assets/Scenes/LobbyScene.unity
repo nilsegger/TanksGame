@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 3b4a16f3017e1854dbbfc732cd14b3b9, type: 2}
 --- !u!1 &663851562
 GameObject:
   m_ObjectHideFlags: 0
@@ -956,7 +956,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playersPerTeam: 1
-  ui: {fileID: 670609527}
+  lobbyUi: {fileID: 670609527}
   lobby: {fileID: 786665002}
 --- !u!4 &1977487880
 Transform:
@@ -1056,7 +1056,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1984295925}
-    PlayerPrefab: {fileID: 4424613088427758173, guid: 506748a8d03c06c4aa152a824d753a3a,
+    PlayerPrefab: {fileID: 5831853618556970855, guid: a4e5e032867a2924d88b5f5a7276d0e9,
       type: 3}
     NetworkPrefabs: []
     TickRate: 30
