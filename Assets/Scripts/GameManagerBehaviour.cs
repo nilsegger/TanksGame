@@ -61,6 +61,12 @@ public class GameManagerBehaviour : NetworkBehaviour
         double beginCountdownAt = NetworkManager.ServerTime.Time + 3.0f;
         _gameStartServerTime = beginCountdownAt + gameStartCountdownDurationS;
         m_GameUi.SetGameCountdownClientRpc(beginCountdownAt, gameStartCountdownDurationS); // Start a countdown of 5 seconds in 3 seconds
+        foreach (var client in NetworkManager.Singleton.ConnectedClients)
+        {
+            var tankBehaviour = client.Value.PlayerObject.GetComponent<NetworkedTankBehaviour>();
+            tankBehaviour.ServerStartGameInTime(_gameStartServerTime);
+            tankBehaviour.StartGameAtTimeClientRpc(_gameStartServerTime);
+        }
     }
 
 }
