@@ -13,6 +13,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     public Camera m_PlayerCamera;
     public GameObject m_Shell;
+    public GameObject m_DestinationMarker;
     public float ShootCooldownS = 3.0f;
     public Transform m_Turret;
     public float m_ShellForwardOffset = 1.5f;
@@ -22,11 +23,13 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private bool _playerRequestedToShoot;
     private bool _gameHasStarted = false;
     private float _shootCooldown = 0.0f;
+    private GameObject _destinationMarkerInstance;
 
     void Start()
     {
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
         _agent = gameObject.GetComponent<NavMeshAgent>();
+        PrepareWayMarker();        
     }
 
     private void OnSceneLoad(ulong clientid, string scenename, LoadSceneMode loadscenemode, AsyncOperation asyncoperation)
@@ -40,6 +43,13 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         }
     }
 
+    private void PrepareWayMarker()
+    {
+        _destinationMarkerInstance = Instantiate(m_DestinationMarker);
+        _destinationMarkerInstance.SetActive(false);
+        DontDestroyOnLoad(_destinationMarkerInstance);
+    }
+    
     private void ActivatePlayerCamera()
     {
         m_PlayerCamera.gameObject.SetActive(true);
@@ -59,6 +69,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private void SetNavAgentDestinationServerRpc(Vector3 destination)
     {
         _agent.SetDestination(destination);
+        _destinationMarkerInstance.transform.position = destination;
+        _destinationMarkerInstance.SetActive(true);
     }
 
     private IEnumerator WaitToStartGame(double time)
@@ -97,6 +109,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
                 if (Physics.Raycast(ray, out hit))
                 {
                     SetNavAgentDestinationServerRpc(hit.point);
+                    _destinationMarkerInstance.transform.position = hit.point;
+                    _destinationMarkerInstance.SetActive(true);
                 }
             }
 
@@ -125,4 +139,5 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             CheckToSpawnShell();
         }
     }
+    
 }

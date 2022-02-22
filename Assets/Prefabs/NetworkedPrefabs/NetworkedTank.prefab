@@ -114,6 +114,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayerCamera: {fileID: 3882965136097382486}
   m_Shell: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b, type: 3}
+  m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
+    type: 3}
   ShootCooldownS: 3
   m_Turret: {fileID: 7631549078342919388}
   m_ShellForwardOffset: 1.5
