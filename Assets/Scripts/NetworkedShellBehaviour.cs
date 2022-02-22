@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
 
     public float m_DestroyAfterS = 10.0f;
     public float m_Speed = 1.0f;
+    public GameObject m_ExplosionPrefab;
 
     private float _lifeTimeCounter = 0.0f;
     private Rigidbody _body;
@@ -39,16 +41,22 @@ public class NetworkedShellBehaviour : NetworkBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             Debug.Log("Distance to floor: " + (hit.point - _body.transform.position).magnitude);
-        }
+        }j
         */
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void DoSafeDespawn()
     {
-        Debug.Log("Triggering Shell with: " + other.name);
-        GetComponent<NetworkObject>().Despawn();
+        var networkObject = GetComponent<NetworkObject>();
+        if(networkObject.IsSpawned) networkObject.Despawn();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        var explosion = NetworkPool.Singleton.GetNetworkObject(m_ExplosionPrefab, collision.contacts[0].point, Quaternion.identity);
+        explosion.GetComponent<NetworkObject>().Spawn();
+        DoSafeDespawn(); 
+    }
 
     private void FixedUpdate()
     {
@@ -61,7 +69,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
 
             if (_lifeTimeCounter >= m_DestroyAfterS)
             {
-                GetComponent<NetworkObject>().Despawn();
+                DoSafeDespawn(); 
             }
         }
     }
