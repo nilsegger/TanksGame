@@ -117,7 +117,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 if (IsLobbyReadyForGame())
                 {
                     _gameStarted = true;
-                    NetworkManager.SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
+                    NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
                 }
             } else if (NetworkManager.Singleton.IsClient)
             {

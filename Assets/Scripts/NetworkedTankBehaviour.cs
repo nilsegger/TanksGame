@@ -16,7 +16,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     public GameObject m_DestinationMarker;
     public float ShootCooldownS = 3.0f;
     public Transform m_Turret;
-    public float m_ShellForwardOffset = 1.5f;
+    public float m_ShellForwardOffset = 2.0f;
     public float m_IgnorePlayerShootRequestBeforeCooldownAtS = 1.0f; // All shoots request which happen before cooldown has hit 1s will be ignored
 
     private NavMeshAgent _agent;
