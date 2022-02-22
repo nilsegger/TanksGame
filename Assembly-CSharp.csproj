@@ -61,6 +61,8 @@
      <Compile Include="Assets\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameBasicUIBehaviour.cs" />
+     <Compile Include="Assets\Scripts\NetworkPool.cs" />
+     <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
  <Reference Include="UnityEngine">

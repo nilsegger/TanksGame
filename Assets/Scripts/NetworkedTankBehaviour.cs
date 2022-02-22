@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -11,10 +12,17 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     // Start is called before the first frame update
 
     public Camera m_PlayerCamera;
-    private NavMeshAgent _agent;
+    public GameObject m_Shell;
+    public float ShootCooldownS = 3.0f;
+    public Transform m_Turret;
+    public float m_ShellForwardOffset = 1.5f;
+    public float m_IgnorePlayerShootRequestBeforeCooldownAtS = 1.0f; // All shoots request which happen before cooldown has hit 1s will be ignored
 
+    private NavMeshAgent _agent;
+    private bool _playerRequestedToShoot;
     private bool _gameHasStarted = false;
-    
+    private float _shootCooldown = 0.0f;
+
     void Start()
     {
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
@@ -35,6 +43,16 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private void ActivatePlayerCamera()
     {
         m_PlayerCamera.gameObject.SetActive(true);
+    }
+    
+    [ServerRpc]
+    private void ClientRequestsShootServerRpc()
+    {
+        if (_shootCooldown <= m_IgnorePlayerShootRequestBeforeCooldownAtS)
+        {
+            _playerRequestedToShoot = true;
+        }
+        
     }
 
     [ServerRpc]
@@ -70,14 +88,41 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_gameHasStarted && NetworkManager.Singleton.IsClient && IsOwner && Input.GetMouseButton(0))
+        if (IsOwner && _gameHasStarted && NetworkManager.Singleton.IsClient)
         {
-            Ray ray = m_PlayerCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit = new RaycastHit();
-            if (Physics.Raycast (ray, out hit))
+            if (Input.GetMouseButton(0))
             {
-                SetNavAgentDestinationServerRpc(hit.point);
+                Ray ray = m_PlayerCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit = new RaycastHit();
+                if (Physics.Raycast(ray, out hit))
+                {
+                    SetNavAgentDestinationServerRpc(hit.point);
+                }
             }
+
+            if (Input.GetKey("space"))
+            {
+                ClientRequestsShootServerRpc();
+            }
+        } 
+    }
+
+    private void CheckToSpawnShell()
+    {
+        _shootCooldown -= Time.fixedDeltaTime;
+        if (!_playerRequestedToShoot || _shootCooldown > 0.0f) return;
+        
+        NetworkObject shell = NetworkPool.Singleton.GetNetworkObject(m_Shell, m_Turret.position + m_Turret.forward * m_ShellForwardOffset, m_Turret.rotation);
+        shell.Spawn(true);
+        _shootCooldown = ShootCooldownS;
+        _playerRequestedToShoot = false;
+    }
+
+    private void FixedUpdate()
+    {
+        if (_gameHasStarted && NetworkManager.Singleton.IsServer)
+        {
+            CheckToSpawnShell();
         }
     }
 }

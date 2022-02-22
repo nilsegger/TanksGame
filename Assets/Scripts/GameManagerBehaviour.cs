@@ -10,6 +10,7 @@ public class GameManagerBehaviour : NetworkBehaviour
     
     public GameBasicUIBehaviour m_GameUi;
     public GameObject m_Level;
+    public Camera serverCamera;
 
     public float gameStartCountdownDurationS = 5.0f;
 
@@ -23,6 +24,7 @@ public class GameManagerBehaviour : NetworkBehaviour
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnAllClientsConnected;
             NetworkManager.Singleton.SceneManager.OnLoadComplete += OnSingleLoadComplete;
+            serverCamera.gameObject.SetActive(true);
             FindSpawnPosition();
         } else if (NetworkManager.Singleton.IsClient)
         {

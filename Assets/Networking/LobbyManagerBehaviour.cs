@@ -158,6 +158,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         } else if (NetworkManager.Singleton.IsClient)
         {
             Debug.Log("Client disconnect log on client side");
+            #if UNITY_EDITOR
+                            UnityEditor.EditorApplication.isPlaying = false;
+            #endif
         }
     }
 
