@@ -14,7 +14,6 @@ public class ShellExplosionBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("Hello Sir");
         m_Particles.Clear();
         m_Particles.Play();
         _lifeTimer = 0.0f;
@@ -28,7 +27,6 @@ public class ShellExplosionBehaviour : NetworkBehaviour
             if (_lifeTimer >= _DestroyAfterS)
             {
                 GetComponent<NetworkObject>().Despawn();
-                Debug.Log("Goodbye");
             }
         }
     }

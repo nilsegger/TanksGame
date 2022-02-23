@@ -34,7 +34,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     private void MoveForward()
     {
         // var forward = new Vector3(_body.transform.forward.x, 0.0f, _body.transform.forward.z); // fix for when bullet drop too quickly
-       _body.MovePosition(_body.transform.position + (_body.transform.forward * (m_Speed * Time.fixedDeltaTime)));
+       _body.MovePosition(_body.transform.position + (_body.transform.forward * (m_Speed * Time.deltaTime)));
 
         /*Ray ray = new Ray(_body.transform.position, Vector3.down);
         RaycastHit hit = new RaycastHit();
