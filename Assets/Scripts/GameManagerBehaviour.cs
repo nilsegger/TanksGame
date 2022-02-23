@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 public class GameManagerBehaviour : NetworkBehaviour
@@ -14,16 +15,17 @@ public class GameManagerBehaviour : NetworkBehaviour
 
     public float gameStartCountdownDurationS = 5.0f;
 
-    private Dictionary<Transform, ulong> _spawnPositionsToClientId;
-    // Start is called before the first frame update
+    private Queue<Transform> _spawnPositions;
 
     private double _gameStartServerTime;
+
+    public static bool GameBegun = false;
+    
     void Start()
     {
         if (NetworkManager.Singleton.IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnAllClientsConnected;
-            NetworkManager.Singleton.SceneManager.OnLoadComplete += OnSingleLoadComplete;
             serverCamera.gameObject.SetActive(true);
             FindSpawnPosition();
         } else if (NetworkManager.Singleton.IsClient)
@@ -34,41 +36,59 @@ public class GameManagerBehaviour : NetworkBehaviour
 
     private void FindSpawnPosition()
     {
-        _spawnPositionsToClientId = new Dictionary<Transform, ulong>();
+        _spawnPositions = new Queue<Transform>();
         foreach (Transform childTransform  in m_Level.transform)
         {
             if (childTransform.gameObject.CompareTag("SpawnPoint"))
             {
-                _spawnPositionsToClientId.Add(childTransform, 0);
-                // childTransform.gameObject.SetActive(false);
+                _spawnPositions.Enqueue(childTransform);
+                childTransform.gameObject.SetActive(false);
             }
-        }
-    }
-
-    // Set new spawn position for player
-    private void OnSingleLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-    {
-        foreach (var entry in _spawnPositionsToClientId.Where(entry => entry.Value == 0))
-        {
-            _spawnPositionsToClientId[entry.Key] = clientId;
-            NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.transform.position = entry.Key.position;
-            NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.transform.rotation = entry.Key.rotation;
-            break;
         }
     }
     
     private void OnAllClientsConnected(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         Debug.Log("All Clients have loaded the new scene");
-        double beginCountdownAt = NetworkManager.ServerTime.Time + 3.0f;
-        _gameStartServerTime = beginCountdownAt + gameStartCountdownDurationS;
-        m_GameUi.SetGameCountdownClientRpc(beginCountdownAt, gameStartCountdownDurationS); // Start a countdown of 5 seconds in 3 seconds
-        foreach (var client in NetworkManager.Singleton.ConnectedClients)
+        
+        Assert.IsTrue(clientsTimedOut.Count == 0);
+
+        foreach (var clientId in clientsCompleted)
         {
-            var tankBehaviour = client.Value.PlayerObject.GetComponent<NetworkedTankBehaviour>();
-            tankBehaviour.ServerStartGameInTime(_gameStartServerTime);
-            tankBehaviour.StartGameAtTimeClientRpc(_gameStartServerTime);
+            var spawn = _spawnPositions.Dequeue();
+            var prefab = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
+            prefab.transform.position = spawn.position;
+            prefab.transform.rotation = spawn.rotation;
+            var behaviour = prefab.GetComponent<NetworkedTankBehaviour>();
+            behaviour.ServerOverridePositionClientRpc(spawn.position, spawn.rotation);
+        } 
+        
+        double beginCountdownAt = NetworkManager.ServerTime.Time + 3.0f;
+        m_GameUi.SetGameCountdownClientRpc(beginCountdownAt, gameStartCountdownDurationS); // Start a countdown of 5 seconds in 3 seconds
+        StartGameAtTimeClientRpc(beginCountdownAt + gameStartCountdownDurationS);
+        StartGameAtTime(beginCountdownAt + gameStartCountdownDurationS);
+    }
+    
+    private static IEnumerator WaitToStartGame(double time)
+    {
+        if (time > 0.0f)
+        {
+            yield return new WaitForSeconds((float) time);
         }
+        GameBegun = true;
+    }
+    
+    private void StartGameAtTime(double time)
+    {
+        var waitTime = time - NetworkManager.ServerTime.Time;
+        StartCoroutine(WaitToStartGame(waitTime));
+    }
+    
+    [ClientRpc]
+    private void StartGameAtTimeClientRpc(double time)
+    {
+        var waitTime = time - NetworkManager.ServerTime.Time;
+        StartCoroutine(WaitToStartGame(waitTime));
     }
 
 }

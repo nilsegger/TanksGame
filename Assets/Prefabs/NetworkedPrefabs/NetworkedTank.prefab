@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2809348059648790429}
   - component: {fileID: 2295937452536562292}
-  - component: {fileID: 6469355328876343648}
   - component: {fileID: 490414975486166804}
   - component: {fileID: 3173230737340915809}
   m_Layer: 0
@@ -51,33 +50,6 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &6469355328876343648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831853618556970855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  InLocalSpace: 0
-  Interpolate: 0
-  CanCommitToTransform: 0
 --- !u!195 &490414975486166804
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -113,15 +85,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PlayerCamera: {fileID: 3882965136097382486}
-  m_Shell: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b, type: 3}
   m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
     type: 3}
-  ShootCooldownS: 1
-  m_Turret: {fileID: 7631549078342919388}
-  m_TurretRotateSpeed: 25
-  m_TankRotateSpeed: 10
-  m_ShellForwardOffset: 2
-  m_IgnorePlayerShootRequestBeforeCooldownAtS: 1
 --- !u!1 &6398760256530846654
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,30 +265,22 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7631549078342532644}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5081544188076297334
-MonoBehaviour:
+--- !u!95 &3568719474120513700
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7631549078342564156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncPositionX: 0
-  SyncPositionY: 0
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  InLocalSpace: 0
-  Interpolate: 1
-  CanCommitToTransform: 0
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a87ce4d8b3637a046a3626a3e8825660, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
