@@ -35,6 +35,7 @@ public struct PlayerInput : INetworkSerializable
          serializer.SerializeValue(ref rotateTankRight);
      }
 
+     /*
      public void MergeNewer(PlayerInput other)
      {
          if (other.destination != Vector3.zero) destination = other.destination;
@@ -44,4 +45,5 @@ public struct PlayerInput : INetworkSerializable
          rotateTankLeft |= other.rotateTankLeft;
          rotateTankRight|= other.rotateTankRight;
      }   
+     */
 }

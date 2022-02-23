@@ -309,22 +309,22 @@
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/unityplastic.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Unsafe">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.Unsafe.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.Unsafe.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Mdb">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Mdb.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Mdb.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Pdb">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Pdb.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Pdb.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
  </Reference>
  <Reference Include="log4netPlastic">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Rocks">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
  </Reference>
  <Reference Include="Newtonsoft.Json">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>

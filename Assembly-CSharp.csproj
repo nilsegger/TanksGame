@@ -293,19 +293,19 @@
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collections@1.1.0/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Unsafe">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.Unsafe.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.Unsafe.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Mdb">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Mdb.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Mdb.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Pdb">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Pdb.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Pdb.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Rocks">
- <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.5.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
  </Reference>
  <Reference Include="Newtonsoft.Json">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
@@ -697,11 +697,17 @@
  <Reference Include="Unity.Netcode.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.Networking.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Networking.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.UI">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="Unity.PlasticSCM.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Netcode.Adapter.UTP.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Adapter.UTP.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Rider.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
@@ -717,6 +723,9 @@
  </Reference>
  <Reference Include="Unity.Notifications.iOS">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.iOS.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Networking.Transport">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Networking.Transport.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Mathematics">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
@@ -738,6 +747,9 @@
  </Reference>
  <Reference Include="Unity.Collections">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Netcode.Adapter.UTP">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Adapter.UTP.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Notifications.Android">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.Android.dll</HintPath>

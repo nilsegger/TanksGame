@@ -170,8 +170,10 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         {
             ReceiveClientInputServerRpc(clientLocalInput);
         }
+        
+        DoClientPreMovement();
     }
-
+    
     private void ClientSetLocalNavDestination(Vector3 destination)
     {
         clientLocalInput.destination = destination;
@@ -179,19 +181,27 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         _destinationMarkerInstance.SetActive(true);
     }
 
+    private void DoClientPreMovement()
+    {
+        // if(clientLocalInput.destination != Vector3.zero) _agent.SetDestination(clientLocalInput.destination);
+        NavigatePlayer(clientLocalInput); 
+        // CheckToSpawnShell(input);
+        RotateTurret(clientLocalInput);
+        RotateTank(clientLocalInput);
+    }
+
     private void DoServerUpdate()
     {
         if (!_gameHasStarted || !NetworkManager.Singleton.IsServer || clientServerInputsQueue.Count == 0) return;
 
-        var input = clientServerInputsQueue.Dequeue();
         while (clientServerInputsQueue.Count > 0)
         {
-            input.MergeNewer(clientServerInputsQueue.Dequeue());            
+            var input = clientServerInputsQueue.Dequeue();
+            NavigatePlayer(input); 
+            CheckToSpawnShell(input);
+            RotateTurret(input);
+            RotateTank(input);
         }
-        NavigatePlayer(input); 
-        CheckToSpawnShell(input);
-        RotateTurret(input);
-        RotateTank(input);
     }
 
     private void NavigatePlayer(PlayerInput input)
