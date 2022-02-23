@@ -3,18 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 public class NetworkedTankBehaviour : NetworkBehaviour 
 {
-    private struct PlayerInputs : INetworkSerializable
+    /* private struct PlayerInputs : INetworkSerializable
     {
         public Vector3 destination;
         public bool requestsToShoot;
         public bool rotateTurretLeft;
         public bool rotateTurretRight;
+        public bool rotateTankLeft;
+        public bool rotateTankRight;
 
         public void Reset()
         {
@@ -22,6 +25,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             requestsToShoot = false;
             rotateTurretLeft = false;
             rotateTurretRight = false;
+            rotateTankLeft = false;
+            rotateTankRight = false;
         }
 
         public bool ContainsAction()
@@ -35,6 +40,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             serializer.SerializeValue(ref requestsToShoot);
             serializer.SerializeValue(ref rotateTurretLeft);
             serializer.SerializeValue(ref rotateTurretRight);
+            serializer.SerializeValue(ref rotateTurretLeft);
+            serializer.SerializeValue(ref rotateTurretRight);
         }
 
         public void MergeNewer(PlayerInputs other)
@@ -44,7 +51,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             rotateTurretLeft |= other.rotateTurretLeft;
             rotateTurretRight |= other.rotateTurretRight;
         }
-    }
+    } */
     // Start is called before the first frame update
 
     public Camera m_PlayerCamera;
@@ -53,6 +60,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     public float ShootCooldownS = 3.0f;
     public Transform m_Turret;
     public float m_TurretRotateSpeed = 25.0f;
+    public float m_TankRotateSpeed = 15.0f;
     public float m_ShellForwardOffset = 2.0f;
     public float m_IgnorePlayerShootRequestBeforeCooldownAtS = 1.0f; // All shoots request which happen before cooldown has hit 1s will be ignored
 
@@ -61,8 +69,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private float _shootCooldown = 0.0f;
     private GameObject _destinationMarkerInstance;
 
-    private PlayerInputs clientLocalInput = new PlayerInputs();
-    private Queue<PlayerInputs> clientServerInputsQueue = new Queue<PlayerInputs>();
+    private PlayerInput clientLocalInput = new PlayerInput();
+    private Queue<PlayerInput> clientServerInputsQueue = new Queue<PlayerInput>();
 
     void Start()
     {
@@ -95,7 +103,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void ReceiveClientInputServerRpc(PlayerInputs input)
+    private void ReceiveClientInputServerRpc(PlayerInput input)
     {
         clientServerInputsQueue.Enqueue(input);
     }
@@ -143,20 +151,32 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             RaycastHit hit = new RaycastHit();
             if (Physics.Raycast(ray, out hit))
             {
-                clientLocalInput.destination = hit.point;
-                _destinationMarkerInstance.transform.position = hit.point;
-                _destinationMarkerInstance.SetActive(true);
+                ClientSetLocalNavDestination(hit.point);
             }
         }
 
         clientLocalInput.requestsToShoot = Input.GetKey("space");
         clientLocalInput.rotateTurretLeft = Input.GetKey("q");
         clientLocalInput.rotateTurretRight = Input.GetKey("e");
+        clientLocalInput.rotateTankLeft = Input.GetKey("a");
+        clientLocalInput.rotateTankRight = Input.GetKey("d");
+
+        if (Input.GetKey("s"))
+        {
+            ClientSetLocalNavDestination(transform.position);
+        }
 
         if (clientLocalInput.ContainsAction())
         {
             ReceiveClientInputServerRpc(clientLocalInput);
         }
+    }
+
+    private void ClientSetLocalNavDestination(Vector3 destination)
+    {
+        clientLocalInput.destination = destination;
+        _destinationMarkerInstance.transform.position = destination;
+        _destinationMarkerInstance.SetActive(true);
     }
 
     private void DoServerUpdate()
@@ -171,9 +191,10 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         NavigatePlayer(input); 
         CheckToSpawnShell(input);
         RotateTurret(input);
+        RotateTank(input);
     }
 
-    private void NavigatePlayer(PlayerInputs input)
+    private void NavigatePlayer(PlayerInput input)
     {
         if (input.destination == Vector3.zero) return;
         _agent.SetDestination(input.destination);
@@ -181,7 +202,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         _destinationMarkerInstance.SetActive(true);
     }
 
-    private void CheckToSpawnShell(PlayerInputs input)
+    private void CheckToSpawnShell(PlayerInput input)
     {
         _shootCooldown -= Time.fixedDeltaTime;
 
@@ -199,7 +220,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         input.requestsToShoot = false;
     }
 
-    private void RotateTurret(PlayerInputs input)
+    private void RotateTurret(PlayerInput input)
     {
         if (input.rotateTurretLeft)
         {
@@ -211,5 +232,18 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             m_Turret.Rotate(Vector3.up,  m_TurretRotateSpeed * Time.deltaTime);
         }
     }
+    
+    private void RotateTank(PlayerInput input)
+        {
+            if (input.rotateTankLeft)
+            {
+                transform.Rotate(Vector3.up,  -m_TankRotateSpeed* Time.deltaTime);
+            }
+    
+            if (input.rotateTankRight)
+            {
+                transform.Rotate(Vector3.up,  m_TankRotateSpeed* Time.deltaTime);
+            }
+        }
     
 }

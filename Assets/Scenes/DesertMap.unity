@@ -158,7 +158,7 @@ MonoBehaviour:
       type: 3}
     PrewarmCount: 20
   - Prefab: {fileID: 195792, guid: a1bd5c3829d5e654b8afad1c43f41385, type: 3}
-    PrewarmCount: 3
+    PrewarmCount: 20
 --- !u!4 &25422103
 Transform:
   m_ObjectHideFlags: 0
