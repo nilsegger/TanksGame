@@ -108,34 +108,6 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
     }
-
-    /*
-    private void CheckForRequiredServerOverride()
-    {
-        if (networkServerOverride.IsInterpolating())
-        {
-            transform.position = networkServerOverride.Interpolate(_serverPosition.Value, Time.deltaTime);
-            return;
-        }
-        
-        if (networkServerOverride.IsOverrideDistance(lagOffset.magnitude))
-        {
-            networkServerOverride.StartCountingMismatch(Time.deltaTime);
-            if (networkServerOverride.ShouldOverride())
-            {
-                transform.position =
-                    networkServerOverride.StartInterpolate(transform.position, _serverPosition.Value, Time.deltaTime);
-                networkServerOverride.Reset();
-            }
-            
-            Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
-        }
-        else
-        {
-            networkServerOverride.Reset();
-        }
-    }
-    */
     
     private void ClientSetLocalNavDestination(Vector3 destination)
     {
