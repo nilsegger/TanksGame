@@ -1,22 +1,32 @@
+using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 [System.Serializable]
 public struct NetworkPlayerSettings
 {
     public float resetPositionAfterMismatchTime;
     public float serverOverridePositionAfterMaxDistance;
+    public float interpolationDuration;
 
-    public NetworkPlayerSettings(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance)
+    public NetworkPlayerSettings(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration)
     {
         this.resetPositionAfterMismatchTime = resetPositionAfterMismatchTime;
         this.serverOverridePositionAfterMaxDistance = serverOverridePositionAfterMaxDistance;
+        this.interpolationDuration = interpolationDuration;
         this._offsetCounter = 0.0f;
+        this._interpolatingTimer = 0.0f;
+        this._interpolatingStart = Vector3.zero;
     }
 
     private float _offsetCounter;
+    private float _interpolatingTimer;
+    private Vector3 _interpolatingStart;
+    
     public void StartCountingMismatch(float time)
     {
         _offsetCounter += time;
@@ -36,6 +46,24 @@ public struct NetworkPlayerSettings
     {
         _offsetCounter = 0.0f;
     }
+
+    public bool IsInterpolating()
+    {
+        return _interpolatingTimer != 0.0f && _interpolatingTimer < interpolationDuration;
+    }
+    
+    public Vector3 StartInterpolate(Vector3 position, Vector3 target, float time)
+    {
+        _interpolatingTimer = 0.0f;
+        _interpolatingStart = position;
+        return Interpolate(target, time);
+    }
+
+    public Vector3 Interpolate(Vector3 target, float time)
+    {
+        _interpolatingTimer += time;
+        return Vector3.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
+    }
 }
 
 public class NetworkedTankBehaviour : NetworkBehaviour 
@@ -44,7 +72,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     public Camera m_PlayerCamera;
     public GameObject m_DestinationMarker;
     public float m_ServerNavMeshAccelerationIncrease = 1.2f;
-    public NetworkPlayerSettings networkPlayerSettings = new NetworkPlayerSettings(3.0f, 3.0f);
+    public NetworkPlayerSettings networkPlayerSettings = new NetworkPlayerSettings(3.0f, 3.0f, 1.0f);
 
     private NavMeshAgent _agent;
     private GameObject _destinationMarkerInstance;
@@ -134,13 +162,21 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     private void CheckForRequiredServerOverride()
     {
+        if (networkPlayerSettings.IsInterpolating())
+        {
+            transform.position = networkPlayerSettings.Interpolate(_serverPosition.Value, Time.deltaTime);
+            return;
+        }
+        
         var lagOffset = transform.position - _serverPosition.Value;
         if (networkPlayerSettings.IsOverrideDistance(lagOffset.magnitude))
         {
             networkPlayerSettings.StartCountingMismatch(Time.deltaTime);
             if (networkPlayerSettings.ShouldOverridePosition())
             {
-                transform.position = _serverPosition.Value;
+                transform.position =
+                    networkPlayerSettings.StartInterpolate(transform.position, _serverPosition.Value, Time.deltaTime);
+                // transform.position = _serverPosition.Value;
                 networkPlayerSettings.Reset();
             }
             
