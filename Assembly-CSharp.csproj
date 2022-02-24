@@ -62,11 +62,11 @@
      <Compile Include="Assets\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameBasicUIBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Tank\TurretRotationBehaviour.cs" />
      <Compile Include="Assets\Scripts\ShellExplosionBehaviour.cs" />
+     <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <Compile Include="Assets\Scripts\PlayerInput.cs" />
-     <Compile Include="Assets\Scripts\Tank\TurretRotationBehaviour.cs" />
-     <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
  <Reference Include="UnityEngine">

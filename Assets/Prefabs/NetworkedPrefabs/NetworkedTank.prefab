@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2295937452536562292}
   - component: {fileID: 490414975486166804}
   - component: {fileID: 3173230737340915809}
+  - component: {fileID: 2833239079181423821}
   m_Layer: 0
   m_Name: NetworkedTank
   m_TagString: Untagged
@@ -88,6 +89,20 @@ MonoBehaviour:
   m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
     type: 3}
   m_ServerNavMeshAccelerationIncrease: 1.2
+--- !u!114 &2833239079181423821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde9ecb194ac89842b5d92e8a55356db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Turret: {fileID: 7631549078342919388}
+  m_RotationSpeed: 30
 --- !u!1 &6398760256530846654
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,16 +300,3 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5748311400334230999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7631549078342564156}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dde9ecb194ac89842b5d92e8a55356db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RotationSpeed: 30

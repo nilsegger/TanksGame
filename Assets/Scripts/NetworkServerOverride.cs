@@ -107,16 +107,16 @@ public class NetworkServerOverridePosition : NetworkServerOverride<Vector3>
     }
 }
 
-public class NetworkServerOverrideRotation: NetworkServerOverride<Quaternion>
+public class NetworkServerOverrideFloat : NetworkServerOverride<float>
 {
-    public NetworkServerOverrideRotation(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration) : base(resetPositionAfterMismatchTime, serverOverridePositionAfterMaxDistance, interpolationDuration)
+    public NetworkServerOverrideFloat(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration) : base(resetPositionAfterMismatchTime, serverOverridePositionAfterMaxDistance, interpolationDuration)
     {
-        this._interpolatingStart = Quaternion.identity;;
+        this._interpolatingStart = 0.0f;
     }
 
-    public override Quaternion Interpolate(Quaternion target, float time)
+    public override float Interpolate(float target, float time)
     {
         _interpolatingTimer += time;
-        return Quaternion.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
+        return Mathf.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
     }
 }
