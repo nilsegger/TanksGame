@@ -8,6 +8,7 @@ public class TurretRotationBehaviour : NetworkBehaviour
 {
     public Transform m_Turret;
     public float m_RotationSpeed = 30.0f;
+    public float m_ServerRotationIncrease = 1.1f;
 
     private NetworkVariable<float> _serverRotation = new NetworkVariable<float>(); // this is the y rotation in euler
    
@@ -24,7 +25,7 @@ public class TurretRotationBehaviour : NetworkBehaviour
 
         if (NetworkManager.Singleton.IsServer)
         {
-            m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, _rotationDestination, m_RotationSpeed * Time.deltaTime);
+            m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, _rotationDestination, m_RotationSpeed * Time.deltaTime * m_ServerRotationIncrease);
             _serverRotation.Value = m_Turret.rotation.eulerAngles.y;
             return;
         } else if (NetworkManager.Singleton.IsClient && IsOwner)
