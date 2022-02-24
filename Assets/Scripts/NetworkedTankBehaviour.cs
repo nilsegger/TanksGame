@@ -1,4 +1,3 @@
-using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,81 +5,21 @@ using UnityEngine.SceneManagement;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
-[System.Serializable]
-public struct NetworkPlayerSettings
-{
-    public float resetPositionAfterMismatchTime;
-    public float serverOverridePositionAfterMaxDistance;
-    public float interpolationDuration;
-
-    public NetworkPlayerSettings(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration)
-    {
-        this.resetPositionAfterMismatchTime = resetPositionAfterMismatchTime;
-        this.serverOverridePositionAfterMaxDistance = serverOverridePositionAfterMaxDistance;
-        this.interpolationDuration = interpolationDuration;
-        this._offsetCounter = 0.0f;
-        this._interpolatingTimer = 0.0f;
-        this._interpolatingStart = Vector3.zero;
-    }
-
-    private float _offsetCounter;
-    private float _interpolatingTimer;
-    private Vector3 _interpolatingStart;
-    
-    public void StartCountingMismatch(float time)
-    {
-        _offsetCounter += time;
-    }
-
-    public bool IsOverrideDistance(float distance)
-    {
-        return distance >= serverOverridePositionAfterMaxDistance;
-    }
-
-    public bool ShouldOverridePosition()
-    {
-        return _offsetCounter >= this.resetPositionAfterMismatchTime;
-    }
-
-    public void Reset()
-    {
-        _offsetCounter = 0.0f;
-    }
-
-    public bool IsInterpolating()
-    {
-        return _interpolatingTimer != 0.0f && _interpolatingTimer < interpolationDuration;
-    }
-    
-    public Vector3 StartInterpolate(Vector3 position, Vector3 target, float time)
-    {
-        _interpolatingTimer = 0.0f;
-        _interpolatingStart = position;
-        return Interpolate(target, time);
-    }
-
-    public Vector3 Interpolate(Vector3 target, float time)
-    {
-        _interpolatingTimer += time;
-        return Vector3.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
-    }
-}
-
 public class NetworkedTankBehaviour : NetworkBehaviour 
 {
 
     public Camera m_PlayerCamera;
     public GameObject m_DestinationMarker;
     public float m_ServerNavMeshAccelerationIncrease = 1.2f;
-    public NetworkPlayerSettings networkPlayerSettings = new NetworkPlayerSettings(3.0f, 3.0f, 1.0f);
+    
+    [SerializeField]
+    private NetworkServerOverridePosition networkServerOverride = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
 
     private NavMeshAgent _agent;
     private GameObject _destinationMarkerInstance;
 
     private NetworkVariable<Vector3> _navDestination;
     private NetworkVariable<Vector3> _serverPosition;
-
-    
 
     void Start()
     {
@@ -157,36 +96,46 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             }
         }
         
-        CheckForRequiredServerOverride();
+        var lagOffset = (transform.position - _serverPosition.Value).magnitude;
+        Vector3 result;
+        if(networkServerOverride.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out result, lagOffset, Time.deltaTime))
+        {
+            transform.position = result;
+        }
+
+        if (networkServerOverride.IsOverrideDistance(lagOffset))
+        {
+            Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
+        }
     }
 
+    /*
     private void CheckForRequiredServerOverride()
     {
-        if (networkPlayerSettings.IsInterpolating())
+        if (networkServerOverride.IsInterpolating())
         {
-            transform.position = networkPlayerSettings.Interpolate(_serverPosition.Value, Time.deltaTime);
+            transform.position = networkServerOverride.Interpolate(_serverPosition.Value, Time.deltaTime);
             return;
         }
         
-        var lagOffset = transform.position - _serverPosition.Value;
-        if (networkPlayerSettings.IsOverrideDistance(lagOffset.magnitude))
+        if (networkServerOverride.IsOverrideDistance(lagOffset.magnitude))
         {
-            networkPlayerSettings.StartCountingMismatch(Time.deltaTime);
-            if (networkPlayerSettings.ShouldOverridePosition())
+            networkServerOverride.StartCountingMismatch(Time.deltaTime);
+            if (networkServerOverride.ShouldOverride())
             {
                 transform.position =
-                    networkPlayerSettings.StartInterpolate(transform.position, _serverPosition.Value, Time.deltaTime);
-                // transform.position = _serverPosition.Value;
-                networkPlayerSettings.Reset();
+                    networkServerOverride.StartInterpolate(transform.position, _serverPosition.Value, Time.deltaTime);
+                networkServerOverride.Reset();
             }
             
             Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
         else
         {
-            networkPlayerSettings.Reset();
+            networkServerOverride.Reset();
         }
     }
+    */
     
     private void ClientSetLocalNavDestination(Vector3 destination)
     {
