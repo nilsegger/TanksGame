@@ -47,7 +47,7 @@ public class TankShootBehaviour : NetworkBehaviour
                 _cooldown = m_ShootCooldown;
                 var shootShellAt = NetworkManager.LocalTime.Time + m_ShootWarmUp;
                 SetShootAnimation(m_ShootWarmUp); 
-                ShootServerRpc(shootShellAt, transform.position, m_Turret.transform.rotation.eulerAngles.y);
+                ShootServerRpc(shootShellAt, transform.position, m_Turret.transform.localRotation.eulerAngles.y);
                 
                 _tankMovementBehaviour.LockMovement();
                 _tankMovementBehaviour.HaltAtPosition();
@@ -93,7 +93,7 @@ public class TankShootBehaviour : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void ShootServerRpc(double atTime, Vector3 position, float rotationY)
+    private void ShootServerRpc(double atTime, Vector3 position, float localRotationY)
     {
         if (!GameManagerBehaviour.GameBegun) return;
         if (_cooldown > 0.0f) return;
@@ -105,7 +105,7 @@ public class TankShootBehaviour : NetworkBehaviour
         _tankMovementBehaviour.UpdateDestinationForShot(position, maxPositionCorrectionOnShootStop);
         
         _turretRotationBehaviour.LockMovement();
-        _turretRotationBehaviour.UpdateDestinationForShot(rotationY, maxAngleCorrectionOnShootStop);
+        _turretRotationBehaviour.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);
 
         StartCoroutine(WaitToUnlockMovement((float) waitTime));
 
