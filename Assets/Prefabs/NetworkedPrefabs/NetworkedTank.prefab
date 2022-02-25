@@ -89,7 +89,7 @@ MonoBehaviour:
   m_PlayerCamera: {fileID: 3882965136097382486}
   m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
     type: 3}
-  m_ServerNavMeshAccelerationIncrease: 1.2
+  m_ServerNavMeshAccelerationIncrease: 1
 --- !u!114 &2833239079181423821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Turret: {fileID: 7631549078342919388}
   m_RotationSpeed: 30
-  m_ServerRotationIncrease: 1.2
+  m_ServerRotationIncrease: 1
 --- !u!114 &2651293376397589743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +121,10 @@ MonoBehaviour:
     type: 3}
   m_ShellSpawnPosition: {fileID: 7915208143245574508}
   m_TurretAnimator: {fileID: 3568719474120513700}
+  m_Turret: {fileID: 7631549078342564156}
   m_ShootAnimation: {fileID: 7400000, guid: a84e75e4fa960df4da6d689c4c386c26, type: 2}
+  maxAngleCorrectionOnShootStop: 10
+  maxPositionCorrectionOnShootStop: 1
   m_ShootCooldown: 1.1
   m_ShootWarmUp: 1
 --- !u!1 &6398760256530846654

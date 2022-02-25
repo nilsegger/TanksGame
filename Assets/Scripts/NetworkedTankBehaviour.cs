@@ -21,6 +21,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private NetworkVariable<Vector3> _navDestination;
     private NetworkVariable<Vector3> _serverPosition;
 
+    private bool _lockedMovement = false;
     void Start()
     {
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
@@ -80,7 +81,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
         if (IsOwner)
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && !_lockedMovement)
             {
                 Ray ray = m_PlayerCamera.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit = new RaycastHit();
@@ -90,7 +91,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
                 }
             }
 
-            if (Input.GetKey("s"))
+            if (Input.GetKey("s") && !_lockedMovement)
             {
                 ClientSetLocalNavDestination(transform.position);
             }
@@ -120,7 +121,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     [ServerRpc]
     private void ClientPushNewNavDestinationServerRpc(Vector3 destination)
     {
-        if (GameManagerBehaviour.GameBegun)
+        if (GameManagerBehaviour.GameBegun && !_lockedMovement)
         {
             _navDestination.Value = destination;
         }
@@ -141,9 +142,41 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         }
     }
 
+    public void HaltAtPosition()
+    {
+        _agent.SetDestination(transform.position);
+    }
+    
+    public void UpdateDestinationForShot(Vector3 position, float maxCorrectionMagnitude)
+    {
+        var forward = position - transform.position;
+        Debug.Log(forward.magnitude + " max " + maxCorrectionMagnitude);
+        if (forward.magnitude <= maxCorrectionMagnitude)
+        {
+            _agent.SetDestination(position);
+        }
+        else
+        {
+            forward.Normalize();
+            var correctedPosition = transform.position + forward  * maxCorrectionMagnitude;
+            _agent.SetDestination(correctedPosition);
+        }
+    }
+
+    public void LockMovement()
+    {
+        _lockedMovement = true;
+    }
+
+    public void UnlockMovement()
+    {
+        _lockedMovement = false;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(_serverPosition.Value, 1);
     }
+    
     
 }

@@ -19,6 +19,8 @@ public class TurretRotationBehaviour : NetworkBehaviour
 
     private float _lastRotation = 0.0f;
 
+    private bool _lockedMovement = false;
+
     void Update()
     {
         if (!GameManagerBehaviour.GameBegun) return;
@@ -30,8 +32,8 @@ public class TurretRotationBehaviour : NetworkBehaviour
             return;
         } else if (NetworkManager.Singleton.IsClient && IsOwner)
         {
-            bool rotateLeft = Input.GetKey("q");
-            bool rotateRight = Input.GetKey("e");
+            bool rotateLeft = Input.GetKey("q") && !_lockedMovement;
+            bool rotateRight = Input.GetKey("e") && !_lockedMovement;
 
             if (rotateLeft)
             {
@@ -76,8 +78,31 @@ public class TurretRotationBehaviour : NetworkBehaviour
     [ServerRpc]
     private void ClientPushNewRotationServerRpc(float rotation)
     {
-        if (!GameManagerBehaviour.GameBegun) return;
+        if (!GameManagerBehaviour.GameBegun || _lockedMovement) return;
         _rotationDestination = Quaternion.Euler(0.0f, rotation, 0.0f);
+    }
+
+    public void UpdateDestinationForShot(float rotation, float maxCorrection)
+    {
+        if (Mathf.Abs(m_Turret.transform.rotation.eulerAngles.y - rotation) <= maxCorrection)
+        {
+            _rotationDestination = Quaternion.Euler(0.0f, rotation, 0.0f);
+        }
+        else
+        {
+            var angle = m_Turret.transform.rotation.eulerAngles.y + Mathf.Sign(rotation - m_Turret.transform.rotation.eulerAngles.y) * maxCorrection;
+            _rotationDestination = quaternion.Euler(0.0f, angle, 0.0f);
+        }
+    }
+    
+    public void LockMovement()
+    {
+        _lockedMovement = true;
+    }
+
+    public void UnlockMovement()
+    {
+        _lockedMovement = false;
     }
     
 }
