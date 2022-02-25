@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 490414975486166804}
   - component: {fileID: 3173230737340915809}
   - component: {fileID: 2833239079181423821}
+  - component: {fileID: 2651293376397589743}
   m_Layer: 0
   m_Name: NetworkedTank
   m_TagString: Untagged
@@ -103,6 +104,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Turret: {fileID: 7631549078342919388}
   m_RotationSpeed: 30
+  m_ServerRotationIncrease: 1.2
+--- !u!114 &2651293376397589743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c78326e0dee56864f8e8a50b8646b766, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShellPrefab: {fileID: 0}
+  m_TurretAnimator: {fileID: 3568719474120513700}
+  m_ShootCooldown: 3
 --- !u!1 &6398760256530846654
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +306,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7631549078342564156}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: a87ce4d8b3637a046a3626a3e8825660, type: 2}
   m_CullingMode: 0
