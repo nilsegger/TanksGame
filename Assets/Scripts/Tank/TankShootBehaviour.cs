@@ -7,10 +7,13 @@ public class TankShootBehaviour : NetworkBehaviour
 {
 
     public GameObject m_ShellPrefab;
+    public GameObject m_ShellSpawnPosition;
 
     public Animator m_TurretAnimator;
+    public AnimationClip m_ShootAnimation;
 
     public float m_ShootCooldown = 3.0f;
+    public float m_ShootWarmUp = 1.0f;
 
     private float _cooldown = 0.0f;
     
@@ -31,20 +34,45 @@ public class TankShootBehaviour : NetworkBehaviour
             if (Input.GetKey("space") && _cooldown <= 0.0f)
             {
                 _cooldown = m_ShootCooldown;
-                Debug.Log("Playing animation");
-                m_TurretAnimator.SetTrigger("Shoot");
+                var shootShellAt = NetworkManager.LocalTime.Time + m_ShootWarmUp;
+                SetShootAnimation(m_ShootWarmUp); 
+                ShootServerRpc(shootShellAt);
             }
             else
             {
                 _cooldown -= Time.deltaTime;
             }
-
+        } else if (NetworkManager.Singleton.IsServer)
+        {
+            if (_cooldown > 0.0f) _cooldown -= Time.deltaTime;
         }
     }
 
-    [ServerRpc]
-    private void ShootServerRpc(float atTime)
+    private void SetShootAnimation(float durationS)
     {
+        m_TurretAnimator.SetTrigger("Shoot");
+        var animationSpeedup = m_ShootAnimation.length / durationS;
+        m_TurretAnimator.speed = animationSpeedup;
+    }
+
+    private void ServerSpawnShell(float spawnTime)
+    {
+        var shell = NetworkPool.Singleton.GetNetworkObject(m_ShellPrefab, m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.rotation);
+        shell.SpawnWithOwnership(OwnerClientId);
         
+        var shellBehaviour = shell.gameObject.GetComponent<NetworkedShellBehaviour>();
+        shellBehaviour.SetSpawnTime(spawnTime);
+    }
+
+    [ServerRpc]
+    private void ShootServerRpc(double atTime)
+    {
+        if (!GameManagerBehaviour.GameBegun) return;
+        if (_cooldown > 0.0f) return;
+        var waitTime = atTime - NetworkManager.ServerTime.Time;
+        SetShootAnimation((float) waitTime);
+        ServerSpawnShell((float) atTime);
+
+        _cooldown = m_ShootCooldown;
     }
 }

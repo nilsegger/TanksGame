@@ -56,9 +56,8 @@ public class TurretRotationBehaviour : NetworkBehaviour
             m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation, ServerRotation(), m_RotationSpeed * Time.deltaTime);
         }
 
-        float updatedEulerAngle;
         var angleOffset = Mathf.Abs(_serverRotation.Value - m_Turret.transform.eulerAngles.y);
-        if (_networkServerOverride.CheckForRequiredServerOverride(m_Turret.transform.rotation.eulerAngles.y, _serverRotation.Value, out updatedEulerAngle, angleOffset, Time.deltaTime))
+        if (_networkServerOverride.CheckForRequiredServerOverride(m_Turret.transform.rotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset, Time.deltaTime))
         {
             m_Turret.transform.rotation = Quaternion.Euler(m_Turret.transform.rotation.eulerAngles.x, updatedEulerAngle, m_Turret.transform.rotation.eulerAngles.z);
         }
