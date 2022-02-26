@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class NetworkedShellBehaviour : NetworkBehaviour 
 {
@@ -11,14 +13,13 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     private Rigidbody _body;
 
     private NetworkVariable<float> _spawnTime = new NetworkVariable<float>(0.0f);
+    private NetworkVariable<Vector3> _serverPosition = new NetworkVariable<Vector3>(Vector3.zero);
 
     private bool _activatedSinceLastNetworkSpawn = false;
 
     private void Start()
     {
         _body = GetComponent<Rigidbody>();
-        _body.isKinematic = true; // dont be affected by gravity etc while waiting for shell to become active
-        
     }
 
     public override void OnNetworkSpawn()
@@ -33,10 +34,15 @@ public class NetworkedShellBehaviour : NetworkBehaviour
         {
             m_Renderer.enabled = false;
         }
-
+        
         _activatedSinceLastNetworkSpawn = false;
         
         _spawnTime.OnValueChanged += OnSpawnTimeChanged;
+
+        if (NetworkManager.Singleton.IsServer && _body != null)
+        {
+            _body.isKinematic = false;
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -60,6 +66,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     public void SetSpawnTime(float time)
     {
         _spawnTime.Value = time;
+        StartCoroutine(ActivateInS((float)(time - NetworkManager.ServerTime.Time)));
     }
 
     private void OnSpawnTimeChanged(float oldTime, float newTime)
@@ -72,14 +79,22 @@ public class NetworkedShellBehaviour : NetworkBehaviour
         StartCoroutine(ActivateInS((float) waitTime));
     }
 
+    private void Update()
+    {
+        Debug.DrawLine(transform.position, _serverPosition.Value, Color.blue);
+    }
+
     /*
     private void OnCollisionEnter(Collision collision)
     {
     }
+    */
 
     private void FixedUpdate()
     {
-        
+        if (!NetworkManager.Singleton.IsServer || !GameManagerBehaviour.GameBegun || !_activatedSinceLastNetworkSpawn) return;
+        _body.MovePosition(transform.position + (transform.forward * m_Speed * Time.fixedDeltaTime));
+        _serverPosition.Value = _body.transform.position;
+        Debug.Log("Hello World!");
     }
-    */
 }
