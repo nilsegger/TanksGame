@@ -11,9 +11,14 @@ public class LobbyUIBehaviour : NetworkBehaviour
     public Text m_MissingPlayersCountText;
     public NetworkVariable<int> missingPlayersCount = new NetworkVariable<int>(0);
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         missingPlayersCount.OnValueChanged += OnMissingPlayersCountChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        missingPlayersCount.OnValueChanged -= OnMissingPlayersCountChanged;
     }
 
     public void SetNetworkStatusText(string text)

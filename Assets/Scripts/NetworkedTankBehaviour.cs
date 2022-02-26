@@ -10,7 +10,6 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     public Camera m_PlayerCamera;
     public GameObject m_DestinationMarker;
-    public float m_ServerNavMeshAccelerationIncrease = 1.2f;
     
     [SerializeField]
     private NetworkServerOverridePosition networkServerOverride = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
@@ -27,16 +26,16 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
         _agent = gameObject.GetComponent<NavMeshAgent>();
         PrepareWayMarker();
-        _navDestination.OnValueChanged += OnClientChangedNavDestination;
-
-       UpgradeServerNavSpeed(); 
     }
 
-    private void UpgradeServerNavSpeed()
+    public override void OnNetworkSpawn()
     {
-        if (!NetworkManager.Singleton.IsServer) return;
-        _agent.acceleration *= m_ServerNavMeshAccelerationIncrease;
-        _agent.angularSpeed *= m_ServerNavMeshAccelerationIncrease;
+        _navDestination.OnValueChanged += OnClientChangedNavDestination;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        _navDestination.OnValueChanged -= OnClientChangedNavDestination;
     }
 
     private void OnSceneLoad(ulong clientid, string scenename, LoadSceneMode loadscenemode, AsyncOperation asyncoperation)
@@ -150,7 +149,6 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     public void UpdateDestinationForShot(Vector3 position, float maxCorrectionMagnitude)
     {
         var forward = position - transform.position;
-        Debug.Log(forward.magnitude + " max " + maxCorrectionMagnitude);
         if (forward.magnitude <= maxCorrectionMagnitude)
         {
             _agent.SetDestination(position);
