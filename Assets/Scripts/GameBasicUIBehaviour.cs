@@ -8,12 +8,15 @@ public class GameBasicUIBehaviour : NetworkBehaviour
 {
 
     public Text m_CountdownText;
+    public Text m_PingText;
     public float m_UpdatePingEveryS = 1.0f;
+    public float m_BadPingLimitMS = 250;
 
     private float _countdown = 0.0f;
 
-    private Dictionary<int, double> _pingsSendTime = new Dictionary<int, double>();
-    private int _nextPingId = 0;
+    private bool _awaitingPingResponse = false;
+    private double _lastRtt = 0.0f;
+    private double _pingSendTime = 0.0f;
     private float _pingCooldown = 0.0f;
     
 
@@ -49,27 +52,29 @@ public class GameBasicUIBehaviour : NetworkBehaviour
 
         if (GameManagerBehaviour.GameBegun)
         {
-            if (_pingCooldown <= 0.0f)
+            if (_awaitingPingResponse == false && _pingCooldown <= 0.0f)
             {
                 SendPingRequest();
-                _pingCooldown = m_UpdatePingEveryS;
             }
             else
             {
                 _pingCooldown -= Time.deltaTime;
             }
+
+            m_PingText.text = ((int)(_lastRtt)).ToString() + "ms";
+            m_PingText.color = Color.Lerp(Color.green, Color.red, 1.0f / (float)m_BadPingLimitMS * (float)_lastRtt);
         }
     }
     
     private void SendPingRequest()
     {
-        _pingsSendTime[_nextPingId] = NetworkManager.LocalTime.Time;
-        PingRequestServerRpc(_nextPingId);
-        _nextPingId++;
+        _awaitingPingResponse = true;
+        _pingSendTime = NetworkManager.LocalTime.Time;
+        PingRequestServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void PingRequestServerRpc(int pingId, ServerRpcParams serverRpcParams = default)
+    private void PingRequestServerRpc(ServerRpcParams serverRpcParams = default)
     {
         ClientRpcParams clientRpcParams = new ClientRpcParams
         {
@@ -78,13 +83,14 @@ public class GameBasicUIBehaviour : NetworkBehaviour
                TargetClientIds = new ulong[]{serverRpcParams.Receive.SenderClientId}
             }
         };
-        PingResponseClientRpc(pingId, clientRpcParams);
+        PingResponseClientRpc(clientRpcParams);
     }
 
     [ClientRpc]
-    private void PingResponseClientRpc(int pingId, ClientRpcParams clientRpcParams = default)
+    private void PingResponseClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log(NetworkManager.LocalTime.Time - _pingsSendTime[pingId]);
-        _pingsSendTime.Remove(pingId);
+        _lastRtt = (NetworkManager.LocalTime.Time - _pingSendTime) * 1000.0;
+        _pingCooldown = m_UpdatePingEveryS;
+        _awaitingPingResponse = false;
     }
 }
