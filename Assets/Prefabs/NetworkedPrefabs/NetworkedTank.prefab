@@ -89,7 +89,6 @@ MonoBehaviour:
   m_PlayerCamera: {fileID: 3882965136097382486}
   m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
     type: 3}
-  m_ServerNavMeshAccelerationIncrease: 1
 --- !u!114 &2833239079181423821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,7 +103,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Turret: {fileID: 7631549078342919388}
   m_RotationSpeed: 30
-  m_ServerRotationIncrease: 1
 --- !u!114 &2651293376397589743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,7 +234,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7915208143245574508}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.582, z: 1.148}
+  m_LocalPosition: {x: 0, y: 0.499, z: 1.21}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 7631549078342919388}
@@ -257,7 +255,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7915208143245574508}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
