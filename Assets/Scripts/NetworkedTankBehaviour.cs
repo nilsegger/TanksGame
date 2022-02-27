@@ -152,12 +152,14 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         if (forward.magnitude <= maxCorrectionMagnitude)
         {
             _agent.SetDestination(position);
+            _navDestination.Value = position;
         }
         else
         {
             forward.Normalize();
             var correctedPosition = transform.position + forward  * maxCorrectionMagnitude;
             _agent.SetDestination(correctedPosition);
+            _navDestination.Value = correctedPosition;
         }
     }
 
