@@ -9,6 +9,7 @@ public class TankShootBehaviour : NetworkBehaviour
 
     public GameObject m_ShellPrefab;
     public GameObject m_ShellSpawnPosition;
+    public GameObject m_HitMarker;
 
     public Animator m_TurretAnimator;
     public GameObject m_Turret;
@@ -21,6 +22,8 @@ public class TankShootBehaviour : NetworkBehaviour
     public float m_ShootWarmUp = 1.0f;
 
     private float _cooldown = 0.0f;
+
+    private GameObject _hitMarkerInstance;
 
     private NetworkedTankBehaviour _tankMovementBehaviour;
     private TurretRotationBehaviour _turretRotationBehaviour;
@@ -62,6 +65,26 @@ public class TankShootBehaviour : NetworkBehaviour
         } else if (NetworkManager.Singleton.IsServer)
         {
             if (_cooldown > 0.0f) _cooldown -= Time.deltaTime;
+        }
+
+        DisplayHitMarker();
+    }
+
+    private void DisplayHitMarker()
+    {
+        if (!NetworkManager.Singleton.IsServer && !IsOwner) return;
+        
+        Ray ray = new Ray(m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.forward);
+        if (!Physics.Raycast(ray, out var hit)) return;
+        
+        if (_hitMarkerInstance == null)
+        {
+            _hitMarkerInstance = Instantiate(m_HitMarker, hit.point, Quaternion.LookRotation(hit.normal));
+        }
+        else
+        {
+            _hitMarkerInstance.transform.position = hit.point;
+            _hitMarkerInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
         }
     }
 

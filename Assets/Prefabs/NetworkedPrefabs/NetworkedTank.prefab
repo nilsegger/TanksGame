@@ -118,6 +118,8 @@ MonoBehaviour:
   m_ShellPrefab: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b,
     type: 3}
   m_ShellSpawnPosition: {fileID: 7915208143245574508}
+  m_HitMarker: {fileID: 1814915164882059669, guid: 41bdc5507ae1115419db603afb216ed8,
+    type: 3}
   m_TurretAnimator: {fileID: 3568719474120513700}
   m_Turret: {fileID: 7631549078342564156}
   m_ShootAnimation: {fileID: 7400000, guid: a84e75e4fa960df4da6d689c4c386c26, type: 2}
