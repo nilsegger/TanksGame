@@ -59,7 +59,7 @@
      <Compile Include="Assets\Scripts\Tank\TankShootBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\NetworkedTankBehaviour.cs" />
      <Compile Include="Assets\PlayerMovement.cs" />
-     <Compile Include="Assets\FogOfWarBehaviour.cs" />
+     <Compile Include="Assets\Scripts\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameBasicUIBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TurretRotationBehaviour.cs" />

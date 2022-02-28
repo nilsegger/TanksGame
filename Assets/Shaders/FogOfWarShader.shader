@@ -28,6 +28,8 @@ Shader "Unlit/FogOfWarShader"
             
             float4 center;
             float4 points[POINTS];
+
+            int debug;
             
             struct appdata
             {
@@ -74,25 +76,26 @@ Shader "Unlit/FogOfWarShader"
             fixed4 frag (v2f i) : SV_Target
             {
 
-                /*
-                float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);
-                if(_ScreenParams.y > _ScreenParams.x) screenRatio = float2(_ScreenParams.x / _ScreenParams.y, 1.0);
-
-                float dist = distance(i.fragScreenPos.xy * screenRatio, center.xy * screenRatio);
-                if(dist < 0.005)
+                if(debug == 1)
                 {
-                    return float4(1.0, 0.0, 0.0, 1.0);
-                }
+                    float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);
+                    if(_ScreenParams.y > _ScreenParams.x) screenRatio = float2(_ScreenParams.x / _ScreenParams.y, 1.0);
 
-                for(int j = 0; j < POINTS; j++)
-                {
-                    dist = distance(i.fragScreenPos.xy * screenRatio, points[j].xy * screenRatio);
+                    float dist = distance(i.fragScreenPos.xy * screenRatio, center.xy * screenRatio);
                     if(dist < 0.005)
                     {
                         return float4(1.0, 0.0, 0.0, 1.0);
                     }
+
+                    for(int j = 0; j < POINTS; j++)
+                    {
+                        dist = distance(i.fragScreenPos.xy * screenRatio, points[j].xy * screenRatio);
+                        if(dist < 0.005)
+                        {
+                            return float4(1.0, 0.0, 0.0, 1.0);
+                        }
+                    }
                 }
-                */
 
                 // TODO optimazation, get points of triangle which would stand if there was no interference, then check if points is inside of that one, if yes, check all triangles
                 bool inView = false;

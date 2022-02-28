@@ -142,8 +142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Turret: {fileID: 7631549078342919388}
-  m_VisibilityForwardOffset: 4
-  m_VisibilityRadius: 5
+  m_VisibilityForwardOffset: 10
+  m_VisibilityRadius: 10
 --- !u!1 &6398760256530846654
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,6 +155,7 @@ GameObject:
   - component: {fileID: 6941720106844350320}
   - component: {fileID: 3882965136097382486}
   - component: {fileID: 2583065925601855658}
+  - component: {fileID: 6555507600186136970}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: Untagged
@@ -170,7 +171,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6398760256530846654}
   m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 20, z: -3}
+  m_LocalPosition: {x: 0, y: 15, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7631549078342919388}
@@ -227,6 +228,23 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6398760256530846654}
   m_Enabled: 1
+--- !u!114 &6555507600186136970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6398760256530846654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 523790e69131b674391cda495bb38a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 803979c026dc00748bec8f864945e94c, type: 2}
+  m_Casts: 40
+  m_AngleRange: 120
+  m_Range: 20
+  m_Transform: {fileID: 7631549078342919388}
 --- !u!1 &7915208143245574508
 GameObject:
   m_ObjectHideFlags: 0
