@@ -11,8 +11,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     public Camera m_PlayerCamera;
     public GameObject m_DestinationMarker;
     
-    [SerializeField]
-    private NetworkServerOverridePosition networkServerOverride = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
+    private NetworkServerOverridePosition movingServerOverridePosition = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
+    private NetworkServerOverridePosition stoppedServerOverridePosition = new NetworkServerOverridePosition(1.5f, 0.1f, 0.5f);
 
     private NavMeshAgent _agent;
     private GameObject _destinationMarkerInstance;
@@ -95,15 +95,20 @@ public class NetworkedTankBehaviour : NetworkBehaviour
                 ClientSetLocalNavDestination(transform.position);
             }
         }
+
+        var overrideManager = movingServerOverridePosition;
+        if(_agent.velocity.magnitude == 0.0f)
+        {
+            overrideManager = stoppedServerOverridePosition;
+        }
         
         var lagOffset = (transform.position - _serverPosition.Value).magnitude;
-        Vector3 result;
-        if(networkServerOverride.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out result, lagOffset, Time.deltaTime))
+        if(overrideManager.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
         {
             transform.position = result;
         }
 
-        if (networkServerOverride.IsOverrideDistance(lagOffset))
+        if (overrideManager.IsOverrideDistance(lagOffset))
         {
             Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
