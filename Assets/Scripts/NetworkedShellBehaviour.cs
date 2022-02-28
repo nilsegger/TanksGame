@@ -71,7 +71,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
 
     private IEnumerator ActivateInS(float waitTime)
     {
-        if (_activatedSinceLastNetworkSpawn) yield break;
+        if (_activatedSinceLastNetworkSpawn || _hitRegisteredSinceNetworkSpawn) yield break; // on really low ping, server can register hit before client
         
         if (waitTime > 0.0f)
         {
@@ -118,17 +118,18 @@ public class NetworkedShellBehaviour : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (_hitRegisteredSinceNetworkSpawn) return;
         ResetRigidBody();
         if (NetworkManager.Singleton.IsServer)
         {
             _hitRegisteredSinceNetworkSpawn = true;
-            OnCollisionRegisteredClientRpc(collision.transform.position, collision.transform.rotation);
+            OnCollisionRegisteredClientRpc(collision.contacts[0].point, collision.contacts[0].normal);
             StartCoroutine(WaitToDespawn(3.0f));
         }
         else
         {
             _clientRegisteredHit = true;
-            _clientHitRegisterEffect = Instantiate(m_ClientHitRegister, collision.transform.position, collision.transform.rotation);
+            _clientHitRegisterEffect = Instantiate(m_ClientHitRegister, collision.contacts[0].point, Quaternion.LookRotation(collision.contacts[0].normal));
         }
     }
 
@@ -139,12 +140,12 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     } 
 
     [ClientRpc]
-    private void OnCollisionRegisteredClientRpc(Vector3 position, Quaternion rotation)
+    private void OnCollisionRegisteredClientRpc(Vector3 position, Vector3 forward)
     {
         ResetRigidBody();
         _hitRegisteredSinceNetworkSpawn = true;
         m_Renderer.enabled = false;
-        Instantiate(m_HitRegister, position, rotation);
+        Instantiate(m_HitRegister, position, Quaternion.LookRotation(forward));
         if (_clientHitRegisterEffect != null)
         {
             Destroy(_clientHitRegisterEffect);
