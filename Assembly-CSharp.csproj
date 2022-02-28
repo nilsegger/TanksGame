@@ -52,13 +52,11 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\ShellBehaviour.cs" />
      <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
      <Compile Include="Assets\Scripts\NetworkPool.cs" />
-     <Compile Include="Assets\Networking\LobbyManagerBehaviour.cs" />
-     <Compile Include="Assets\LobbyUIBehaviour.cs" />
+     <Compile Include="Assets\Scripts\LobbyUIBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankShootBehaviour.cs" />
-     <Compile Include="Assets\Scripts\NetworkedTankBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Tank\NetworkedTankBehaviour.cs" />
      <Compile Include="Assets\PlayerMovement.cs" />
      <Compile Include="Assets\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameManagerBehaviour.cs" />
@@ -66,6 +64,7 @@
      <Compile Include="Assets\Scripts\Tank\TurretRotationBehaviour.cs" />
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
+     <Compile Include="Assets\Scripts\LobbyManagerBehaviour.cs" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
  <Reference Include="UnityEngine">
