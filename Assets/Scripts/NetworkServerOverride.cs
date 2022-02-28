@@ -21,7 +21,7 @@ public abstract class NetworkServerOverride<Type>
     protected  float _interpolatingTimer;
     protected  Type _interpolatingStart;
     
-    public void StartCountingMismatch(float time)
+    private void StartCountingMismatch(float time)
     {
         _offsetCounter += time;
     }
@@ -31,7 +31,7 @@ public abstract class NetworkServerOverride<Type>
         return distance >= serverOverridePositionAfterMaxDistance;
     }
 
-    public bool ShouldOverride()
+    private bool ShouldOverride()
     {
         return _offsetCounter >= this.resetPositionAfterMismatchTime;
     }
@@ -41,20 +41,19 @@ public abstract class NetworkServerOverride<Type>
         _offsetCounter = 0.0f;
     }
 
-    public bool IsInterpolating()
+    private bool IsInterpolating()
     {
         return _interpolatingTimer != 0.0f && _interpolatingTimer < interpolationDuration;
     }
     
-    public Type StartInterpolate(Type position, Type target, float time)
+    private Type StartInterpolate(Type position, Type target, float time)
     {
         _interpolatingTimer = 0.0f;
         _interpolatingStart = position;
         return Interpolate(target, time);
     }
 
-    public abstract Type Interpolate(Type target, float time);
-    
+    protected abstract Type Interpolate(Type target, float time);
     
     public bool CheckForRequiredServerOverride(Type current, Type server, out Type updated, float distance, float time)
     {
@@ -84,13 +83,6 @@ public abstract class NetworkServerOverride<Type>
         updated = default(Type);
         return false;
     }
-    /*
-    public Vector3 Interpolate(Type target, float time)
-    {
-        _interpolatingTimer += time;
-        return Vector3.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
-    }
-    */
 }
 
 public class NetworkServerOverridePosition : NetworkServerOverride<Vector3>
@@ -100,7 +92,7 @@ public class NetworkServerOverridePosition : NetworkServerOverride<Vector3>
         this._interpolatingStart = Vector3.zero;
     }
 
-    public override Vector3 Interpolate(Vector3 target, float time)
+    protected override Vector3 Interpolate(Vector3 target, float time)
     {
         _interpolatingTimer += time;
         return Vector3.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
@@ -114,7 +106,7 @@ public class NetworkServerOverrideFloat : NetworkServerOverride<float>
         this._interpolatingStart = 0.0f;
     }
 
-    public override float Interpolate(float target, float time)
+    protected override float Interpolate(float target, float time)
     {
         _interpolatingTimer += time;
         return Mathf.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);

@@ -1,3 +1,5 @@
+using System;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,16 +11,23 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 {
 
     public Camera m_PlayerCamera;
+    
     public GameObject m_DestinationMarker;
+    private GameObject _destinationMarkerInstance;
+    
+    private NavMeshAgent _agent;
+    private NetworkVariable<Vector3> _navDestination;
+    private NetworkVariable<Vector3> _serverPosition;
     
     private NetworkServerOverridePosition movingServerOverridePosition = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
     private NetworkServerOverridePosition stoppedServerOverridePosition = new NetworkServerOverridePosition(1.5f, 0.1f, 0.5f);
-
-    private NavMeshAgent _agent;
-    private GameObject _destinationMarkerInstance;
-
-    private NetworkVariable<Vector3> _navDestination;
-    private NetworkVariable<Vector3> _serverPosition;
+    
+    public float m_ServerCorrectionRotationSpeed = 15.0f;
+    private NetworkVariable<float> _serverRotation = new NetworkVariable<float>();
+    private Quaternion _ownerRotationTarget = Quaternion.identity;
+    private float _clientLastRotation = 0.0f; // used to check whetever client needs to push new rotation to server
+    private NetworkServerOverrideFloat _movingRotationOverride = new NetworkServerOverrideFloat(3.0f, 10.0f, 1.0f);
+    private NetworkServerOverrideFloat _stoppedRotationOverride = new NetworkServerOverrideFloat(1.0f, 0.5f, 1.0f);
 
     private bool _lockedMovement = false;
     void Start()
@@ -94,24 +103,42 @@ public class NetworkedTankBehaviour : NetworkBehaviour
             {
                 ClientSetLocalNavDestination(transform.position);
             }
+
+            if (Math.Abs(_clientLastRotation - transform.rotation.eulerAngles.y) > 0.01)
+            {
+                _clientLastRotation = transform.rotation.eulerAngles.y;
+                ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
+            }
         }
 
-        var overrideManager = movingServerOverridePosition;
+        var positionOverrideManager = movingServerOverridePosition;
+        var rotationOverrideManager = _movingRotationOverride;
         if(_agent.velocity.magnitude == 0.0f)
         {
-            overrideManager = stoppedServerOverridePosition;
+            positionOverrideManager = stoppedServerOverridePosition;
+            rotationOverrideManager = _stoppedRotationOverride;
         }
         
         var lagOffset = (transform.position - _serverPosition.Value).magnitude;
-        if(overrideManager.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
+        if(positionOverrideManager.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
         {
             transform.position = result;
         }
 
-        if (overrideManager.IsOverrideDistance(lagOffset))
+        if (positionOverrideManager.IsOverrideDistance(lagOffset))
         {
             Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
+        
+        var rotationOffset = Mathf.Abs(transform.rotation.eulerAngles.y - _serverRotation.Value);
+        if (rotationOverrideManager.CheckForRequiredServerOverride(transform.rotation.eulerAngles.y,
+                _serverRotation.Value, out float updatedRotation, rotationOffset, Time.deltaTime))
+        {
+            transform.rotation = Quaternion.Euler(0.0f, updatedRotation, 0.0f);
+        }
+        
+        Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), rotationOverrideManager.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
+        
     }
     
     private void ClientSetLocalNavDestination(Vector3 destination)
@@ -136,6 +163,10 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsServer) return;
 
         _serverPosition.Value = transform.position;
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, _ownerRotationTarget,
+            m_ServerCorrectionRotationSpeed * Time.deltaTime);
+        _serverRotation.Value = transform.rotation.eulerAngles.y;
     }
 
     private void OnClientChangedNavDestination(Vector3 oldValue, Vector3 newValue)
@@ -181,6 +212,13 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(_serverPosition.Value, 1);
+    }
+
+    [ServerRpc]
+    private void ClientPushRotationTargetServerRpc(float yRotation)
+    {
+        if (!GameManagerBehaviour.GameBegun) return;
+        _ownerRotationTarget = Quaternion.Euler(0.0f, yRotation, 0.0f);
     }
     
     

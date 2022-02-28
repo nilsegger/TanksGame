@@ -104,7 +104,8 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     {
         if (_activatedSinceLastNetworkSpawn)
         {
-            if (_positionOverride.ShouldOverride())
+            var distance = (_body.transform.position - _serverPosition.Value).magnitude;
+            if (_positionOverride.IsOverrideDistance(distance))
             {
                 Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
             }
