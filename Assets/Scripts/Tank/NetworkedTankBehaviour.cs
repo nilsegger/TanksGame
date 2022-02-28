@@ -39,6 +39,11 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (_agent == null)
+        {
+            _agent = gameObject.GetComponent<NavMeshAgent>();
+        }
+
         _navDestination.OnValueChanged += OnClientChangedNavDestination;
     }
 
@@ -171,7 +176,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     private void OnClientChangedNavDestination(Vector3 oldValue, Vector3 newValue)
     {
-        if (!IsOwner)
+        if (!IsOwner && newValue != Vector3.zero) // Sacrificing position because what are the chances that someone clicks Vector3.zero
         {
             _agent.SetDestination(newValue);
         }
