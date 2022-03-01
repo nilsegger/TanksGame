@@ -199,7 +199,7 @@ GameObject:
   - component: {fileID: 7709534914675791615}
   - component: {fileID: 6697394755533364216}
   - component: {fileID: 4067064724306279182}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SpawnPointBottom
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 3816856717127323087}
   - component: {fileID: 4782631761622914534}
   - component: {fileID: 2202882486346894747}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: HitboxCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -423,7 +423,7 @@ GameObject:
   - component: {fileID: 273167226170205152}
   - component: {fileID: 7179070867838239771}
   - component: {fileID: 3360218248233265894}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SpawnPointTop
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
@@ -1950,6 +1950,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: afd58f28713632e419efd8f302698ceb, type: 3}
       propertyPath: m_Name
       value: Radar
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: afd58f28713632e419efd8f302698ceb, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: afd58f28713632e419efd8f302698ceb, type: 3}
       propertyPath: m_StaticEditorFlags

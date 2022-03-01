@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4924685513486807674}
   - component: {fileID: 6780195999491643398}
   - component: {fileID: 1810942750657898595}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: NetworkedShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,6 +107,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 9ed1e8a25f964bd4298944675e425a0d, type: 3}
       propertyPath: m_Name
       value: Shell
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 9ed1e8a25f964bd4298944675e425a0d, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9ed1e8a25f964bd4298944675e425a0d, type: 3}
       propertyPath: m_RootOrder
