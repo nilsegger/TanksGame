@@ -7,6 +7,8 @@ Shader "Unlit/FogOfWarShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _FOGNoise("FOG Noise", 2D) = "white" {}
+        _FOGFadeDistance("FOG Fade Distance", float) = 50
     }
     SubShader
     {
@@ -22,14 +24,17 @@ Shader "Unlit/FogOfWarShader"
 
             #define POINTS 40 
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
+            uniform sampler2D _MainTex;
+            uniform float4 _MainTex_ST;
             
-            float4 center;
-            float4 points[POINTS];
+            uniform sampler2D _FOGNoise;
+            uniform float4 _FOGNoise_ST;
+            uniform float _FOGFadeDistance;
+            
+            uniform float4 center;
+            uniform float4 points[POINTS];
 
-            int debug;
+            uniform int debug;
             
             struct appdata
             {
@@ -70,12 +75,43 @@ Shader "Unlit/FogOfWarShader"
                 return !(has_neg && has_pos);
             }
 
-            // TODO sgliche mit de heightmap nomol versueche mit https://docs.unity3d.com/ScriptReference/Camera.ViewportToWorldPoint.html
-            // alli 4 pünkt 0,0 - 1,0 - 0,1 - 1,1 umwandle in world pos und ahand vu dem in koords vude heightmap umwandle
+            // https://stackoverflow.com/a/6853926
+            float distanceToLineSegment(float2 p, float2 start, float2 end)
+            {
+                float A = p.x - start.x;
+                float B = p.y - start.y;
+                float C = end.x - start.x;
+                float D = end.y - start.y;
+
+                float d = A * C + B * D;
+                float len_eq = C * C + D * D;
+                float param = -1;
+                if(len_eq != 0) {
+                    param = d / len_eq;
+                }
+
+                float xx, yy;
+                if(param < 0)
+                {
+                    xx = start.x;
+                    yy = start.y;
+                } else if(param > 1)
+                {
+                    xx = end.x;
+                    yy = end.y;
+                } else
+                {
+                    xx = start.x + param * C;
+                    yy = start.y + param * D;
+                }
+
+                float dx = p.x - xx;
+                float dy = p.y - yy;
+                return sqrt(dx * dx + dy * dy);
+            }
 
             fixed4 frag (v2f i) : SV_Target
             {
-
                 if(debug == 1)
                 {
                     float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);
@@ -97,14 +133,24 @@ Shader "Unlit/FogOfWarShader"
                     }
                 }
 
-                // TODO optimazation, get points of triangle which would stand if there was no interference, then check if points is inside of that one, if yes, check all triangles
+                /* TODO optimazation, get points of triangle which would stand if there was no interference, then check if points is inside of that one, if yes, check all triangles */
                 bool inView = false;
+                float closestDistance = distanceToLineSegment(i.fragScreenPos, center.xy, points[0].xy);
+                float lastToCenterDist = distanceToLineSegment(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
+                if(lastToCenterDist < closestDistance) closestDistance = lastToCenterDist;
+                
                 for(int k = 0; k < POINTS - 1; k++)
                 {
                     if(pointInTriangle(i.fragScreenPos.xy, center.xy, points[k].xy, points[k + 1].xy))
                     {
                         inView = true;
                         break;
+                    }
+
+                    float dist = distanceToLineSegment(i.fragScreenPos, points[k].xy, points[k + 1].xy);
+                    if(dist < closestDistance)
+                    {
+                        closestDistance = dist;
                     }
                     
                 }
@@ -115,8 +161,11 @@ Shader "Unlit/FogOfWarShader"
                     return col;
                 } else
                 {
+                    float noiseWeight = 1.0f / _FOGFadeDistance * (closestDistance * sqrt(_ScreenParams.x * _ScreenParams.x + _ScreenParams.y * _ScreenParams.y));
+                    noiseWeight = clamp(noiseWeight, 0.0f, 1.0f);
                     float4 col = tex2D(_MainTex, i.uv);
-                    return col * 0.25f;
+                    float4 noise = tex2D(_FOGNoise, i.uv);
+                    return col * lerp(noise, float4(0.0f, 0.0f, 0.0f, 0.0f), noiseWeight);//col * noise;
                 }
 
             }
