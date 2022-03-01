@@ -1,17 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class TankVisibility : NetworkBehaviour
 {
 
     public Transform m_Turret;
-    public float m_VisibilityForwardOffset = 4.0f;
-    public float m_VisibilityRadius = 1.0f;
+    
+    public float m_VisibilityRange = 15.0f;
+    public float m_AngleRange = 180.0f;
 
     private NetworkObject _networkObject;
 
@@ -34,20 +35,33 @@ public class TankVisibility : NetworkBehaviour
         }
     }
 
-    private Vector3 VisibilityCenter()
+    private float CalculateDegreesBetweenPlayerSightAndOther(NetworkObject player, NetworkObject other)
     {
-         return m_Turret.position + m_Turret.forward * m_VisibilityForwardOffset;
+        Vector2 xzPlayer = new Vector2(player.transform.position.x, player.transform.position.z);
+        Vector2 xzOther = new Vector2(other.transform.position.x, other.transform.position.z);
+        var otherForward = xzOther - xzPlayer;
+
+        var p1 = new Vector2(m_Turret.forward.x, m_Turret.forward.z) * otherForward.magnitude;
+        var p2 = otherForward;
+
+        return (Mathf.Atan2(p1.y, p1.x) - Mathf.Atan2(p2.y, p2.x)) * Mathf.Rad2Deg;
     }
     
      private void CheckVisibility(ulong player, ulong other)
      {
          var playerObject = NetworkManager.Singleton.ConnectedClients[player].PlayerObject;
          var otherObject = NetworkManager.Singleton.ConnectedClients[other].PlayerObject;
-         bool inDistance = Vector3.Distance(otherObject.transform.position, VisibilityCenter()) <= m_VisibilityRadius;
+         
+         var distance = Vector3.Distance(playerObject.transform.position, otherObject.transform.position);
+         
+         bool inDistance = distance <= m_VisibilityRange;
 
          if (inDistance)
          {
-             Debug.DrawLine(playerObject.transform.position, otherObject.transform.position, Color.green);
+             var degreesBetween = CalculateDegreesBetweenPlayerSightAndOther(playerObject, otherObject);
+             inDistance = -m_AngleRange / 2.0f <= degreesBetween && degreesBetween <= m_AngleRange / 2.0f;
+             
+             Debug.DrawLine(m_Turret.position, m_Turret.position + (m_Turret.rotation * Quaternion.Euler(0.0f, degreesBetween, 0.0f) * Vector3.forward) * m_VisibilityRange, inDistance ? Color.green : Color.red);
          }
 
          bool isObserver = false;
@@ -74,8 +88,4 @@ public class TankVisibility : NetworkBehaviour
          }
      }
      
-     private void OnDrawGizmos()
-     {
-        Gizmos.DrawWireSphere(VisibilityCenter(), m_VisibilityRadius);
-     }
 }
