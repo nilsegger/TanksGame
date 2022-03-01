@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 3816856717127323087}
   - component: {fileID: 4782631761622914534}
   - component: {fileID: 2202882486346894747}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: HitboxCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1953,7 +1953,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: afd58f28713632e419efd8f302698ceb, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: afd58f28713632e419efd8f302698ceb, type: 3}
       propertyPath: m_StaticEditorFlags

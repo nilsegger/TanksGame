@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1237095541509624676}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: Hitboxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 879169456420722804}
   - component: {fileID: 3740749680422796853}
   - component: {fileID: 4619065889189429435}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +336,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 183
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -373,6 +373,7 @@ MonoBehaviour:
   m_AngleRange: 120
   m_Range: 20
   m_Transform: {fileID: 2313485569068824781}
+  m_RayIgnoreLayers: 0200000007000000
   m_DrawDebugRayHits: 0
 --- !u!1 &6754181138115843024
 GameObject:
@@ -914,7 +915,7 @@ GameObject:
   - component: {fileID: 4510361184014624124}
   - component: {fileID: 1953810575561912969}
   - component: {fileID: 2057748680443780205}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -11,6 +12,9 @@ public class FogOfWarBehaviour : MonoBehaviour
     public float m_AngleRange = 5.0f;
     public float m_Range = 5.0f;
     public Transform m_Transform;
+    
+    private int _fogMask = Int32.MaxValue;
+    public List<int> m_RayIgnoreLayers;
 
     public bool m_DrawDebugRayHits = false;
 
@@ -44,7 +48,8 @@ public class FogOfWarBehaviour : MonoBehaviour
             Vector3 rotatedForward = Quaternion.Euler(0, (-m_AngleRange/ 2.0f) + i * (m_AngleRange/ (float)m_Casts), 0) * m_Transform.forward;
             RaycastHit hit = new RaycastHit();
             Vector3 result;
-            if (Physics.Raycast (_eyesPosition, rotatedForward, out hit, m_Range))
+            
+            if (Physics.Raycast (_eyesPosition, rotatedForward, out hit, m_Range, _fogMask))
             {
                 result = hit.point;
             } else
@@ -61,7 +66,17 @@ public class FogOfWarBehaviour : MonoBehaviour
     {
         _camera = gameObject.GetComponent<Camera>();
         _sightPoints = new List<Vector4>(new Vector4[m_Casts]);
-        SetEyesPosition();    
+        SetEyesPosition();
+
+        if (m_RayIgnoreLayers != null)
+        {
+            _fogMask = 0;
+            foreach (var layer in m_RayIgnoreLayers)
+            {
+                _fogMask |= (1 << layer);
+            }
+            _fogMask = ~_fogMask;
+        }
     }
 
     // Update is called once per frame
