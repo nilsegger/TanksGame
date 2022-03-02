@@ -114,8 +114,6 @@ Shader "Unlit/FogOfWarShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                return tex2D(heightmap, i.uv);
-                
                 if(debug == 1)
                 {
                     float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);
@@ -165,11 +163,21 @@ Shader "Unlit/FogOfWarShader"
                     return col;
                 } else
                 {
-                    float noiseWeight = 1.0f - 1.0f / (_FOGFadeDistance / 1000.0f) * (closestDistance);
                     float4 col = tex2D(_MainTex, i.uv);
-                    float4 noise = tex2D(_FOGNoise, i.uv * _SinTime);
-                    return col * lerp(noise, float4(1.0, 1.0, 1.0, 1.0), noiseWeight);
+                    float fadeDistance = _FOGFadeDistance / 1000.0f;
+                    float noiseWeight = 1.0f - 1.0f / fadeDistance * closestDistance;
+
+                    if(closestDistance <= fadeDistance)
+                    {
+                        float4 noise = tex2D(_FOGNoise, i.uv * _SinTime);
+                        return col * lerp(noise, float4(1.0, 1.0, 1.0, 1.0), noiseWeight);    
+                    } else
+                    {
+                        float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
+                        return col * heightmapValue;
+                    }
                 }
+                
 
             }
             ENDCG
