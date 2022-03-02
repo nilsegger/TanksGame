@@ -161,11 +161,10 @@ Shader "Unlit/FogOfWarShader"
                     return col;
                 } else
                 {
-                    float noiseWeight = 1.0f / _FOGFadeDistance * (closestDistance * sqrt(_ScreenParams.x * _ScreenParams.x + _ScreenParams.y * _ScreenParams.y));
-                    noiseWeight = clamp(noiseWeight, 0.0f, 1.0f);
+                    float noiseWeight = 1.0f - 1.0f / (_FOGFadeDistance / 1000.0f) * (closestDistance);
                     float4 col = tex2D(_MainTex, i.uv);
-                    float4 noise = tex2D(_FOGNoise, i.uv);
-                    return col * lerp(noise, float4(0.0f, 0.0f, 0.0f, 0.0f), noiseWeight);//col * noise;
+                    float4 noise = tex2D(_FOGNoise, i.uv * _SinTime);
+                    return col * lerp(noise, float4(1.0, 1.0, 1.0, 1.0), noiseWeight);
                 }
 
             }

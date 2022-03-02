@@ -55,6 +55,7 @@
      <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
      <Compile Include="Assets\Scripts\NetworkPool.cs" />
      <Compile Include="Assets\Scripts\LobbyUIBehaviour.cs" />
+     <Compile Include="Assets\Scripts\FOG3DBehaviour.cs" />
      <Compile Include="Assets\Scripts\LobbyManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankShootBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\NetworkedTankBehaviour.cs" />
@@ -66,7 +67,6 @@
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankVisibility.cs" />
-     <Compile Include="Assets\Scripts\FOG3DBehaviour.cs" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
  <Reference Include="UnityEngine">
