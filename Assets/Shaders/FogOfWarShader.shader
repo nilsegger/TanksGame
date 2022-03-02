@@ -167,14 +167,18 @@ Shader "Unlit/FogOfWarShader"
                     float fadeDistance = _FOGFadeDistance / 1000.0f;
                     float noiseWeight = 1.0f - 1.0f / fadeDistance * closestDistance;
 
+                    float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
+                    float hmap_light = clamp(heightmapValue.x + 0.05, 0.0, 1.0);
+                    float4 fog_color = float4(0, 0, 0, 1.0);
+                    fog_color = lerp(fog_color, col, hmap_light);
+                    
                     if(closestDistance <= fadeDistance)
                     {
-                        float4 noise = tex2D(_FOGNoise, i.uv * _SinTime);
-                        return col * lerp(noise, float4(1.0, 1.0, 1.0, 1.0), noiseWeight);    
+                        // float4 noise = tex2D(_FOGNoise, i.uv);
+                        return lerp(fog_color, col, noiseWeight);    
                     } else
                     {
-                        float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
-                        return col * heightmapValue;
+                       return fog_color; 
                     }
                 }
                 
