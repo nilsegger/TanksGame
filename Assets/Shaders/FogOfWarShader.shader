@@ -30,6 +30,8 @@ Shader "Unlit/FogOfWarShader"
             uniform sampler2D _FOGNoise;
             uniform float4 _FOGNoise_ST;
             uniform float _FOGFadeDistance;
+
+            uniform sampler2D heightmap;
             
             uniform float4 center;
             uniform float4 points[POINTS];
@@ -112,6 +114,8 @@ Shader "Unlit/FogOfWarShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                return tex2D(heightmap, i.uv);
+                
                 if(debug == 1)
                 {
                     float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);

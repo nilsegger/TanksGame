@@ -52,6 +52,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\HeightmapCameraBehaviour.cs" />
      <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
      <Compile Include="Assets\Scripts\NetworkPool.cs" />
      <Compile Include="Assets\Scripts\LobbyUIBehaviour.cs" />
@@ -67,6 +68,7 @@
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankVisibility.cs" />
+     <None Include="Assets\Shaders\HeightmapShader.shader" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
  <Reference Include="UnityEngine">

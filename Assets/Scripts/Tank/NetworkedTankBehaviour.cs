@@ -216,7 +216,10 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(_serverPosition.Value, 1);
+        if (NetworkManager != null)
+        {
+            Gizmos.DrawWireSphere(_serverPosition.Value, 1);
+        }
     }
 
     [ServerRpc]

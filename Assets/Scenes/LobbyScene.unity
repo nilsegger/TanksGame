@@ -545,8 +545,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5818283196002199631, guid: 4db2a3d5803d15e498c9af10ec2c7a23,
         type: 3}
+      propertyPath: m_Depth
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5818283196002199631, guid: 4db2a3d5803d15e498c9af10ec2c7a23,
+        type: 3}
       propertyPath: m_ClearFlags
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5818283196002199631, guid: 4db2a3d5803d15e498c9af10ec2c7a23,
+        type: 3}
+      propertyPath: field of view
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5818283196002199631, guid: 4db2a3d5803d15e498c9af10ec2c7a23,
         type: 3}

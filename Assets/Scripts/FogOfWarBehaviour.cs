@@ -32,6 +32,11 @@ public class FogOfWarBehaviour : MonoBehaviour
     public void SetPoints(List<Vector4> points) {
         m_Material.SetVectorArray("points", points);
     }
+
+    public void SetHeightmap(RenderTexture texture)
+    {
+       m_Material.SetTexture("heightmap", texture); 
+    }
     
     private void SetDebugDrawRayHits() {
         m_Material.SetInt("debug", m_DrawDebugRayHits ? 1 : 0);
@@ -65,6 +70,9 @@ public class FogOfWarBehaviour : MonoBehaviour
     void Start()
     {
         _camera = gameObject.GetComponent<Camera>();
+        
+        _camera.depthTextureMode = DepthTextureMode.Depth;
+        
         _sightPoints = new List<Vector4>(new Vector4[m_Casts]);
         SetEyesPosition();
 
