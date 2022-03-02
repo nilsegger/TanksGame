@@ -11,22 +11,23 @@ public class FOG3DBehaviour : MonoBehaviour
     public Vector3[] m_Corners = new Vector3[4]; // Must be in clockwise order
     public List<Vector3> m_VisibleArea;
 
-    public float m_GridSize; 
+    // TODO implement
+    public float m_GridSize;
+    public float m_Height;
 
     private Mesh _mesh;
+    private List<Vector3> _vertices = new List<Vector3>();
+    private List<int> _triangles = new List<int>();
+    private List<Vector3> _normals = new List<Vector3>();
     
     private Vector3[] _visibleAreaBoundingBox = new Vector3[4];
-
-    private Vector3[] _vertices;
-    private int[] _triangles;
-    private Vector3[] _normals;
-    
     void Start()
     {
         _mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = _mesh;
         
-        CreateShape();
+        CalcVisibleAreaBoundingBox();
+        CreateBoundingBoxSurface();
         UpdateMesh();
     }
 
@@ -66,41 +67,45 @@ public class FOG3DBehaviour : MonoBehaviour
         
     }
 
-    private void CreateShape()
+    private void CreateBoundingBoxSurface()
     {
-        _vertices = new Vector3[]
-        {
-            new Vector3(0, 0, 0),
-            new Vector3(0, 0, 1),
-            new Vector3(1, 0, 0),
-            
-            new Vector3(1, 0, 1),
-            new Vector3(1, 0, 2)
-        };
+       _vertices.Clear(); 
+       _triangles.Clear();
+       _normals.Clear();
 
-        _triangles = new int[]
-        {
-            0, 1, 2,
-            1, 4, 3
-        };
+       _vertices.Add(m_Corners[0]);
+       _vertices.Add(m_Corners[1]);
+       _vertices.Add(m_Corners[2]);
+       _vertices.Add(m_Corners[3]);
+       
+       _vertices.Add(_visibleAreaBoundingBox[0]);
+       _vertices.Add(_visibleAreaBoundingBox[1]);
+       _vertices.Add(_visibleAreaBoundingBox[2]);
+       _vertices.Add(_visibleAreaBoundingBox[3]);
+       
+       for (int i = 0; i < 3; i++)
+       {
+           _triangles.Add(i + 5);
+           _triangles.Add(i + 4);
+           _triangles.Add(i);
+       }
+       
+       _triangles.Add(3);
+       _triangles.Add(4);
+       _triangles.Add(7);
 
-        _normals = new Vector3[]
-        {
-            new Vector3(0, 1.0f, 0),
-            new Vector3(0, 1.0f, 0),
-            new Vector3(0, 1.0f, 0),
-            
-            new Vector3(0, 1.0f, 0),
-            new Vector3(0, 1.0f, 0)
-        };
+       for (int i = 0; i < _vertices.Count; i++)
+       {
+           _normals.Add(Vector3.up);
+       }
     }
 
     private void UpdateMesh()
     {
         _mesh.Clear();
-        _mesh.vertices = _vertices;
-        _mesh.triangles = _triangles;
-        _mesh.normals = _normals;
+        _mesh.vertices = _vertices.ToArray();
+        _mesh.triangles = _triangles.ToArray();
+        _mesh.normals = _normals.ToArray();
     }
 
     private void DebugDrawPoint(Vector3 point, float r)
@@ -113,7 +118,7 @@ public class FOG3DBehaviour : MonoBehaviour
     {
         
         CalcVisibleAreaBoundingBox(); 
-        CreateShape();
+        CreateBoundingBoxSurface();
         UpdateMesh();
         
         Debug.DrawLine(_visibleAreaBoundingBox[0], _visibleAreaBoundingBox[1], Color.green);
