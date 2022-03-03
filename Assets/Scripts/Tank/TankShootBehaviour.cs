@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 public class TankShootBehaviour : NetworkBehaviour
 {
@@ -14,6 +15,9 @@ public class TankShootBehaviour : NetworkBehaviour
     public Animator m_TurretAnimator;
     public GameObject m_Turret;
     public AnimationClip m_ShootAnimation;
+
+    public Button m_ShootButton;
+    private bool _shootButtonPressed = false;
 
     public float maxAngleCorrectionOnShootStop = 10.0f;
     public float maxPositionCorrectionOnShootStop = 1.0f;
@@ -36,6 +40,8 @@ public class TankShootBehaviour : NetworkBehaviour
 
         _turretRotationBehaviour = GetComponent<TurretRotationBehaviour>();
         Assert.IsNotNull(_turretRotationBehaviour);
+        
+        m_ShootButton.onClick.AddListener(() => _shootButtonPressed = true) ;
     }
 
     // Update is called once per frame
@@ -45,9 +51,10 @@ public class TankShootBehaviour : NetworkBehaviour
 
         if (IsOwner && NetworkManager.Singleton.IsClient)
         {
-            if (Input.GetKey("space") && _cooldown <= 0.0f)
+            if ((Input.GetKey("space") || _shootButtonPressed) && _cooldown <= 0.0f)
             {
                 _cooldown = m_ShootCooldown;
+                _shootButtonPressed = false;
                 var shootShellAt = NetworkManager.LocalTime.Time + m_ShootWarmUp;
                 SetShootAnimation(m_ShootWarmUp); 
                 ShootServerRpc(shootShellAt, transform.position, m_Turret.transform.localRotation.eulerAngles.y);

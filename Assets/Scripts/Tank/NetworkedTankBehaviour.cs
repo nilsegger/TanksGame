@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
@@ -88,21 +89,31 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         transform.rotation = rotation;
     }
 
+    private void HandleTouch(Vector3 pos)
+    {
+        Ray ray = m_PlayerCamera.ScreenPointToRay(pos);
+        RaycastHit hit = new RaycastHit();
+        if (Physics.Raycast(ray, out hit))
+        {
+            ClientSetLocalNavDestination(hit.point);
+        }
+    }
+
     private void DoClientUpdate()
     {
         if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsClient) return;
 
         if (IsOwner)
         {
-            if (Input.GetMouseButton(0) && !_lockedMovement)
+            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && !_lockedMovement)
             {
-                Ray ray = m_PlayerCamera.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit = new RaycastHit();
-                if (Physics.Raycast(ray, out hit))
-                {
-                    ClientSetLocalNavDestination(hit.point);
-                }
+                HandleTouch(Input.mousePosition);
             }
+
+            if (Input.touchCount > 0 && !_lockedMovement)
+            {
+                HandleTouch(Input.GetTouch(0).position);
+            } 
 
             if (Input.GetKey("s") && !_lockedMovement)
             {
