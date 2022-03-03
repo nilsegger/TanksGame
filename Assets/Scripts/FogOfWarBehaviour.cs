@@ -11,7 +11,7 @@ public class FogOfWarBehaviour : MonoBehaviour
     public int m_Casts = 20; // this needs to match the shader
     public float m_AngleRange = 5.0f;
     public float m_Range = 5.0f;
-    public Transform m_Transform;
+    public Transform m_EyesTransform;
     
     private int _fogMask = Int32.MaxValue;
     public List<int> m_RayIgnoreLayers;
@@ -44,13 +44,13 @@ public class FogOfWarBehaviour : MonoBehaviour
     
     private void SetEyesPosition()
     {
-        _eyesPosition = m_Transform.position; // - _turret.forward * 1.0f; 
+        _eyesPosition = m_EyesTransform.position; // - _turret.forward * 1.0f; 
     }
     
     private void RaycastSight()
     {
         for(int i = 0; i < m_Casts; i++) {
-            Vector3 rotatedForward = Quaternion.Euler(0, (-m_AngleRange/ 2.0f) + i * (m_AngleRange/ (float)m_Casts), 0) * m_Transform.forward;
+            Vector3 rotatedForward = Quaternion.Euler(0, (-m_AngleRange/ 2.0f) + i * (m_AngleRange/ (float)m_Casts), 0) * m_EyesTransform.forward;
             RaycastHit hit = new RaycastHit();
             Vector3 result;
             
