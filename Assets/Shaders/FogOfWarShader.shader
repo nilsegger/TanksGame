@@ -172,8 +172,10 @@ Shader "Unlit/FogOfWarShader"
                 if(closestDistance <= fadeDistance)
                 {
                     return lerp(fog_color, col, fadeWeight);    
-                } 
-               return fog_color; 
+                }
+
+                if(debug) return col;
+                return fog_color; 
 
             }
             ENDCG
