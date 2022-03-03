@@ -7,7 +7,6 @@ Shader "Unlit/FogOfWarShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _FOGNoise("FOG Noise", 2D) = "white" {}
         _FOGFadeDistance("FOG Fade Distance", float) = 50
     }
     SubShader
@@ -168,12 +167,10 @@ Shader "Unlit/FogOfWarShader"
                     float noiseWeight = 1.0f - 1.0f / fadeDistance * closestDistance;
 
                     float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
-                    float4 fog_color = float4(0, 0, 0, 1.0);
-                    fog_color = lerp(0.0, col, heightmapValue);
+                    float4 fog_color = lerp(0.0, col, heightmapValue);
                     
                     if(closestDistance <= fadeDistance)
                     {
-                        // float4 noise = tex2D(_FOGNoise, i.uv);
                         return lerp(fog_color, col, noiseWeight);    
                     } else
                     {
