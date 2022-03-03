@@ -344,9 +344,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62a5b7c6644b8a4b88b2ac267d14314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Turret: {fileID: 2313485569068824781}
-  m_VisibilityRange: 15
-  m_AngleRange: 180
+  m_Eyes: {fileID: 1125054195529907817}
+  m_VisibilityRange: 22
+  m_AngleRange: 165
 --- !u!1 &6259052209002215010
 GameObject:
   m_ObjectHideFlags: 0
