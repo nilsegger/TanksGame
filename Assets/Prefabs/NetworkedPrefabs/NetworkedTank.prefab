@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 500964159200029933}
   - component: {fileID: 7338815188181412112}
   - component: {fileID: 8350226103662168691}
+  - component: {fileID: 6127132158829251120}
   m_Layer: 5
   m_Name: RotateLeft
   m_TagString: Untagged
@@ -121,6 +122,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6127132158829251120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762829335229321774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9346fc9196cb954689b610098fca5cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPressed: 0
 --- !u!1 &1107518702439657647
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,6 +349,7 @@ GameObject:
   - component: {fileID: 6577640910547505477}
   - component: {fileID: 3546380499042856820}
   - component: {fileID: 2580252014596177996}
+  - component: {fileID: 4560913748584936816}
   m_Layer: 5
   m_Name: RotateRight
   m_TagString: Untagged
@@ -444,6 +459,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4560913748584936816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776220895979104045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9346fc9196cb954689b610098fca5cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPressed: 0
 --- !u!1 &5831853618556970855
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,7 +507,6 @@ Transform:
   m_Children:
   - {fileID: 7631549078342919380}
   - {fileID: 1237095541509624676}
-  - {fileID: 3173118417804558899}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -551,6 +578,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Turret: {fileID: 2313485569068824781}
   m_RotationSpeed: 30
+  m_RotateLeftButton: {fileID: 6127132158829251120}
+  m_RotateRightButton: {fileID: 4560913748584936816}
 --- !u!114 &2651293376397589743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -796,6 +825,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2417701271865043432}
+  - {fileID: 3173118417804558899}
   m_Father: {fileID: 2313485569068824781}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
@@ -1631,8 +1661,8 @@ RectTransform:
   - {fileID: 9193847002456540513}
   - {fileID: 8625910098170568916}
   - {fileID: 5831512754637522835}
-  m_Father: {fileID: 2809348059648790429}
-  m_RootOrder: 2
+  m_Father: {fileID: 6941720106844350320}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

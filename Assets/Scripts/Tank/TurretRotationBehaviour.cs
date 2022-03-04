@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TurretRotationBehaviour : NetworkBehaviour
 {
     public Transform m_Turret;
     public float m_RotationSpeed = 30.0f;
+
+    public ButtonPressBehaviour m_RotateLeftButton;
+    public ButtonPressBehaviour m_RotateRightButton;
 
     private NetworkVariable<float> _serverRotation = new NetworkVariable<float>(); // this is the local y rotation in euler
    
@@ -29,8 +33,8 @@ public class TurretRotationBehaviour : NetworkBehaviour
             return;
         } else if (NetworkManager.Singleton.IsClient && IsOwner)
         {
-            bool rotateLeft = Input.GetKey("q") && !_lockedMovement;
-            bool rotateRight = Input.GetKey("e") && !_lockedMovement;
+            bool rotateLeft = (Input.GetKey("q") || m_RotateLeftButton.isPressed) && !_lockedMovement;
+            bool rotateRight = (Input.GetKey("e") || m_RotateRightButton.isPressed) && !_lockedMovement;
 
             if (rotateLeft)
             {

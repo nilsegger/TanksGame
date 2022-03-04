@@ -68,6 +68,7 @@
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankVisibility.cs" />
+     <Compile Include="Assets\Scripts\ButtonPressBehaviour.cs" />
      <None Include="Assets\Shaders\HeightmapShader.shader" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
