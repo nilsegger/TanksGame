@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
@@ -44,6 +45,41 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.AddOnClickPlayListener(OnPlayClick);
         lobbyUi.AddOnClickDisconnectListener(OnDisconnectClick);
         AddSpawnPoints();
+        
+        #if UNITY_SERVER
+            CheckToStartServer();
+        #endif
+    }
+
+    private void CheckToStartServer()
+    {
+        string ip = "";
+        int port = 0;
+        
+        string[] args = System.Environment.GetCommandLineArgs ();
+        for (int i = 0; i < args.Length; i++) {
+            if (args [i] == "-bindIp") {
+                ip = args [i + 1];
+            }
+            if (args [i] == "-bindPort") {
+                if (!int.TryParse(args[i + 1], out port))
+                {
+                    Console.Error.WriteLine("Failed to convert " + args[i + 1] + " to port.");
+                    Application.Quit();
+                }
+            }
+        }
+
+        if (ip.Equals("") || port == 0)
+        {
+            Console.Error.WriteLine("Please initialize -bindIp and -bindPort");
+            Application.Quit();
+        }
+        
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData(ip, (ushort)port);
+
+        NetworkManager.Singleton.StartServer();
     }
 
     private void AddSpawnPoints()
@@ -63,6 +99,19 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     {
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer ||
             NetworkManager.Singleton.IsHost) return;
+
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+
+        if (lobbyUi.ServerPort(out var port))
+        {
+            transport.SetConnectionData(lobbyUi.ServerIp(), (ushort) port);
+        }
+        else
+        {
+            // TODO obviously this should have separate text, but code go brrr
+            lobbyUi.SetNetworkStatusText("Invalid port");
+            return;
+        }
         
         NetworkManager.Singleton.StartClient();
         NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);

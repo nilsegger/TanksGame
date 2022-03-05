@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -11,6 +12,25 @@ public class LobbyUIBehaviour : NetworkBehaviour
     public Text m_MissingPlayersCountText;
     public NetworkVariable<int> missingPlayersCount = new NetworkVariable<int>(0);
 
+    public InputField m_ServerIpInput;
+    public InputField m_ServerPortInput;
+
+    private void Start()
+    {
+        m_ServerIpInput.text = "127.0.0.1";
+        m_ServerPortInput.text = "7777";
+    }
+
+    public string ServerIp()
+    {
+        return m_ServerIpInput.text;
+    }
+    
+    public bool ServerPort(out int port)
+    {
+        return int.TryParse(m_ServerPortInput.text, out port);
+    }
+    
     public override void OnNetworkSpawn()
     {
         missingPlayersCount.OnValueChanged += OnMissingPlayersCountChanged;

@@ -5,3 +5,11 @@ Packages/
 Temp/
 obj/
 Assembly-CSharp.csproj
+Builds/
+Assets/PlayFabSDK.meta
+Assets/PlayFabSDK
+Assets/PlayFabEditorExtensions.meta
+Assets/PlayFabEditorExtensions/
+PlayFab.csproj
+PlayFabSDKEditor.csproj
+PlayFabEditorExtensions.csproj
