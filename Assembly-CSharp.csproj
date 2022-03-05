@@ -52,7 +52,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\HeightmapCameraBehaviour.cs" />
+     <Compile Include="Assets\Scripts\HeightmapCameraBehaviour.cs" />
      <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
      <Compile Include="Assets\Scripts\NetworkPool.cs" />
      <Compile Include="Assets\Scripts\ButtonPressBehaviour.cs" />
@@ -61,7 +61,6 @@
      <Compile Include="Assets\Scripts\LobbyManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankShootBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\NetworkedTankBehaviour.cs" />
-     <Compile Include="Assets\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameBasicUIBehaviour.cs" />
@@ -69,6 +68,7 @@
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\NetworkedShellBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankVisibility.cs" />
+     <Compile Include="Assets\Scripts\PlayfabBehaviour.cs" />
      <None Include="Assets\Shaders\HeightmapShader.shader" />
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
