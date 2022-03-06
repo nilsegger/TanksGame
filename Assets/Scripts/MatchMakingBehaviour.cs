@@ -1,8 +1,10 @@
 using System.Collections;
 using PlayFab;
 using PlayFab.MultiplayerModels;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MatchMakingBehaviour : MonoBehaviour
@@ -21,7 +23,7 @@ public class MatchMakingBehaviour : MonoBehaviour
 
     private void DisplayInfo(string text, bool showButton)
     {
-        m_StartMatchmakingButton.enabled = showButton;
+        m_StartMatchmakingButton.gameObject.SetActive(showButton);
         m_InfoText.text = text;
     }
 
@@ -103,10 +105,11 @@ public class MatchMakingBehaviour : MonoBehaviour
         } else if (result.Status.Equals("Matched"))
         {
             DisplayInfo("Joining match " + result.MatchId, false);
+            TryToJoinMatch(result.MatchId);
         }
         else
         {
-            DisplayInfo(result.Status + " / Match: " + result.MatchId, false);
+            DisplayInfo(result.Status, false);
             StartCoroutine(WaitToCheckTicketState(ticket));
         }
     }
@@ -115,6 +118,24 @@ public class MatchMakingBehaviour : MonoBehaviour
     {
         yield return new WaitForSeconds(m_TicketStateCheckCooldown);
         UpdateTicketState(ticket);
+    }
+
+    private void TryToJoinMatch(string matchId)
+    {
+       PlayFabMultiplayerAPI.GetMatch(new GetMatchRequest
+       {
+           MatchId = matchId,
+           QueueName = "Casual"
+       }, result =>
+       {
+           PlayfabPersistenceData.ServerDetails = result.ServerDetails;
+           DisplayInfo("Loading Lobby...", true);
+           SceneManager.LoadScene("LobbyScene");
+       }, error =>
+       {
+           DisplayInfo("Failed to get match", true);
+           Debug.Log(error.GenerateErrorReport()); 
+       }); 
     }
 
     

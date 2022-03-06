@@ -90,7 +90,8 @@ public class PlayfabBehaviour : MonoBehaviour
     void Start()
     {
         m_InfoText.text = "Checking Server Status...";
-       SignInUsingDeviceId(); 
+       SignInUsingDeviceId();
+       PlayfabPersistenceData.IsUsingPlayFab = true;
     }
     
 }

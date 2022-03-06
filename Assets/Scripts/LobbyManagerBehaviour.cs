@@ -86,8 +86,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData(ip, (ushort)port);
-        
-        Console.Out.WriteLine("Hello World!?");
 
         PlayFabMultiplayerAgentAPI.Start();
         NetworkManager.Singleton.StartServer();
@@ -123,7 +121,12 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             lobbyUi.SetNetworkStatusText("Invalid port");
             return;
         }
-        
+
+        if (PlayfabPersistenceData.IsUsingPlayFab)
+        {
+            transport.SetConnectionData(PlayfabPersistenceData.ServerDetails.IPV4Address, (ushort) PlayfabPersistenceData.ServerDetails.Ports[0].Num);
+        }
+
         NetworkManager.Singleton.StartClient();
         NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);
         NetworkManager.Singleton.SceneManager.OnLoad += ClientOnSceneLoadEvent;
@@ -137,12 +140,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         if (!NetworkManager.Singleton.IsConnectedClient) return;
         
         NetworkManager.Singleton.Shutdown();
-        
-        /*
-        ui.SetPlayButtonVisibility(false);
-        ui.SetDisconnectButtonVisibility(false);
-        ui.SetNetworkStatusText("Disconnecting...");
-        */
         
         lobbyUi.SetDisconnectButtonVisibility(false); 
         lobbyUi.SetPlayButtonVisibility(true); 
