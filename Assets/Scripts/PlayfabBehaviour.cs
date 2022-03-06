@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayfabBehaviour : MonoBehaviour
@@ -10,26 +9,46 @@ public class PlayfabBehaviour : MonoBehaviour
 
     public Text m_InfoText;
 
+    private string RandomCustomId()
+    {
+        string result = "test_";
+        const string glyphs= "abcdefghijklmnopqrstuvwxyz0123456789";
+        for(int i=0; i < 4; i++)
+        {
+            result += glyphs[Random.Range(0, glyphs.Length)];
+        }
+        return result;
+    }
+
     private void SignInUsingDeviceId()
     {
 
+        /*
         if (Application.platform == RuntimePlatform.Android)
         {
             PlayFabClientAPI.LoginWithAndroidDeviceID(new LoginWithAndroidDeviceIDRequest(),
-                result => { CheckIfServerOnline(); }, error =>
+                result =>
+                {
+                    PlayfabPersistenceData.AuthEntityToken = result.EntityToken;
+                    CheckIfServerOnline();
+                }, error =>
                 {
                     m_InfoText.text = "Failed to authenticate device.";
                     Debug.Log(error.GenerateErrorReport());
                 });
-        } else if (Application.platform == RuntimePlatform.WindowsEditor)
+        } else */ if (Application.platform == RuntimePlatform.WindowsEditor)
         {
             var request = new LoginWithCustomIDRequest
             {
-                CustomId = "test",
+                CustomId = RandomCustomId(),
                 CreateAccount = true 
             };
             
-            PlayFabClientAPI.LoginWithCustomID(request, result => { CheckIfServerOnline(); },
+            PlayFabClientAPI.LoginWithCustomID(request, result =>
+                {
+                    PlayfabPersistenceData.AuthEntityToken = result.EntityToken;
+                    CheckIfServerOnline();
+                },
                 error =>
                 {
                     m_InfoText.text = "Failed to authenticate device.";
@@ -64,7 +83,7 @@ public class PlayfabBehaviour : MonoBehaviour
 
     private void LoadMainMenu()
     {
-        m_InfoText.text = "Now i would load lobby";
+        SceneManager.LoadScene("MainMenu");
     }
     
     // Start is called before the first frame update

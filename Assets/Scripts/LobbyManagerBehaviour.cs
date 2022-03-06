@@ -26,6 +26,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     public LobbyUIBehaviour lobbyUi;
     public GameObject lobby;
 
+    public int m_WaitTime = 5 * 60;
+
+    private float _waitTime = 0.0f;
+
     private bool _gameStarted = false;
     private Dictionary<Vector3, ulong> _spawnPointsToClientid;
 
@@ -305,7 +309,18 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             lobbyUi.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
         }
     }
-    
-    
+
+    private void Update()
+    {
+        _waitTime += Time.deltaTime;
+        if (_waitTime >= m_WaitTime)
+        {
+            #if UNITY_EDITOR
+                            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                            Application.Quit();
+            #endif
+        }
+    }
 }
 
