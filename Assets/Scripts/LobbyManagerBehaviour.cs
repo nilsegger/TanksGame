@@ -165,6 +165,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 UpdateMissingPlayersCount();
                 if (IsLobbyReadyForGame())
                 {
+                    Debug.Log("Loading scene????");
                     _gameStarted = true;
                     NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
                 }
