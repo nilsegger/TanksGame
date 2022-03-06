@@ -12,6 +12,7 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 {
 
     public Camera m_PlayerCamera;
+    public GameObject m_PlayerMap;
     
     public GameObject m_DestinationMarker;
     private GameObject _destinationMarkerInstance;
@@ -59,7 +60,8 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         {
             if (!scenename.ToLower().Contains("lobby"))
             {
-                ActivatePlayerCamera();
+                Debug.Log("Hello");
+                ActivatePlayer();
             }
         }
     }
@@ -71,9 +73,10 @@ public class NetworkedTankBehaviour : NetworkBehaviour
         DontDestroyOnLoad(_destinationMarkerInstance);
     }
     
-    private void ActivatePlayerCamera()
+    private void ActivatePlayer()
     {
         m_PlayerCamera.gameObject.SetActive(true);
+        m_PlayerMap.SetActive(true);
     }
 
     void Update()
