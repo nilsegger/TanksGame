@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using PlayFab;
 using Unity.Collections;
 using UnityEngine;
 
@@ -53,10 +51,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         
         #if UNITY_SERVER
             CheckToStartServer();
+            PlayFabMultiplayerAgentAPI.OnShutDownCallback += () => Application.Quit();
         #endif
 
-        // TODO send notificaiton to connected players
-        PlayFabMultiplayerAgentAPI.OnShutDownCallback += () => Application.Quit();
+        
     }
 
     private void CheckToStartServer()
@@ -87,7 +85,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData(ip, (ushort)port);
 
+#if UNITY_SERVER
         PlayFabMultiplayerAgentAPI.Start();
+#endif
         NetworkManager.Singleton.StartServer();
     }
 
@@ -165,7 +165,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.SetPlayButtonVisibility(false);
         lobbyUi.SetDisconnectButtonVisibility(false);
         
+#if UNITY_SERVER
         PlayFabMultiplayerAgentAPI.ReadyForPlayers();
+#endif
     } 
     
     private void OnClientConnect(ulong cliendId)

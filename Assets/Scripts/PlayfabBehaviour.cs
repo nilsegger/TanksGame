@@ -23,20 +23,17 @@ public class PlayfabBehaviour : MonoBehaviour
     private void SignInUsingDeviceId()
     {
 
-        /*
         if (Application.platform == RuntimePlatform.Android)
         {
-            PlayFabClientAPI.LoginWithAndroidDeviceID(new LoginWithAndroidDeviceIDRequest(),
-                result =>
-                {
-                    PlayfabPersistenceData.AuthEntityToken = result.EntityToken;
-                    CheckIfServerOnline();
-                }, error =>
-                {
-                    m_InfoText.text = "Failed to authenticate device.";
-                    Debug.Log(error.GenerateErrorReport());
-                });
-        } else */ if (Application.platform == RuntimePlatform.WindowsEditor)
+            var request = new LoginWithAndroidDeviceIDRequest
+            {
+                AndroidDeviceId = SystemInfo.deviceUniqueIdentifier,
+                AndroidDevice = SystemInfo.deviceModel,
+                CreateAccount = true
+            };
+            
+            PlayFabClientAPI.LoginWithAndroidDeviceID(request, LoginSuccess, LoginError);
+        } else if (Application.platform == RuntimePlatform.WindowsEditor)
         {
             var request = new LoginWithCustomIDRequest
             {
@@ -44,17 +41,20 @@ public class PlayfabBehaviour : MonoBehaviour
                 CreateAccount = true 
             };
             
-            PlayFabClientAPI.LoginWithCustomID(request, result =>
-                {
-                    PlayfabPersistenceData.AuthEntityToken = result.EntityToken;
-                    CheckIfServerOnline();
-                },
-                error =>
-                {
-                    m_InfoText.text = "Failed to authenticate device.";
-                    Debug.Log(error.GenerateErrorReport());
-                });
+            PlayFabClientAPI.LoginWithCustomID(request, LoginSuccess, LoginError);
         }
+    }
+
+    private void LoginSuccess(LoginResult result)
+    {
+        PlayfabPersistenceData.AuthEntityToken = result.EntityToken;
+        CheckIfServerOnline();
+    }
+
+    private void LoginError(PlayFabError error)
+    {
+        m_InfoText.text = "Failed to authenticate device.";
+        Debug.Log(error.GenerateErrorReport());
     }
    
     private void CheckIfServerOnline() {
