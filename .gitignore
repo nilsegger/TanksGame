@@ -13,3 +13,4 @@ Assets/PlayFabEditorExtensions/
 PlayFab.csproj
 PlayFabSDKEditor.csproj
 PlayFabEditorExtensions.csproj
+LocalMultiplayerAgentPublish/
