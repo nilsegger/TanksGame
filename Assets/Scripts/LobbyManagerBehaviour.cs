@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
@@ -26,6 +25,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     public LobbyUIBehaviour lobbyUi;
     public GameObject lobby;
 
+    public int m_WaitTime = 5 * 60;
+
+    private float _waitTime = 0.0f;
+
     private bool _gameStarted = false;
     private Dictionary<Vector3, ulong> _spawnPointsToClientid;
 
@@ -48,7 +51,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         
         #if UNITY_SERVER
             CheckToStartServer();
+            PlayFabMultiplayerAgentAPI.OnShutDownCallback += () => Application.Quit();
         #endif
+
+        
     }
 
     private void CheckToStartServer()
@@ -79,6 +85,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData(ip, (ushort)port);
 
+#if UNITY_SERVER
+        PlayFabMultiplayerAgentAPI.Start();
+#endif
         NetworkManager.Singleton.StartServer();
     }
 
@@ -112,7 +121,12 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             lobbyUi.SetNetworkStatusText("Invalid port");
             return;
         }
-        
+
+        if (PlayfabPersistenceData.IsUsingPlayFab)
+        {
+            transport.SetConnectionData(PlayfabPersistenceData.ServerDetails.IPV4Address, (ushort) PlayfabPersistenceData.ServerDetails.Ports[0].Num);
+        }
+
         NetworkManager.Singleton.StartClient();
         NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);
         NetworkManager.Singleton.SceneManager.OnLoad += ClientOnSceneLoadEvent;
@@ -126,12 +140,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         if (!NetworkManager.Singleton.IsConnectedClient) return;
         
         NetworkManager.Singleton.Shutdown();
-        
-        /*
-        ui.SetPlayButtonVisibility(false);
-        ui.SetDisconnectButtonVisibility(false);
-        ui.SetNetworkStatusText("Disconnecting...");
-        */
         
         lobbyUi.SetDisconnectButtonVisibility(false); 
         lobbyUi.SetPlayButtonVisibility(true); 
@@ -156,6 +164,10 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.SetNetworkStatusText("SERVER");
         lobbyUi.SetPlayButtonVisibility(false);
         lobbyUi.SetDisconnectButtonVisibility(false);
+        
+#if UNITY_SERVER
+        PlayFabMultiplayerAgentAPI.ReadyForPlayers();
+#endif
     } 
     
     private void OnClientConnect(ulong cliendId)
@@ -165,7 +177,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                 UpdateMissingPlayersCount();
                 if (IsLobbyReadyForGame())
                 {
-                    Debug.Log("Loading scene????");
                     _gameStarted = true;
                     NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
                 }
@@ -306,7 +317,18 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             lobbyUi.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
         }
     }
-    
-    
+
+    private void Update()
+    {
+        _waitTime += Time.deltaTime;
+        if (_waitTime >= m_WaitTime)
+        {
+            #if UNITY_EDITOR
+                            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                            Application.Quit();
+            #endif
+        }
+    }
 }
 
