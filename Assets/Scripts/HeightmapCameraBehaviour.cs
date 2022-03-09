@@ -4,7 +4,6 @@ using UnityEngine.Assertions;
 public class HeightmapCameraBehaviour : MonoBehaviour
 {
 
-    public Material m_Material;
     public FogOfWarBehaviour m_FOGBehaviour; 
     
     private Camera _camera;
@@ -19,22 +18,15 @@ public class HeightmapCameraBehaviour : MonoBehaviour
         _camera.targetTexture = _texture;
         
         Assert.IsNotNull(_camera);
-
-        _camera.depthTextureMode = DepthTextureMode.DepthNormals;
     }
 
     private void OnDestroy()
     {
         _texture.Release();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        m_FOGBehaviour.SetHeightmap(_texture);
-    }
     
     private void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        Graphics.Blit(source, destination, m_Material);
+        Graphics.Blit(source, destination);
+        m_FOGBehaviour.SetHeightmap(_texture);
     }
 }
