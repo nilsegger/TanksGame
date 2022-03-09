@@ -136,11 +136,11 @@ Shader "Unlit/FogOfWarShader"
                     return heightmap_color;
                 }
 
-                /* TODO optimazation, get points of triangle which would stand if there was no interference, then check if points is inside of that one, if yes, check all triangles */
-                bool inView = false;
                 float closestDistance = distanceToLineSegmentSquared(i.fragScreenPos, center.xy, points[0].xy);
                 float lastToCenterDist = distanceToLineSegmentSquared(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
                 if(lastToCenterDist < closestDistance) closestDistance = lastToCenterDist;
+
+                bool inView = false;
                 
                 for(int k = 0; k < POINTS - 1; k++)
                 {
@@ -158,20 +158,12 @@ Shader "Unlit/FogOfWarShader"
                     
                 }
 
-
-                if(inView)
-                {
-                    fixed4 col = tex2D(_MainTex, i.uv);
-                    return col;
-                }
-                
-                // closestDistance = sqrt(closestDistance);
-                
                 float4 col = tex2D(_MainTex, i.uv);
+                if(inView) return col;
+
                 float fadeDistance = _FOGFadeDistance / 1000.0f;
 
-                float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
-                float4 fog_color = lerp(0.0, col, heightmapValue);
+                float4 fog_color = lerp(0.0, col, 1.0 - heightmap_color);
                 
                 if(closestDistance <= fadeDistance * fadeDistance)
                 {
@@ -179,7 +171,7 @@ Shader "Unlit/FogOfWarShader"
                     return lerp(fog_color, col, fadeWeight);    
                 }
 
-                if(debug) return col;
+                if(debug == 1) return col;
                 return fog_color; 
 
             }
