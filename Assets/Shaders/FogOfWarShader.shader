@@ -1,12 +1,8 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "Unlit/FogOfWarShader"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "black" {}
         _FOGFadeDistance("FOG Fade Distance", float) = 50
     }
     SubShader
@@ -21,7 +17,7 @@ Shader "Unlit/FogOfWarShader"
 
             #include "UnityCG.cginc"
 
-            #define POINTS 40 
+            #define POINTS 20 
 
             uniform sampler2D _MainTex;
             uniform float4 _MainTex_ST;
@@ -77,7 +73,7 @@ Shader "Unlit/FogOfWarShader"
             }
 
             // https://stackoverflow.com/a/6853926
-            float distanceToLineSegment(float2 p, float2 start, float2 end)
+            float distanceToLineSegmentSquared(float2 p, float2 start, float2 end)
             {
                 float A = p.x - start.x;
                 float B = p.y - start.y;
@@ -108,7 +104,7 @@ Shader "Unlit/FogOfWarShader"
 
                 float dx = p.x - xx;
                 float dy = p.y - yy;
-                return sqrt(dx * dx + dy * dy);
+                return dx * dx + dy * dy;
             }
 
             fixed4 frag (v2f i) : SV_Target
@@ -134,10 +130,16 @@ Shader "Unlit/FogOfWarShader"
                     }
                 }
 
+                float4 heightmap_color = tex2D(heightmap, i.uv);
+                if(heightmap_color.r != 1.0 || heightmap_color.g != 1.0 || heightmap_color.b != 1.0)
+                {
+                    return heightmap_color;
+                }
+
                 /* TODO optimazation, get points of triangle which would stand if there was no interference, then check if points is inside of that one, if yes, check all triangles */
                 bool inView = false;
-                float closestDistance = distanceToLineSegment(i.fragScreenPos, center.xy, points[0].xy);
-                float lastToCenterDist = distanceToLineSegment(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
+                float closestDistance = distanceToLineSegmentSquared(i.fragScreenPos, center.xy, points[0].xy);
+                float lastToCenterDist = distanceToLineSegmentSquared(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
                 if(lastToCenterDist < closestDistance) closestDistance = lastToCenterDist;
                 
                 for(int k = 0; k < POINTS - 1; k++)
@@ -148,7 +150,7 @@ Shader "Unlit/FogOfWarShader"
                         break;
                     }
 
-                    float dist = distanceToLineSegment(i.fragScreenPos, points[k].xy, points[k + 1].xy);
+                    float dist = distanceToLineSegmentSquared(i.fragScreenPos, points[k].xy, points[k + 1].xy);
                     if(dist < closestDistance)
                     {
                         closestDistance = dist;
@@ -156,21 +158,24 @@ Shader "Unlit/FogOfWarShader"
                     
                 }
 
+
                 if(inView)
                 {
                     fixed4 col = tex2D(_MainTex, i.uv);
                     return col;
                 }
                 
+                // closestDistance = sqrt(closestDistance);
+                
                 float4 col = tex2D(_MainTex, i.uv);
                 float fadeDistance = _FOGFadeDistance / 1000.0f;
-                float fadeWeight = 1.0f - 1.0f / fadeDistance * closestDistance;
 
                 float4 heightmapValue = 1.0f - tex2D(heightmap, i.uv);
                 float4 fog_color = lerp(0.0, col, heightmapValue);
                 
-                if(closestDistance <= fadeDistance)
+                if(closestDistance <= fadeDistance * fadeDistance)
                 {
+                    float fadeWeight = 1.0f - 1.0f / (fadeDistance * fadeDistance) * closestDistance;
                     return lerp(fog_color, col, fadeWeight);    
                 }
 

@@ -1,4 +1,8 @@
 Shader "HeightmapShader" {
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "black" {}
+    }
     SubShader {
         Tags { "RenderType"="Opaque" }
         Pass {
@@ -8,6 +12,8 @@ Shader "HeightmapShader" {
             #pragma fragment frag
             #include "UnityCG.cginc"
 
+            uniform sampler2D _MainTex;
+            uniform float4 _MainTex_ST;
             sampler2D _CameraDepthNormalsTexture;
 
             struct appdata
@@ -24,15 +30,15 @@ Shader "HeightmapShader" {
             v2f vert (appdata v) {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);;
                 return o;
             }
 
             half4 frag(v2f i) : SV_Target {
-
                 float4 NormalDepth;
                 DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, i.uv), NormalDepth.w, NormalDepth.xyz);
 
+                if(NormalDepth.w < 0.9) return tex2D(_MainTex, i.uv);
                 return float4(NormalDepth.w, NormalDepth.w, NormalDepth.w, 1.0);
             }
             ENDCG
