@@ -24,8 +24,6 @@ Shader "Unlit/FogOfWarShader"
             
             uniform fixed _FOGFadeDistance;
 
-            uniform sampler2D heightmap;
-            
             uniform fixed4 center;
             uniform fixed4 points[POINTS];
 
@@ -128,12 +126,6 @@ Shader "Unlit/FogOfWarShader"
                     }
                 }
 
-                fixed4 heightmap_color = tex2D(heightmap, i.uv);
-                if(heightmap_color.r <= 0.9 || heightmap_color.g <= 0.9 || heightmap_color.b <= 0.9)
-                {
-                    return heightmap_color;
-                }
-
                 fixed closestDistance = distanceToLineSegmentSquared(i.fragScreenPos, center.xy, points[0].xy);
                 fixed lastToCenterDist = distanceToLineSegmentSquared(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
                 if(lastToCenterDist < closestDistance) closestDistance = lastToCenterDist;
@@ -166,16 +158,14 @@ Shader "Unlit/FogOfWarShader"
                 fixed4 col = tex2D(_MainTex, i.uv);
                 if(inView) return col;
 
-                fixed4 fog_color = lerp(0.0, col, 1.0 - heightmap_color);
-                
                 if(closestDistance <= fadeDistance * fadeDistance)
                 {
                     fixed fadeWeight = 1.0f - 1.0f / (fadeDistance * fadeDistance) * closestDistance;
-                    return lerp(fog_color, col, fadeWeight);    
+                    return lerp(0, col, fadeWeight);    
                 }
 
                 if(debug == 1) return col;
-                return fog_color; 
+                return 0; 
 
             }
             ENDCG

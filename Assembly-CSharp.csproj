@@ -53,14 +53,12 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\ButtonPressBehaviour.cs" />
-     <Compile Include="Assets\Scripts\FOG3DBehaviour.cs" />
      <Compile Include="Assets\Scripts\Tank\TankShootBehaviour.cs" />
      <Compile Include="Assets\Scripts\FogOfWarBehaviour.cs" />
      <Compile Include="Assets\Scripts\GameBasicUIBehaviour.cs" />
      <Compile Include="Assets\Scripts\LocalTankBehaviour.cs" />
      <Compile Include="Assets\Scripts\NetworkServerOverride.cs" />
      <Compile Include="Assets\Scripts\Tank\TankVisibility.cs" />
-     <Compile Include="Assets\Scripts\HeightmapCameraBehaviour.cs" />
      <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
      <Compile Include="Assets\Scripts\NetworkPool.cs" />
      <Compile Include="Assets\Scripts\LobbyUIBehaviour.cs" />
@@ -711,6 +709,9 @@
  <Reference Include="Unity.Netcode.Components">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Components.dll</HintPath>
  </Reference>
+ <Reference Include="Whinarn.UnityMeshSimplifier.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Whinarn.UnityMeshSimplifier.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Toolchain.Win-x86_64-Linux-x86_64.dll</HintPath>
  </Reference>
@@ -731,6 +732,9 @@
  </Reference>
  <Reference Include="Unity.Multiplayer.NetStats">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetStats.dll</HintPath>
+ </Reference>
+ <Reference Include="Whinarn.UnityMeshSimplifier.Runtime">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Whinarn.UnityMeshSimplifier.Runtime.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Multiplayer.NetworkSolutionInterface">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkSolutionInterface.dll</HintPath>
