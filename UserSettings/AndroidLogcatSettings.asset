@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "5200b2145a7d9443",
         "name": "com.EggerSoftwareDevelopment.Tanks",
-        "processId": 12691,
+        "processId": 10272,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -96,6 +96,12 @@
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
             "processId": 12691,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 10272,
             "exited": false
         }
     ],

@@ -6,8 +6,8 @@ OcclusionCullingSettings:
   serializedVersion: 2
   m_OcclusionBakeSettings:
     smallestOccluder: 5
-    smallestHole: 0.25
-    backfaceThreshold: 100
+    smallestHole: 0.5
+    backfaceThreshold: 50
   m_SceneGUID: 0a540a28b74381647b494815f4714cda
   m_OcclusionCullingData: {fileID: 36300000, guid: cf5d8c716c4927449a0d958e5aaa7d9e,
     type: 2}
@@ -98,8 +98,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: d6d751061ebc8fe44b7bcd5f0e40f1cf,
-    type: 2}
+  m_LightingDataAsset: {fileID: 0}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 482f0973bd58651448b1a9fae3921bef,
     type: 2}
 --- !u!196 &4
@@ -260,7 +259,7 @@ PrefabInstance:
     - target: {fileID: 3267625047395253426, guid: 639e8b1046c59cc4596c95f383b3cc7b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 38.3
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 3267625047395253426, guid: 639e8b1046c59cc4596c95f383b3cc7b,
         type: 3}
