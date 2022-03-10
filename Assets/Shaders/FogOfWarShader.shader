@@ -22,14 +22,12 @@ Shader "Unlit/FogOfWarShader"
             uniform sampler2D _MainTex;
             uniform float4 _MainTex_ST;
             
-            uniform sampler2D _FOGNoise;
-            uniform float4 _FOGNoise_ST;
-            uniform float _FOGFadeDistance;
+            uniform fixed _FOGFadeDistance;
 
             uniform sampler2D heightmap;
             
-            uniform float4 center;
-            uniform float4 points[POINTS];
+            uniform fixed4 center;
+            uniform fixed4 points[POINTS];
 
             uniform int debug;
             
@@ -55,16 +53,16 @@ Shader "Unlit/FogOfWarShader"
                 return o;
             }
 
-            float signTriangle(float2 p1, float2 p2, float2 p3)
+            fixed signTriangle(fixed2 p1, fixed2 p2, fixed2 p3)
             {
                 return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
             }
 
-            bool pointInTriangle(float2 p, float2 c1, float2 c2, float2 c3)
+            bool pointInTriangle(fixed2 p, fixed2 c1, fixed2 c2, fixed2 c3)
             {
-                float d1 = signTriangle(p, c1, c2);
-                float d2 = signTriangle(p, c2, c3);
-                float d3 = signTriangle(p, c3, c1);
+                fixed d1 = signTriangle(p, c1, c2);
+                fixed d2 = signTriangle(p, c2, c3);
+                fixed d3 = signTriangle(p, c3, c1);
 
                 bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
                 bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
@@ -73,21 +71,21 @@ Shader "Unlit/FogOfWarShader"
             }
 
             // https://stackoverflow.com/a/6853926
-            float distanceToLineSegmentSquared(float2 p, float2 start, float2 end)
+            fixed distanceToLineSegmentSquared(fixed2 p, fixed2 start, fixed2 end)
             {
-                float A = p.x - start.x;
-                float B = p.y - start.y;
-                float C = end.x - start.x;
-                float D = end.y - start.y;
+                fixed A = p.x - start.x;
+                fixed B = p.y - start.y;
+                fixed C = end.x - start.x;
+                fixed D = end.y - start.y;
 
-                float d = A * C + B * D;
-                float len_eq = C * C + D * D;
-                float param = -1;
+                fixed d = A * C + B * D;
+                fixed len_eq = C * C + D * D;
+                fixed param = -1;
                 if(len_eq != 0) {
                     param = d / len_eq;
                 }
 
-                float xx, yy;
+                fixed xx, yy;
                 if(param < 0)
                 {
                     xx = start.x;
@@ -102,8 +100,8 @@ Shader "Unlit/FogOfWarShader"
                     yy = start.y + param * D;
                 }
 
-                float dx = p.x - xx;
-                float dy = p.y - yy;
+                fixed dx = p.x - xx;
+                fixed dy = p.y - yy;
                 return dx * dx + dy * dy;
             }
 
@@ -111,13 +109,13 @@ Shader "Unlit/FogOfWarShader"
             {
                 if(debug == 1)
                 {
-                    float2 screenRatio = float2(1.0, _ScreenParams.y / _ScreenParams.x);
-                    if(_ScreenParams.y > _ScreenParams.x) screenRatio = float2(_ScreenParams.x / _ScreenParams.y, 1.0);
+                    fixed2 screenRatio = fixed2(1.0, _ScreenParams.y / _ScreenParams.x);
+                    if(_ScreenParams.y > _ScreenParams.x) screenRatio = fixed2(_ScreenParams.x / _ScreenParams.y, 1.0);
 
-                    float dist = distance(i.fragScreenPos.xy * screenRatio, center.xy * screenRatio);
+                    fixed dist = distance(i.fragScreenPos.xy * screenRatio, center.xy * screenRatio);
                     if(dist < 0.005)
                     {
-                        return float4(1.0, 0.0, 0.0, 1.0);
+                        return fixed4(1.0, 0.0, 0.0, 1.0);
                     }
 
                     for(int j = 0; j < POINTS; j++)
@@ -125,49 +123,54 @@ Shader "Unlit/FogOfWarShader"
                         dist = distance(i.fragScreenPos.xy * screenRatio, points[j].xy * screenRatio);
                         if(dist < 0.005)
                         {
-                            return float4(1.0, 0.0, 0.0, 1.0);
+                            return fixed4(1.0, 0.0, 0.0, 1.0);
                         }
                     }
                 }
 
-                float4 heightmap_color = tex2D(heightmap, i.uv);
-                if(heightmap_color.r != 1.0 || heightmap_color.g != 1.0 || heightmap_color.b != 1.0)
+                fixed4 heightmap_color = tex2D(heightmap, i.uv);
+                if(heightmap_color.r <= 0.9 || heightmap_color.g <= 0.9 || heightmap_color.b <= 0.9)
                 {
                     return heightmap_color;
                 }
 
-                float closestDistance = distanceToLineSegmentSquared(i.fragScreenPos, center.xy, points[0].xy);
-                float lastToCenterDist = distanceToLineSegmentSquared(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
+                fixed closestDistance = distanceToLineSegmentSquared(i.fragScreenPos, center.xy, points[0].xy);
+                fixed lastToCenterDist = distanceToLineSegmentSquared(i.fragScreenPos, points[POINTS - 1].xy, center.xy);
                 if(lastToCenterDist < closestDistance) closestDistance = lastToCenterDist;
 
                 bool inView = false;
-                
-                for(int k = 0; k < POINTS - 1; k++)
-                {
-                    if(pointInTriangle(i.fragScreenPos.xy, center.xy, points[k].xy, points[k + 1].xy))
-                    {
-                        inView = true;
-                        break;
-                    }
 
-                    float dist = distanceToLineSegmentSquared(i.fragScreenPos, points[k].xy, points[k + 1].xy);
-                    if(dist < closestDistance)
+                fixed fadeDistance = _FOGFadeDistance / 1000.0f;
+                if(i.fragScreenPos.x < points[0].x - fadeDistance || i.fragScreenPos.x > points[POINTS - 1].x + fadeDistance)
+                {
+                        closestDistance = fadeDistance * fadeDistance;
+                } else
+                {
+                    for(int k = 0; k < POINTS - 1; k++)
                     {
-                        closestDistance = dist;
-                    }
+                        if(pointInTriangle(i.fragScreenPos.xy, center.xy, points[k].xy, points[k + 1].xy))
+                        {
+                            inView = true;
+                            break;
+                        }
+
+                        fixed dist = distanceToLineSegmentSquared(i.fragScreenPos, points[k].xy, points[k + 1].xy);
+                        if(dist < closestDistance)
+                        {
+                            closestDistance = dist;
+                        }
                     
+                    }
                 }
 
-                float4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = tex2D(_MainTex, i.uv);
                 if(inView) return col;
 
-                float fadeDistance = _FOGFadeDistance / 1000.0f;
-
-                float4 fog_color = lerp(0.0, col, 1.0 - heightmap_color);
+                fixed4 fog_color = lerp(0.0, col, 1.0 - heightmap_color);
                 
                 if(closestDistance <= fadeDistance * fadeDistance)
                 {
-                    float fadeWeight = 1.0f - 1.0f / (fadeDistance * fadeDistance) * closestDistance;
+                    fixed fadeWeight = 1.0f - 1.0f / (fadeDistance * fadeDistance) * closestDistance;
                     return lerp(fog_color, col, fadeWeight);    
                 }
 
