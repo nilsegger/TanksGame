@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 5507128404064396362}
   - component: {fileID: 2724878467149434051}
   m_Layer: 0
-  m_Name: Bounding Box
+  m_Name: BulletCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6559778138106782840}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.6, z: -49.6}
+  m_LocalPosition: {x: 0, y: 4.6, z: -52.5}
   m_LocalScale: {x: 95.375, y: 10, z: 3.72897}
   m_Children: []
   m_Father: {fileID: 4468122719262073996}
@@ -157,6 +157,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 12783825d19a606449c1d81b822fb4a2, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 12783825d19a606449c1d81b822fb4a2, type: 3}
       propertyPath: m_LightProbeUsage
       value: 0
       objectReference: {fileID: 0}
@@ -164,6 +168,10 @@ PrefabInstance:
       propertyPath: m_ReflectionProbeUsage
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 12783825d19a606449c1d81b822fb4a2, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 10c0454e8c887df48abcffcf421fce69, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 12783825d19a606449c1d81b822fb4a2, type: 3}
 --- !u!4 &1851821269931235475 stripped

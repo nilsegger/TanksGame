@@ -659,6 +659,9 @@
  <Reference Include="Unity.VSCode.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.RenderPipelines.Universal.Shaders">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Notifications">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.dll</HintPath>
  </Reference>
@@ -667,6 +670,9 @@
  </Reference>
  <Reference Include="Unity.Multiplayer.NetworkProfiler.Runtime">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkProfiler.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Searcher.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Searcher.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Multiplayer.MetricTypes">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.MetricTypes.dll</HintPath>
@@ -683,6 +689,9 @@
  <Reference Include="Unity.Rider.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -695,11 +704,17 @@
  <Reference Include="Unity.Networking.Transport">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Networking.Transport.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.ShaderGraph.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Netcode.Components">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Components.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Toolchain.Win-x86_64-Linux-x86_64.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Mathematics.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
@@ -718,6 +733,9 @@
  </Reference>
  <Reference Include="Unity.Multiplayer.NetworkSolutionInterface">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkSolutionInterface.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
  </Reference>
  <Reference Include="Unity.VisualStudio.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
@@ -743,6 +761,9 @@
  <Reference Include="Unity.2D.Sprite.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.RenderPipelines.Core.Runtime">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Postprocessing.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Postprocessing.Editor.dll</HintPath>
  </Reference>
@@ -764,11 +785,20 @@
  <Reference Include="Unity.Postprocessing.Runtime">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.RenderPipelines.Universal.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Mobile.AndroidLogcat.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mobile.AndroidLogcat.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.RenderPipelines.Core.Editor">
+ <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.SysrootPackage.Editor">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.SysrootPackage.Editor.dll</HintPath>
