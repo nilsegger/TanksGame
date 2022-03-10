@@ -21,6 +21,7 @@ public class FogOfWarBehaviour : MonoBehaviour
     private Camera _camera;
     private Vector3 _eyesPosition;
     private List<Vector4> _sightPoints;
+    private List<Vector4> _boundingPoints = new List<Vector4>(); // 1. most left 2. most right 3. highest (y)
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         Graphics.Blit(source, destination, m_Material);
@@ -32,10 +33,9 @@ public class FogOfWarBehaviour : MonoBehaviour
     public void SetPoints(List<Vector4> points) {
         m_Material.SetVectorArray("points", points);
     }
-
-    public void SetHeightmap(RenderTexture texture)
-    {
-       m_Material.SetTexture("heightmap", texture); 
+    
+    public void SetBoundingPoints(List<Vector4> points) {
+        m_Material.SetVectorArray("boundingPoints", points);
     }
     
     private void SetDebugDrawRayHits() {
@@ -49,6 +49,10 @@ public class FogOfWarBehaviour : MonoBehaviour
     
     private void RaycastSight()
     {
+        Vector4 mostLeft = Vector4.zero;
+        Vector4 mostRight = Vector4.zero;
+        Vector4 highest = Vector4.zero;
+        
         for(int i = 0; i < m_Casts; i++) {
             Vector3 rotatedForward = Quaternion.Euler(0, (-m_AngleRange/ 2.0f) + i * (m_AngleRange/ (float)m_Casts), 0) * m_EyesTransform.forward;
             RaycastHit hit = new RaycastHit();
@@ -63,6 +67,23 @@ public class FogOfWarBehaviour : MonoBehaviour
             }
             Vector3 screenPoint = _camera.WorldToScreenPoint(result);
             _sightPoints[i] = new Vector4(1.0f / _camera.pixelWidth * screenPoint.x, 1.0f / _camera.pixelHeight * screenPoint.y, 0, 0);
+
+            if (mostLeft == Vector4.zero || _sightPoints[i].x < mostLeft .x) mostLeft = _sightPoints[i];
+            if (mostRight == Vector4.zero || _sightPoints[i].x > mostRight.x) mostRight = _sightPoints[i];
+            if (highest == Vector4.zero || _sightPoints[i].y > highest.y) highest = _sightPoints[i];
+        }
+
+        if (_boundingPoints.Count == 0)
+        {
+            _boundingPoints.Add(mostLeft);
+            _boundingPoints.Add(mostRight);
+            _boundingPoints.Add(highest);
+        }
+        else
+        {
+            _boundingPoints[0] = mostLeft;
+            _boundingPoints[1] = mostRight;
+            _boundingPoints[2] = highest;
         }
     }
 
@@ -96,6 +117,7 @@ public class FogOfWarBehaviour : MonoBehaviour
         Vector3 screenCenterPoint = _camera.WorldToScreenPoint(_eyesPosition);
         SetCenterPoint(new Vector4(1.0f / _camera.pixelWidth * screenCenterPoint.x , 1.0f / _camera.pixelHeight * screenCenterPoint.y, 0, 0));
         SetPoints(_sightPoints);   
+        SetBoundingPoints(_boundingPoints);
         SetDebugDrawRayHits();
     }
 }

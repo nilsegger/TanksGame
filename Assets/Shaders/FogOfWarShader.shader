@@ -26,6 +26,7 @@ Shader "Unlit/FogOfWarShader"
 
             uniform fixed4 center;
             uniform fixed4 points[POINTS];
+            uniform fixed4 boundingPoints[3];
 
             uniform int debug;
             
@@ -133,9 +134,11 @@ Shader "Unlit/FogOfWarShader"
                 bool inView = false;
 
                 fixed fadeDistance = _FOGFadeDistance / 1000.0f;
-                if(i.fragScreenPos.x < points[0].x - fadeDistance || i.fragScreenPos.x > points[POINTS - 1].x + fadeDistance)
+                if(i.fragScreenPos.x < boundingPoints[0].x - fadeDistance || i.fragScreenPos.x > boundingPoints[1].x + fadeDistance || i.fragScreenPos.y < center.y - fadeDistance || i.fragScreenPos.y > boundingPoints[2].y + fadeDistance)
                 {
-                        closestDistance = fadeDistance * fadeDistance;
+                    // closestDistance = fadeDistance * fadeDistance;
+                    if(debug == 1) return 1;
+                    return 0;
                 } else
                 {
                     for(int k = 0; k < POINTS - 1; k++)
