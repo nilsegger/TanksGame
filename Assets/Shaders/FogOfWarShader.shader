@@ -17,7 +17,7 @@ Shader "Unlit/FogOfWarShader"
 
             #include "UnityCG.cginc"
 
-            #define POINTS 20 
+            #define POINTS 50 
 
             uniform sampler2D _MainTex;
             uniform float4 _MainTex_ST;
