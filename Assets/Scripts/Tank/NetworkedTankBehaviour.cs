@@ -12,7 +12,6 @@ public class NetworkedTankBehaviour : NetworkBehaviour
 {
 
     public Camera m_PlayerCamera;
-    public GameObject m_PlayerMap;
     
     public GameObject m_DestinationMarker;
     private GameObject _destinationMarkerInstance;
@@ -76,7 +75,6 @@ public class NetworkedTankBehaviour : NetworkBehaviour
     private void ActivatePlayer()
     {
         m_PlayerCamera.gameObject.SetActive(true);
-        m_PlayerMap.SetActive(true);
     }
 
     void Update()

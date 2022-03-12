@@ -90,19 +90,27 @@ v2f_surf vert_surf (appdata_full v)
     
     float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
     o.fade = 0.0;
-    for(int i = 0; i < detecting_sources_count; i++)
+
+    // assuming were still in editor
+    if(detecting_sources_count == 0)
     {
-        const float3 forward = detecting_sources_position[i] - worldPos;
-        const float d = forward.x * forward.x + forward.z * forward.z;
-        float i_fade = 0.f;
-        if(d <= visibility_range * visibility_range)
+        o.fade = 1.0;
+    } else
+    {
+        for(int i = 0; i < detecting_sources_count; i++)
         {
-            i_fade = 1.0;
-        } else if(d <= visibility_range * visibility_range + fade_distance * fade_distance)
-        {
-            i_fade = 1.0 - clamp(1.0f / (fade_distance * fade_distance) * (d - visibility_range * visibility_range), 0.0f, 1.0f);
+            const float3 forward = detecting_sources_position[i] - worldPos;
+            const float d = forward.x * forward.x + forward.z * forward.z;
+            float i_fade = 0.f;
+            if(d <= visibility_range * visibility_range)
+            {
+                i_fade = 1.0;
+            } else if(d <= visibility_range * visibility_range + fade_distance * fade_distance)
+            {
+                i_fade = 1.0 - clamp(1.0f / (fade_distance * fade_distance) * (d - visibility_range * visibility_range), 0.0f, 1.0f);
+            }
+            o.fade = max(o.fade, i_fade);
         }
-        o.fade = max(o.fade, i_fade);
     }
     
     return o;

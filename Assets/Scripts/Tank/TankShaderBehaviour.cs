@@ -1,18 +1,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class TankShaderBehaviour : MonoBehaviour
+public class TankShaderBehaviour : NetworkBehaviour 
 {
 
     public float fadeDistance = .5f;
     public float visibilityRange = 15.0f;
     private List<Material> _shaderMaterials = new List<Material>();
 
+    private static Dictionary<ulong, Transform> _networkIdToTransform = new Dictionary<ulong, Transform>();
+
     private void Start()
     {
         FindChildRenderer(gameObject.transform); 
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        _networkIdToTransform[NetworkObjectId] = gameObject.transform;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        _networkIdToTransform.Remove(NetworkObjectId);
     }
 
     private void FindChildRenderer(Transform t)
@@ -39,13 +52,20 @@ public class TankShaderBehaviour : MonoBehaviour
         m.SetVectorArray("detecting_sources_position", positions); 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (_shaderMaterials == null) return;
+        if (NetworkManager == null || !NetworkManager.Singleton.IsClient || !GameManagerBehaviour.GameBegun || IsOwner) return;
 
-        var positions = new List<Vector4>() {new Vector4(0.0f, 0.0f, 0.0f, 0.0f)};
+        var positions = new List<Vector4>();
 
+        foreach (var entry in _networkIdToTransform)
+        {
+            if (entry.Key != NetworkObjectId)
+            {
+                positions.Add(entry.Value.position);    
+            }
+        }
+        
         foreach (var m in _shaderMaterials)
         {
             PushDetectingSources(m, positions);
