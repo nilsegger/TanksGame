@@ -32,8 +32,10 @@ CGPROGRAM
 #include "AutoLight.cginc"
 
         uniform float4 detecting_sources_position[10];
+        uniform float4 detecting_sources_forward[10];
         uniform int detecting_sources_count;
         uniform float fade_distance;
+        uniform float visibility_degrees_range;
         uniform float visibility_range;
 
         inline float3 LightingLambertVS (float3 normal, float3 lightDir)
@@ -63,6 +65,14 @@ CGPROGRAM
   UNITY_VERTEX_OUTPUT_STEREO
 float fade : TEXCOORD6;
 };
+
+float AngleInDegrees(float2 from, float2 to)
+{
+  float num = sqrt((from.x * from.x + from.y * from.y) * (to.x * to.x + to.y * to.y));
+  return num < 1.00000000362749E-15 ? 0.0f : acos(clamp(dot(from, to) / num, -1.0f, 1.0f)) * 57.29578f;
+}
+
+
 float4 _MainTex_ST;
 v2f_surf vert_surf (appdata_full v)
 {
@@ -99,7 +109,15 @@ v2f_surf vert_surf (appdata_full v)
     {
         for(int i = 0; i < detecting_sources_count; i++)
         {
-            const float3 forward = detecting_sources_position[i] - worldPos;
+            const float3 forward = worldPos - detecting_sources_position[i];
+            const float degrees_between = AngleInDegrees(detecting_sources_forward[i].xz, forward.xz);
+
+            // Object is not in view triangle
+            if(degrees_between > visibility_degrees_range / 2.0f)
+            {
+                continue;
+            }
+            
             const float d = forward.x * forward.x + forward.z * forward.z;
             float i_fade = 0.f;
             if(d <= visibility_range * visibility_range)

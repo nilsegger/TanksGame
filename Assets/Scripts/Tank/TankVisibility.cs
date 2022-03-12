@@ -37,14 +37,9 @@ public class TankVisibility : NetworkBehaviour
 
     private float CalculateDegreesBetweenPlayerSightAndOther(NetworkObject player, NetworkObject other)
     {
-        Vector2 xzPlayer = new Vector2(player.transform.position.x, player.transform.position.z);
-        Vector2 xzOther = new Vector2(other.transform.position.x, other.transform.position.z);
-        var otherForward = xzOther - xzPlayer;
-
-        var p1 = new Vector2(m_Eyes.forward.x, m_Eyes.forward.z) * otherForward.magnitude;
-        var p2 = otherForward;
-
-        return (Mathf.Atan2(p1.y, p1.x) - Mathf.Atan2(p2.y, p2.x)) * Mathf.Rad2Deg;
+        var angleBetween = Vector3.Angle(m_Eyes.forward, other.transform.position - player.transform.position);
+        Debug.Log(angleBetween);
+        return angleBetween;
     }
     
      private void CheckVisibility(ulong player, ulong other)
@@ -59,7 +54,7 @@ public class TankVisibility : NetworkBehaviour
          if (inDistance)
          {
              var degreesBetween = CalculateDegreesBetweenPlayerSightAndOther(playerObject, otherObject);
-             inDistance = -m_AngleRange / 2.0f <= degreesBetween && degreesBetween <= m_AngleRange / 2.0f;
+             inDistance = degreesBetween <= m_AngleRange / 2.0f;
              
              Debug.DrawLine(m_Eyes.position, m_Eyes.position + (m_Eyes.rotation * Quaternion.Euler(0.0f, degreesBetween, 0.0f) * Vector3.forward) * m_VisibilityRange, inDistance ? Color.green : Color.red);
          }
