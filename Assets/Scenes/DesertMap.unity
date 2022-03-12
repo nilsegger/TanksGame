@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,8 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: f10e39361e0243345bb4ddd5886540ef,
-    type: 2}
+  m_LightingDataAsset: {fileID: 0}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 5617f558043d9a149ae931d912f351a0,
     type: 2}
 --- !u!196 &4
@@ -336,7 +335,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1360624108
 PrefabInstance:
@@ -368,7 +367,7 @@ PrefabInstance:
     - target: {fileID: 8112734451109623389, guid: 5422e82052b8d8e4fa1d9fd44d79a11c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8112734451109623389, guid: 5422e82052b8d8e4fa1d9fd44d79a11c,
         type: 3}
@@ -463,6 +462,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1171954813845018929, guid: 02db1ffca0e8c494e9164e8ae2d9a576,
+        type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4125585557677561258, guid: 02db1ffca0e8c494e9164e8ae2d9a576,
         type: 3}
       propertyPath: m_Name
@@ -525,6 +529,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02db1ffca0e8c494e9164e8ae2d9a576, type: 3}
+--- !u!1 &1470775646 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4125585557677561258, guid: 02db1ffca0e8c494e9164e8ae2d9a576,
+    type: 3}
+  m_PrefabInstance: {fileID: 1470775645}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1685246328
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,6 +596,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GameUi: {fileID: 1360624111}
-  m_Level: {fileID: 0}
+  m_Level: {fileID: 1470775646}
   serverCamera: {fileID: 462578698}
   gameStartCountdownDurationS: 1
