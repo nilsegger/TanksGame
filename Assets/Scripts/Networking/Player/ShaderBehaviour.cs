@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class TankShaderBehaviour : NetworkBehaviour 
+public class ShaderBehaviour : NetworkBehaviour 
 {
 
     public float visibilityRange = 15.0f;

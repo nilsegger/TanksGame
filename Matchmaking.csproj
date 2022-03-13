@@ -13,11 +13,11 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{c55ae4c7-4de6-1f26-df12-5bf4a531e67f}</ProjectGuid>
+    <ProjectGuid>{9295261e-aea4-db3b-8de8-749ad1a52022}</ProjectGuid>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Matchmaking</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -52,12 +52,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\ParrelSync\Examples\CustomArgumentExample.cs" />
-     <None Include="Assets\Shaders\TestShader.shader" />
-     <None Include="Assets\Shaders\Custom-Mobile-VertexLit-OnlyDirectionalLights.shader" />
-     <None Include="Assets\Shaders\FogOfWarShader.shader" />
-     <None Include="Assets\ParrelSync\VERSION.txt" />
-     <None Include="Assets\Shaders\Custom-Mobile-TanksLit-OnlyDirectionalLights.shader" />
+     <Compile Include="Assets\Scripts\Matchmaking\PlayfabPersistenceData.cs" />
+     <Compile Include="Assets\Scripts\Matchmaking\MatchMakingBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Matchmaking\PlayfabBehaviour.cs" />
+     <None Include="Assets\Scripts\Matchmaking\Matchmaking.asmdef" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
  </Reference>
@@ -271,8 +269,32 @@
  <Reference Include="UnityEditor.UnityConnectModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
  </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WebGL.Extensions">
+ <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Android.Extensions">
+ <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+ <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.LinuxStandalone.Extensions">
+ <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.Collections.LowLevel.ILSupport">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collections@1.1.0/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Plastic.Newtonsoft.Json">
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Plastic.Antlr3.Runtime">
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="unityplastic">
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/unityplastic.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Unsafe">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.Unsafe.dll</HintPath>
@@ -285,6 +307,9 @@
  </Reference>
  <Reference Include="Unity.Burst.Cecil">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
+ </Reference>
+ <Reference Include="log4netPlastic">
+ <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.collab-proxy@1.15.7/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Rocks">
  <HintPath>C:/Users/nils/Tanks/Library/PackageCache/com.unity.burst@1.6.4/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
@@ -640,162 +665,17 @@
  <Reference Include="System.Xml.Serialization">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Serialization.dll</HintPath>
  </Reference>
- <Reference Include="Unity.VSCode.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Notifications">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.dll</HintPath>
- </Reference>
- <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Multiplayer.NetworkProfiler.Runtime">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkProfiler.Runtime.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Multiplayer.MetricTypes">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.MetricTypes.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Netcode.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Networking.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Networking.Editor.dll</HintPath>
- </Reference>
  <Reference Include="UnityEditor.UI">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Rider.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
- <Reference Include="Unity.Multiplayer.NetStatsReporting">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetStatsReporting.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Notifications.iOS">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.iOS.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Networking.Transport">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Networking.Transport.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Netcode.Components">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Components.dll</HintPath>
- </Reference>
- <Reference Include="Whinarn.UnityMeshSimplifier.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Whinarn.UnityMeshSimplifier.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Toolchain.Win-x86_64-Linux-x86_64.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Mathematics.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Collections">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Netcode.Adapter.UTP">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Adapter.UTP.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Notifications.Android">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Notifications.Android.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Multiplayer.NetStats">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetStats.dll</HintPath>
- </Reference>
- <Reference Include="Whinarn.UnityMeshSimplifier.Runtime">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Whinarn.UnityMeshSimplifier.Runtime.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Multiplayer.NetworkSolutionInterface">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkSolutionInterface.dll</HintPath>
- </Reference>
- <Reference Include="Unity.VisualStudio.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Sysroot.Linux_x86_64">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Sysroot.Linux_x86_64.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Profiling.Core">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Profiling.Core.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Timeline">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Multiplayer.NetworkProfiler.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Multiplayer.NetworkProfiler.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.TextMeshPro">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Burst.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.2D.Sprite.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Postprocessing.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Postprocessing.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.PlasticSCM.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Netcode.Adapter.UTP.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Adapter.UTP.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Netcode.Runtime">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Netcode.Runtime.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Mathematics">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Burst">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Postprocessing.Runtime">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Mobile.AndroidLogcat.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Mobile.AndroidLogcat.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.Timeline.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
- </Reference>
- <Reference Include="Unity.SysrootPackage.Editor">
- <HintPath>C:/Users/nils/Tanks/Library/ScriptAssemblies/Unity.SysrootPackage.Editor.dll</HintPath>
- </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="PlayFabSDKEditor.csproj">
-      <Project>{0bff929e-dc09-82c2-0eca-806ecb26db16}</Project>
-      <Name>PlayFabSDKEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="PlayFabEditorExtensions.csproj">
-      <Project>{8c18c779-2a88-e256-4e4b-66381157aef1}</Project>
-      <Name>PlayFabEditorExtensions</Name>
-    </ProjectReference>
     <ProjectReference Include="PlayFab.csproj">
       <Project>{7e08ebe4-4b17-f879-89d2-2200bed8b89a}</Project>
       <Name>PlayFab</Name>
-    </ProjectReference>
-    <ProjectReference Include="ParrelSync.csproj">
-      <Project>{a81a2fcb-43f8-7a6b-63c7-c7169ec48b2f}</Project>
-      <Name>ParrelSync</Name>
-    </ProjectReference>
-    <ProjectReference Include="Local.csproj">
-      <Project>{fa579679-2b8b-c218-c538-2be13cc4fd5b}</Project>
-      <Name>Local</Name>
-    </ProjectReference>
-    <ProjectReference Include="Matchmaking.csproj">
-      <Project>{9295261e-aea4-db3b-8de8-749ad1a52022}</Project>
-      <Name>Matchmaking</Name>
-    </ProjectReference>
-    <ProjectReference Include="Networking.csproj">
-      <Project>{ab5c9cda-e4a3-b4a3-8e9a-6186f8a93043}</Project>
-      <Name>Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="CustomUI.csproj">
-      <Project>{c8c0d7dd-f73e-8663-3c5f-9cae1d32067a}</Project>
-      <Name>CustomUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

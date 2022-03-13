@@ -1,5 +1,4 @@
 using System;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,7 +7,7 @@ using UnityEngine.SceneManagement;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
-public class NetworkedTankBehaviour : NetworkBehaviour 
+public class NavigationBehaviour : NetworkBehaviour 
 {
 
     public Camera m_PlayerCamera;

@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-public class TankShootBehaviour : NetworkBehaviour
+public class ShootBehaviour : NetworkBehaviour
 {
 
     public GameObject m_ShellPrefab;
@@ -29,16 +28,16 @@ public class TankShootBehaviour : NetworkBehaviour
 
     private GameObject _hitMarkerInstance;
 
-    private NetworkedTankBehaviour _tankMovementBehaviour;
-    private TurretRotationBehaviour _turretRotationBehaviour;
+    private NavigationBehaviour _tankMovementBehaviour;
+    private LookBehaviour _turretRotationBehaviour;
     
     // Start is called before the first frame update
     void Start()
     {
-        _tankMovementBehaviour = GetComponent<NetworkedTankBehaviour>();
+        _tankMovementBehaviour = GetComponent<NavigationBehaviour>();
         Assert.IsNotNull(_tankMovementBehaviour);
 
-        _turretRotationBehaviour = GetComponent<TurretRotationBehaviour>();
+        _turretRotationBehaviour = GetComponent<LookBehaviour>();
         Assert.IsNotNull(_turretRotationBehaviour);
         
         m_ShootButton.onClick.AddListener(() => _shootButtonPressed = true) ;

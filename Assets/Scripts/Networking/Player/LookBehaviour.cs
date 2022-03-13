@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class TurretRotationBehaviour : NetworkBehaviour
+public class LookBehaviour : NetworkBehaviour
 {
     public Transform m_Turret;
     public float m_RotationSpeed = 30.0f;

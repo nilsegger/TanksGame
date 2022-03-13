@@ -1,12 +1,10 @@
-using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Quaternion = UnityEngine.Quaternion;
-using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class TankVisibility : NetworkBehaviour
+public class ServerVisibilityBehaviour : NetworkBehaviour
 {
 
     public Transform m_Eyes;

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -59,7 +58,7 @@ public class GameManagerBehaviour : NetworkBehaviour
             var prefab = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
             prefab.transform.position = spawn.position;
             prefab.transform.rotation = spawn.rotation;
-            var behaviour = prefab.GetComponent<NetworkedTankBehaviour>();
+            var behaviour = prefab.GetComponent<NavigationBehaviour>();
             behaviour.ServerOverridePositionClientRpc(spawn.position, spawn.rotation);
         } 
         
