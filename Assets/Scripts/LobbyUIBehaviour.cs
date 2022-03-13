@@ -1,24 +1,24 @@
-using System;
-using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class LobbyUIBehaviour : NetworkBehaviour 
+public class LobbyUIBehaviour : MonoBehaviour 
 {
     
     public Button m_PlayButton;
     public Button m_DisconnectButton;
     public Text m_NetworkTypeText;
     public Text m_MissingPlayersCountText;
-    public NetworkVariable<int> missingPlayersCount = new NetworkVariable<int>(0);
 
     public InputField m_ServerIpInput;
     public InputField m_ServerPortInput;
 
     private void Start()
     {
-        m_ServerIpInput.text = "127.0.0.1";
-        m_ServerPortInput.text = "7777";
+        #if UNITY_EDITOR
+            m_ServerIpInput.text = "127.0.0.1";
+            m_ServerPortInput.text = "7777";
+        #endif
     }
 
     public string ServerIp()
@@ -30,16 +30,6 @@ public class LobbyUIBehaviour : NetworkBehaviour
     {
         return int.TryParse(m_ServerPortInput.text, out port);
     }
-    
-    public override void OnNetworkSpawn()
-    {
-        missingPlayersCount.OnValueChanged += OnMissingPlayersCountChanged;
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        missingPlayersCount.OnValueChanged -= OnMissingPlayersCountChanged;
-    }
 
     public void SetNetworkStatusText(string text)
     {
@@ -49,11 +39,13 @@ public class LobbyUIBehaviour : NetworkBehaviour
     public void SetPlayButtonVisibility(bool show)
     {
         m_PlayButton.gameObject.SetActive(show);
+        m_ServerIpInput.gameObject.SetActive(show);
+        m_ServerPortInput.gameObject.SetActive(show);
     }
     
     public void SetDisconnectButtonVisibility(bool show)
     {
-        m_DisconnectButton.gameObject.SetActive(show);
+        // m_DisconnectButton.gameObject.SetActive(show);
     }
 
     public void AddOnClickPlayListener(UnityAction call)
@@ -66,9 +58,9 @@ public class LobbyUIBehaviour : NetworkBehaviour
         m_DisconnectButton.onClick.AddListener(call);
     }
 
-    private void OnMissingPlayersCountChanged(int prevCount, int newCount)
+    public void SetMissingPlayersCount(int missingCount)
     {
-        m_MissingPlayersCountText.text = "Waiting for " + newCount + " players.";
+        m_MissingPlayersCountText.text = "Waiting for " + missingCount + " players.";
     }
 
 }

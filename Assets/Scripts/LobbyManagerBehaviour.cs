@@ -36,25 +36,24 @@ public class LobbyManagerBehaviour : NetworkBehaviour
 
     private static LobbyManagerBehaviour _instance;
     
+    private NetworkVariable<int> missingPlayersCount = new NetworkVariable<int>(0);
+    
     private void Start()
     {
         Assert.IsTrue(_instance == null);
         _instance = this;
-        NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
-        NetworkManager.Singleton.OnServerStarted += OnServerStarted;
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
         
         lobbyUi.AddOnClickPlayListener(OnPlayClick);
         lobbyUi.AddOnClickDisconnectListener(OnDisconnectClick);
         AddSpawnPoints();
         
+        NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+        
         #if UNITY_SERVER
             CheckToStartServer();
             PlayFabMultiplayerAgentAPI.OnShutDownCallback += () => Application.Quit();
         #endif
-
-        
     }
 
     private void CheckToStartServer()
@@ -103,9 +102,34 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             }
         }
     }
-    
+
+    public override void OnNetworkSpawn()
+    {
+        Debug.Log("OnNetworkSpawn"); 
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        missingPlayersCount.OnValueChanged += UpdateMissingPlayerCountUI;
+        NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        Debug.Log("OnNetworkSpawnDespawn"); 
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
+        missingPlayersCount.OnValueChanged -= UpdateMissingPlayerCountUI;
+        NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage));
+    }
+
+    private void UpdateMissingPlayerCountUI(int old, int newV)
+    {
+        lobbyUi.SetMissingPlayersCount(newV);
+    }
+
     private void OnPlayClick()
     {
+        Debug.Log("Hello from click " + NetworkManager.Singleton.IsClient);
+        
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer ||
             NetworkManager.Singleton.IsHost) return;
 
@@ -128,38 +152,44 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         }
 
         NetworkManager.Singleton.StartClient();
-        NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage), ReceiveServerToClientConnectResult_CustomMessage);
-        NetworkManager.Singleton.SceneManager.OnLoad += ClientOnSceneLoadEvent;
         lobbyUi.SetPlayButtonVisibility(false);
         lobbyUi.SetDisconnectButtonVisibility(false);
         lobbyUi.SetNetworkStatusText("Connecting...");
+        StartCoroutine(WaitToCheckIfConnected());
+    }
+
+    IEnumerator WaitToCheckIfConnected()
+    {
+        yield return new WaitForSeconds(2);
+        
+        if (!NetworkManager.Singleton.IsConnectedClient)
+        {
+           lobbyUi.SetDisconnectButtonVisibility(false); 
+           lobbyUi.SetPlayButtonVisibility(true); 
+           lobbyUi.SetNetworkStatusText("Connection was not successful");
+           
+           // NetworkManager.Singleton.Shutdown(); 
+        }
     }
 
     private void OnDisconnectClick()
     {
         if (!NetworkManager.Singleton.IsConnectedClient) return;
         
-        NetworkManager.Singleton.Shutdown();
-        
         lobbyUi.SetDisconnectButtonVisibility(false); 
-        lobbyUi.SetPlayButtonVisibility(true); 
-        lobbyUi.SetNetworkStatusText("Disconnected");
-                    
-        NetworkManager.Singleton.SceneManager.OnLoad -= ClientOnSceneLoadEvent;
-        NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(nameof(ReceiveServerToClientConnectResult_CustomMessage));
+        lobbyUi.SetPlayButtonVisibility(false); 
+        lobbyUi.SetNetworkStatusText("Disconnecting...");
+        
+        NetworkManager.Singleton.Shutdown();
     }
 
-    private void ClientOnSceneLoadEvent(ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation)
-    {
-        // TODO show loading screen (careful async operation can be null)
-    }
+    
 
     private void OnServerStarted()
     {
         if (!NetworkManager.Singleton.IsServer) return;
         
         _approvedClients = new List<ulong>();
-        UpdateMissingPlayersCount();
         
         lobbyUi.SetNetworkStatusText("SERVER");
         lobbyUi.SetPlayButtonVisibility(false);
@@ -171,22 +201,21 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     } 
     
     private void OnClientConnect(ulong cliendId)
+    {
+        if (NetworkManager.Singleton.IsServer)
         {
-            if (NetworkManager.Singleton.IsServer)
+            if (IsLobbyReadyForGame())
             {
-                UpdateMissingPlayersCount();
-                if (IsLobbyReadyForGame())
-                {
-                    _gameStarted = true;
-                    NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
-                }
-            } else if (NetworkManager.Singleton.IsClient)
-            {
-               lobbyUi.SetDisconnectButtonVisibility(true); 
-               lobbyUi.SetPlayButtonVisibility(false); 
-               lobbyUi.SetNetworkStatusText("Connected as client");
+                _gameStarted = true;
+                NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
             }
+        } else if (NetworkManager.Singleton.IsClient)
+        {
+           lobbyUi.SetDisconnectButtonVisibility(true); 
+           lobbyUi.SetPlayButtonVisibility(false); 
+           lobbyUi.SetNetworkStatusText("Connected as client");
         }
+    }
     
     private void OnClientDisconnect(ulong clientId)
     {
@@ -204,7 +233,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
                     }
                 } 
             }
-            UpdateMissingPlayersCount();
             if (_gameStarted && _approvedClients.Count == 0)
             {
                 Debug.Log("All Players have disconnected.");
@@ -219,9 +247,14 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         } else if (NetworkManager.Singleton.IsClient)
         {
             Debug.Log("Client disconnect log on client side");
+            lobbyUi.SetNetworkStatusText("Disconnected.");
+            lobbyUi.SetPlayButtonVisibility(true);
+            lobbyUi.SetDisconnectButtonVisibility(false);
+            /*
             #if UNITY_EDITOR
-                            UnityEditor.EditorApplication.isPlaying = false;
+                    UnityEditor.EditorApplication.isPlaying = false;
             #endif
+            */
         }
     }
 
@@ -259,6 +292,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         Assert.AreNotEqual(spawnPoint, Vector3.negativeInfinity);
 
         callback(true /* create player object */, null, true /* approve */, spawnPoint,  Quaternion.Euler(0.0f, 180.0f, 0.0f));
+        
+        
+        missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
     }
     
     private IEnumerator WaitToDisconnect(ulong clientId)
@@ -308,14 +344,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
     private bool IsLobbyReadyForGame()
     {
         return _approvedClients.Count == playersPerTeam * 2;
-    }
-
-    private void UpdateMissingPlayersCount()
-    {
-        if (!_gameStarted)
-        {
-            lobbyUi.missingPlayersCount.Value = (playersPerTeam * 2) - _approvedClients.Count;
-        }
     }
 
     private void Update()
