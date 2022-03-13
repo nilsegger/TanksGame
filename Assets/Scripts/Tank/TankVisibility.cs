@@ -38,7 +38,6 @@ public class TankVisibility : NetworkBehaviour
     private float CalculateDegreesBetweenPlayerSightAndOther(NetworkObject player, NetworkObject other)
     {
         var angleBetween = Vector3.Angle(m_Eyes.forward, other.transform.position - player.transform.position);
-        Debug.Log(angleBetween);
         return angleBetween;
     }
     

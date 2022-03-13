@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "5200b2145a7d9443",
         "name": "com.EggerSoftwareDevelopment.Tanks",
-        "processId": 7962,
+        "processId": 31191,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -48,6 +48,30 @@
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
             "processId": 7962,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 28951,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 29799,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 30801,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 31191,
             "exited": false
         }
     ],
