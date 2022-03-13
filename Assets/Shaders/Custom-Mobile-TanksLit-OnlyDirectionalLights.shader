@@ -35,6 +35,7 @@ CGPROGRAM
         uniform float4 detecting_sources_forward[10];
         uniform int detecting_sources_count;
         uniform float fade_distance;
+        uniform float fade_degrees_distance;
         uniform float visibility_degrees_range;
         uniform float visibility_range;
 
@@ -117,17 +118,26 @@ v2f_surf vert_surf (appdata_full v)
             {
                 continue;
             }
-            
-            const float d = forward.x * forward.x + forward.z * forward.z;
-            float i_fade = 0.f;
-            if(d <= visibility_range * visibility_range)
+
+            float i_degrees_fade = 1.0;
+            if(degrees_between > visibility_degrees_range / 2.0f - fade_degrees_distance)
             {
-                i_fade = 1.0;
-            } else if(d <= visibility_range * visibility_range + fade_distance * fade_distance)
-            {
-                i_fade = 1.0 - clamp(1.0f / (fade_distance * fade_distance) * (d - visibility_range * visibility_range), 0.0f, 1.0f);
+                i_degrees_fade = 1.0 - clamp(1.0f / fade_degrees_distance * (degrees_between - (visibility_degrees_range / 2.0f - fade_degrees_distance)), 0.0f, 1.0f);
             }
-            o.fade = max(o.fade, i_fade);
+
+            const float d = forward.x * forward.x + forward.z * forward.z;
+            const float visibility_range_sqr = visibility_range * visibility_range;
+            const float fade_distance_sqr = fade_distance * fade_distance;
+            
+            float i_distance_fade = 0.f;
+            if(d <= (visibility_range_sqr) - (fade_distance_sqr))
+            {
+                i_distance_fade = 1.0;
+            } else if(d <= visibility_range_sqr)
+            {
+                i_distance_fade = 1.0 - clamp(1.0f / (fade_distance_sqr) * (d - (visibility_range_sqr - (fade_distance_sqr))), 0.0f, 1.0f);
+            }
+            o.fade = max(o.fade, min(i_distance_fade, i_degrees_fade));
         }
     }
     

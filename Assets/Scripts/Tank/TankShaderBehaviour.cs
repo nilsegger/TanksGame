@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class TankShaderBehaviour : NetworkBehaviour 
 {
 
-    public float fadeDistance = .5f;
     public float visibilityRange = 15.0f;
+    public float fadeDistance = .5f;
     public float visibilityDegreesRange = 120.0f;
+    public float fadeDegreesDistance = 10.0f;
     public Transform eyes;
     
     private List<Material> _shaderMaterials = new List<Material>();
@@ -50,7 +52,9 @@ public class TankShaderBehaviour : NetworkBehaviour
 
     private void PushDetectingSources(Material m, List<Vector4> positions, List<Vector4> forward)
     {
+        Assert.IsFalse(positions.Count > 10, "Maximum of 10 detectors or shader max count has to be changed");
         m.SetFloat("fade_distance", fadeDistance);
+        m.SetFloat("fade_degrees_distance", fadeDegreesDistance);
         m.SetFloat("visibility_range", visibilityRange);
         m.SetFloat("visibility_degrees_range", visibilityDegreesRange);
         m.SetInt("detecting_sources_count", positions.Count);
@@ -78,7 +82,5 @@ public class TankShaderBehaviour : NetworkBehaviour
         {
             PushDetectingSources(m, positions, forwards);
         }
-
-        // _networkIdToTransform[NetworkObjectId] = eyes;
     }
 }
