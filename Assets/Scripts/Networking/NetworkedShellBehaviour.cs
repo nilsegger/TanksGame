@@ -1,4 +1,5 @@
 using System.Collections;
+using PlayFab.MultiplayerModels;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     private NetworkVariable<float> _spawnTime = new NetworkVariable<float>(0.0f);
     private NetworkVariable<Vector3> _serverPosition = new NetworkVariable<Vector3>(Vector3.zero);
 
-    private NetworkServerOverridePosition _positionOverride = new NetworkServerOverridePosition(1.0f, 1.5f, 0.5f);
+    private NetworkServerOverridePosition _serverPositionOverride = new NetworkServerOverridePosition();
 
     private bool _activatedSinceLastNetworkSpawn = false;
     private bool _hitRegisteredSinceNetworkSpawn = false;
@@ -31,6 +32,9 @@ public class NetworkedShellBehaviour : NetworkBehaviour
     {
         _body = GetComponent<Rigidbody>();
         _hitbox = GetComponent<BoxCollider>();
+        
+        _serverPositionOverride.AddSetting("default", new NetworkServerOverrideSettings() {InterpolationDuration = 0.3f, MaxAllowedDelta = 1.0f, ResetPositionAfterMismatchTime = 0.5f});
+        _serverPositionOverride.Activate("default");
     }
 
     public override void OnNetworkSpawn()
@@ -105,7 +109,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
         if (_activatedSinceLastNetworkSpawn)
         {
             var distance = (_body.transform.position - _serverPosition.Value).magnitude;
-            if (_positionOverride.IsOverrideDistance(distance))
+            if (_serverPositionOverride.IsOverrideDistance(distance))
             {
                 Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
             }
@@ -168,7 +172,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
             }
 
             var distance = (_body.transform.position - _serverPosition.Value).magnitude;
-            if(_positionOverride.CheckForRequiredServerOverride(_body.transform.position, _serverPosition.Value, out var updated, distance, Time.deltaTime))
+            if(_serverPositionOverride.CheckForRequiredServerOverride(_body.transform.position, _serverPosition.Value, out var updated, distance, Time.deltaTime))
             {
                 _body.transform.position = updated;
             }

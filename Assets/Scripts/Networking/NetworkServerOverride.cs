@@ -1,54 +1,83 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public struct NetworkServerOverrideSettings
+{
+    public float ResetPositionAfterMismatchTime;
+    public float MaxAllowedDelta;
+    public float InterpolationDuration;
+};
 
 [System.Serializable]
 public abstract class NetworkServerOverride<Type>
 {
-    public float resetPositionAfterMismatchTime;
-    public float serverOverridePositionAfterMaxDistance;
-    public float interpolationDuration;
 
-    protected NetworkServerOverride(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration)
+    private Dictionary<string, NetworkServerOverrideSettings> _settings = new Dictionary<string, NetworkServerOverrideSettings>();
+    private string _activeSetting;
+    private string _desiredSetting;
+
+    protected NetworkServerOverride()
     {
-        this.resetPositionAfterMismatchTime = resetPositionAfterMismatchTime;
-        this.serverOverridePositionAfterMaxDistance = serverOverridePositionAfterMaxDistance;
-        this.interpolationDuration = interpolationDuration;
-        this._offsetCounter = 0.0f;
-        this._interpolatingTimer = 0.0f;
+        OffsetCounter = 0.0f;
+        InterpolatingTimer = 0.0f;
     }
 
-    protected  float _offsetCounter;
-    protected  float _interpolatingTimer;
-    protected  Type _interpolatingStart;
+    public void AddSetting(string name, NetworkServerOverrideSettings setting)
+    {
+        Assert.IsFalse(_settings.ContainsKey(name), "Setting already exists with name " + name);
+        _settings[name] = setting;
+    }
+
+    public void Activate(string settingName, bool force = false)
+    {
+        if (force || _activeSetting == null)
+        {
+            _activeSetting = settingName;
+            _desiredSetting = null;
+        }
+        if (IsInterpolating() && !_activeSetting.Equals(settingName)) _desiredSetting = settingName;
+        else _activeSetting = settingName;
+    }
+    
+    protected float OffsetCounter;
+    protected float InterpolatingTimer;
+    protected Type InterpolatingStart;
     
     private void StartCountingMismatch(float time)
     {
-        _offsetCounter += time;
+        OffsetCounter += time;
     }
 
     public bool IsOverrideDistance(float distance)
     {
-        return distance >= serverOverridePositionAfterMaxDistance;
+        return distance >= _settings[_activeSetting].MaxAllowedDelta;
     }
 
     private bool ShouldOverride()
     {
-        return _offsetCounter >= this.resetPositionAfterMismatchTime;
+        return OffsetCounter >= _settings[_activeSetting].ResetPositionAfterMismatchTime;
     }
 
-    public void Reset()
+    private void Reset()
     {
-        _offsetCounter = 0.0f;
+        OffsetCounter = 0.0f;
     }
 
     private bool IsInterpolating()
     {
-        return _interpolatingTimer != 0.0f && _interpolatingTimer < interpolationDuration;
+        return InterpolatingTimer != 0.0f && InterpolatingTimer < _settings[_activeSetting].InterpolationDuration;
+    }
+
+    protected float InterpolationDuration()
+    {
+        return _settings[_activeSetting].InterpolationDuration;
     }
     
     private Type StartInterpolate(Type position, Type target, float time)
     {
-        _interpolatingTimer = 0.0f;
-        _interpolatingStart = position;
+        InterpolatingTimer = 0.0f;
+        InterpolatingStart = position;
         return Interpolate(target, time);
     }
 
@@ -62,6 +91,12 @@ public abstract class NetworkServerOverride<Type>
             return true;
         }
         
+        if (_desiredSetting != null && !_activeSetting.Equals(_desiredSetting))
+        {
+            _activeSetting = _desiredSetting;
+            _desiredSetting = null;
+        }
+        
         if (IsOverrideDistance(distance))
         {
             StartCountingMismatch(time);
@@ -71,8 +106,6 @@ public abstract class NetworkServerOverride<Type>
                 Reset();
                 return true;
             }
-
-            // Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
         else
         {
@@ -86,28 +119,28 @@ public abstract class NetworkServerOverride<Type>
 
 public class NetworkServerOverridePosition : NetworkServerOverride<Vector3>
 {
-    public NetworkServerOverridePosition(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration) : base(resetPositionAfterMismatchTime, serverOverridePositionAfterMaxDistance, interpolationDuration)
+    public NetworkServerOverridePosition()
     {
-        this._interpolatingStart = Vector3.zero;
+        InterpolatingStart = Vector3.zero;
     }
 
     protected override Vector3 Interpolate(Vector3 target, float time)
     {
-        _interpolatingTimer += time;
-        return Vector3.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
+        InterpolatingTimer += time;
+        return Vector3.Lerp(InterpolatingStart, target, 1.0f / InterpolationDuration() * InterpolatingTimer);
     }
 }
 
 public class NetworkServerOverrideFloat : NetworkServerOverride<float>
 {
-    public NetworkServerOverrideFloat(float resetPositionAfterMismatchTime, float serverOverridePositionAfterMaxDistance, float interpolationDuration) : base(resetPositionAfterMismatchTime, serverOverridePositionAfterMaxDistance, interpolationDuration)
+    public NetworkServerOverrideFloat()
     {
-        this._interpolatingStart = 0.0f;
+        InterpolatingStart = 0.0f;
     }
 
     protected override float Interpolate(float target, float time)
     {
-        _interpolatingTimer += time;
-        return Mathf.Lerp(_interpolatingStart, target, 1.0f / interpolationDuration * _interpolatingTimer);
+        InterpolatingTimer += time;
+        return Mathf.Lerp(InterpolatingStart, target, 1.0f / InterpolationDuration() * InterpolatingTimer);
     }
 }

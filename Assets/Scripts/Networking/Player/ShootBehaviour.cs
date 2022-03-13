@@ -10,6 +10,7 @@ public class ShootBehaviour : NetworkBehaviour
     public GameObject m_ShellPrefab;
     public GameObject m_ShellSpawnPosition;
     public GameObject m_HitMarker;
+    public float m_HitmarkerMaxDistance;
 
     public Animator m_TurretAnimator;
     public GameObject m_Turret;
@@ -81,7 +82,7 @@ public class ShootBehaviour : NetworkBehaviour
         if (!NetworkManager.Singleton.IsServer && !IsOwner) return;
         
         Ray ray = new Ray(m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.forward);
-        if (!Physics.Raycast(ray, out var hit)) return;
+        if (!Physics.Raycast(ray, out var hit, m_HitmarkerMaxDistance)) return;
         
         if (_hitMarkerInstance == null)
         {

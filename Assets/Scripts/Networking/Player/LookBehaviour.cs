@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,11 +13,25 @@ public class LookBehaviour : NetworkBehaviour
     private NetworkVariable<float> _serverRotation = new NetworkVariable<float>(); // this is the local y rotation in euler
    
     [SerializeField]
-    private NetworkServerOverrideFloat _networkServerOverride = new NetworkServerOverrideFloat(3.0f, 20.0f, 1.0f);
+    private NetworkServerOverrideFloat _serverRotationOverride = new NetworkServerOverrideFloat();
     
     private Quaternion _rotationDestination;
 
     private bool _lockedMovement = false;
+
+    private void Start()
+    {
+        _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
+        _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (NetworkManager.Singleton.IsClient && !IsOwner)
+        {
+            _serverRotationOverride.Activate("spawn", true);
+        }
+    }
 
     void Update()
     {
@@ -52,14 +67,16 @@ public class LookBehaviour : NetworkBehaviour
         {
             m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, ServerRotation(), m_RotationSpeed * Time.deltaTime);
         }
+        
+        _serverRotationOverride.Activate("moving");
 
         var angleOffset = Mathf.Abs(_serverRotation.Value - m_Turret.localRotation.eulerAngles.y);
-        if (_networkServerOverride.CheckForRequiredServerOverride(m_Turret.transform.localRotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset, Time.deltaTime))
+        if (_serverRotationOverride.CheckForRequiredServerOverride(m_Turret.transform.localRotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset, Time.deltaTime))
         {
             m_Turret.transform.localRotation= Quaternion.Euler(m_Turret.transform.localRotation.eulerAngles.x, updatedEulerAngle, m_Turret.transform.localRotation.eulerAngles.z);
         }
 
-        if (_networkServerOverride.IsOverrideDistance(angleOffset))
+        if (_serverRotationOverride.IsOverrideDistance(angleOffset))
         {
             Debug.DrawLine(m_Turret.position, m_Turret.position + ServerGlobalRotation() * Vector3.forward, Color.red);
         }

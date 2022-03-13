@@ -11,6 +11,8 @@ public class NavigationBehaviour : NetworkBehaviour
 {
 
     public Camera m_PlayerCamera;
+    public float m_TouchBlock = 0.5f; // Blocks the next touch for 0.5f after lifting finger, since somehow they get registered even though it was an ui click.
+    private float _touchBlockCooldown = 0.0f;
     
     public GameObject m_DestinationMarker;
     private GameObject _destinationMarkerInstance;
@@ -19,15 +21,14 @@ public class NavigationBehaviour : NetworkBehaviour
     private NetworkVariable<Vector3> _navDestination;
     private NetworkVariable<Vector3> _serverPosition;
     
-    private NetworkServerOverridePosition movingServerOverridePosition = new NetworkServerOverridePosition(3.0f, 3.0f, 1.0f);
-    private NetworkServerOverridePosition stoppedServerOverridePosition = new NetworkServerOverridePosition(1.5f, 0.1f, 0.5f);
+    private NetworkServerOverridePosition _serverPositionOverride = new NetworkServerOverridePosition();
     
     public float m_ServerCorrectionRotationSpeed = 15.0f;
     private NetworkVariable<float> _serverRotation = new NetworkVariable<float>();
     private Quaternion _ownerRotationTarget = Quaternion.identity;
     private float _clientLastRotation = 0.0f; // used to check whetever client needs to push new rotation to server
-    private NetworkServerOverrideFloat _movingRotationOverride = new NetworkServerOverrideFloat(3.0f, 10.0f, 1.0f);
-    private NetworkServerOverrideFloat _stoppedRotationOverride = new NetworkServerOverrideFloat(1.0f, 0.5f, 1.0f);
+    
+    private NetworkServerOverrideFloat _serverRotationOverride = new NetworkServerOverrideFloat();
 
     private bool _lockedMovement = false;
     void Start()
@@ -35,6 +36,14 @@ public class NavigationBehaviour : NetworkBehaviour
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
         _agent = gameObject.GetComponent<NavMeshAgent>();
         PrepareWayMarker();
+        
+        _serverPositionOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 3.0f, MaxAllowedDelta = 3.0f});
+        _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
+        _serverPositionOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
+        
+        _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
+        _serverRotationOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
+        _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
     }
 
     public override void OnNetworkSpawn()
@@ -45,6 +54,12 @@ public class NavigationBehaviour : NetworkBehaviour
         }
 
         _navDestination.OnValueChanged += OnClientChangedNavDestination;
+
+        if (NetworkManager.Singleton.IsClient && !IsOwner)
+        {
+            _serverPositionOverride.Activate("spawn", true);
+            _serverRotationOverride.Activate("spawn", true);
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -105,15 +120,28 @@ public class NavigationBehaviour : NetworkBehaviour
 
         if (IsOwner)
         {
-            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && !_lockedMovement)
+
+            bool uiTouch = EventSystem.current.IsPointerOverGameObject() ||
+                           (Input.touchCount > 0 &&
+                            EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId));
+            
+            if (Input.GetMouseButton(0) && !uiTouch && !_lockedMovement)
             {
                 HandleTouch(Input.mousePosition);
             }
 
-            if (Input.touchCount > 0 && !_lockedMovement)
+            if (Input.touchCount > 0 && !uiTouch && _touchBlockCooldown <= 0.0f && !_lockedMovement)
             {
                 HandleTouch(Input.GetTouch(0).position);
-            } 
+            } else if (uiTouch)
+            {
+                _touchBlockCooldown = m_TouchBlock;
+            }
+
+            if (_touchBlockCooldown > 0.0f)
+            {
+                _touchBlockCooldown -= Time.deltaTime;
+            }
 
             if (Input.GetKey("s") && !_lockedMovement)
             {
@@ -127,33 +155,37 @@ public class NavigationBehaviour : NetworkBehaviour
             }
         }
 
-        var positionOverrideManager = movingServerOverridePosition;
-        var rotationOverrideManager = _movingRotationOverride;
+        
         if(_agent.velocity.magnitude == 0.0f)
         {
-            positionOverrideManager = stoppedServerOverridePosition;
-            rotationOverrideManager = _stoppedRotationOverride;
+            _serverPositionOverride.Activate("stopped");
+            _serverRotationOverride.Activate("stopped");
+        }
+        else
+        {
+            _serverPositionOverride.Activate("moving");
+            _serverRotationOverride.Activate("moving");
         }
         
         var lagOffset = (transform.position - _serverPosition.Value).magnitude;
-        if(positionOverrideManager.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
+        if(_serverPositionOverride.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
         {
             transform.position = result;
         }
 
-        if (positionOverrideManager.IsOverrideDistance(lagOffset))
+        if (_serverPositionOverride.IsOverrideDistance(lagOffset))
         {
             Debug.DrawLine(transform.position, _serverPosition.Value, Color.red);
         }
         
         var rotationOffset = Mathf.Abs(transform.rotation.eulerAngles.y - _serverRotation.Value);
-        if (rotationOverrideManager.CheckForRequiredServerOverride(transform.rotation.eulerAngles.y,
+        if (_serverRotationOverride.CheckForRequiredServerOverride(transform.rotation.eulerAngles.y,
                 _serverRotation.Value, out float updatedRotation, rotationOffset, Time.deltaTime))
         {
             transform.rotation = Quaternion.Euler(0.0f, updatedRotation, 0.0f);
         }
         
-        Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), rotationOverrideManager.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
+        Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), _serverRotationOverride.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
         
     }
     
