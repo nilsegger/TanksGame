@@ -82,7 +82,11 @@ public class ShootBehaviour : NetworkBehaviour
         if (!NetworkManager.Singleton.IsServer && !IsOwner) return;
         
         Ray ray = new Ray(m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.forward);
-        if (!Physics.Raycast(ray, out var hit, m_HitmarkerMaxDistance)) return;
+        if (!Physics.Raycast(ray, out var hit, m_HitmarkerMaxDistance))
+        {
+            if(_hitMarkerInstance != null) _hitMarkerInstance.SetActive(false);
+            return;
+        }
         
         if (_hitMarkerInstance == null)
         {
@@ -90,6 +94,7 @@ public class ShootBehaviour : NetworkBehaviour
         }
         else
         {
+            _hitMarkerInstance.SetActive(true);
             _hitMarkerInstance.transform.position = hit.point;
             _hitMarkerInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
         }

@@ -769,9 +769,25 @@
       <Project>{0bff929e-dc09-82c2-0eca-806ecb26db16}</Project>
       <Name>PlayFabSDKEditor</Name>
     </ProjectReference>
+    <ProjectReference Include="Networking.csproj">
+      <Project>{ab5c9cda-e4a3-b4a3-8e9a-6186f8a93043}</Project>
+      <Name>Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="Local.csproj">
+      <Project>{fa579679-2b8b-c218-c538-2be13cc4fd5b}</Project>
+      <Name>Local</Name>
+    </ProjectReference>
+    <ProjectReference Include="CustomUI.csproj">
+      <Project>{c8c0d7dd-f73e-8663-3c5f-9cae1d32067a}</Project>
+      <Name>CustomUI</Name>
+    </ProjectReference>
     <ProjectReference Include="PlayFabEditorExtensions.csproj">
       <Project>{8c18c779-2a88-e256-4e4b-66381157aef1}</Project>
       <Name>PlayFabEditorExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="Matchmaking.csproj">
+      <Project>{9295261e-aea4-db3b-8de8-749ad1a52022}</Project>
+      <Name>Matchmaking</Name>
     </ProjectReference>
     <ProjectReference Include="PlayFab.csproj">
       <Project>{7e08ebe4-4b17-f879-89d2-2200bed8b89a}</Project>
@@ -780,22 +796,6 @@
     <ProjectReference Include="ParrelSync.csproj">
       <Project>{a81a2fcb-43f8-7a6b-63c7-c7169ec48b2f}</Project>
       <Name>ParrelSync</Name>
-    </ProjectReference>
-    <ProjectReference Include="Local.csproj">
-      <Project>{fa579679-2b8b-c218-c538-2be13cc4fd5b}</Project>
-      <Name>Local</Name>
-    </ProjectReference>
-    <ProjectReference Include="Matchmaking.csproj">
-      <Project>{9295261e-aea4-db3b-8de8-749ad1a52022}</Project>
-      <Name>Matchmaking</Name>
-    </ProjectReference>
-    <ProjectReference Include="Networking.csproj">
-      <Project>{ab5c9cda-e4a3-b4a3-8e9a-6186f8a93043}</Project>
-      <Name>Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="CustomUI.csproj">
-      <Project>{c8c0d7dd-f73e-8663-3c5f-9cae1d32067a}</Project>
-      <Name>CustomUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

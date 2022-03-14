@@ -105,7 +105,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("OnNetworkSpawn"); 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
         missingPlayersCount.OnValueChanged += UpdateMissingPlayerCountUI;
@@ -114,7 +113,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        Debug.Log("OnNetworkSpawnDespawn"); 
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
         missingPlayersCount.OnValueChanged -= UpdateMissingPlayerCountUI;
@@ -128,8 +126,6 @@ public class LobbyManagerBehaviour : NetworkBehaviour
 
     private void OnPlayClick()
     {
-        Debug.Log("Hello from click " + NetworkManager.Singleton.IsClient);
-        
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer ||
             NetworkManager.Singleton.IsHost) return;
 

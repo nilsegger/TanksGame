@@ -73,7 +73,6 @@ public class NavigationBehaviour : NetworkBehaviour
         {
             if (!scenename.ToLower().Contains("lobby"))
             {
-                Debug.Log("Hello");
                 ActivatePlayer();
             }
         }
