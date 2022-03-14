@@ -23,6 +23,7 @@ public class LookBehaviour : NetworkBehaviour
     {
         _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
         _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
+        _serverRotationOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 5.0f});
     }
 
     public override void OnNetworkSpawn()
@@ -68,7 +69,7 @@ public class LookBehaviour : NetworkBehaviour
             m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, ServerRotation(), m_RotationSpeed * Time.deltaTime);
         }
         
-        _serverRotationOverride.Activate("moving");
+        _serverRotationOverride.Activate(IsOwner ? "moving" : "client");
 
         var angleOffset = Mathf.Abs(_serverRotation.Value - m_Turret.localRotation.eulerAngles.y);
         if (_serverRotationOverride.CheckForRequiredServerOverride(m_Turret.transform.localRotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset, Time.deltaTime))

@@ -39,10 +39,12 @@ public class NavigationBehaviour : NetworkBehaviour
         _serverPositionOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 3.0f, MaxAllowedDelta = 3.0f});
         _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
         _serverPositionOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
+        _serverPositionOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 1.0f});
         
         _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
         _serverRotationOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
         _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
+        _serverRotationOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 10.0f});
     }
 
     public override void OnNetworkSpawn()
@@ -159,10 +161,15 @@ public class NavigationBehaviour : NetworkBehaviour
             _serverPositionOverride.Activate("stopped");
             _serverRotationOverride.Activate("stopped");
         }
-        else
+        else if(IsOwner)
         {
             _serverPositionOverride.Activate("moving");
             _serverRotationOverride.Activate("moving");
+        }
+        else
+        {
+            _serverPositionOverride.Activate("client");
+            _serverRotationOverride.Activate("client");
         }
         
         var lagOffset = (transform.position - _serverPosition.Value).magnitude;
