@@ -144,9 +144,16 @@ public class NavigationBehaviour : NetworkBehaviour
                 _clientLastRotation = transform.rotation.eulerAngles.y;
                 ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
             }
-        }
 
+            
+
+        }
         
+        ClientCheckServerOverrides();
+    }
+
+    private void ClientCheckServerOverrides()
+    {
         if(_agent.velocity.magnitude == 0.0f)
         {
             _serverPositionOverride.Activate("stopped");
@@ -177,7 +184,6 @@ public class NavigationBehaviour : NetworkBehaviour
         }
         
         Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), _serverRotationOverride.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
-        
     }
     
     private void ClientSetLocalNavDestination(Vector3 destination)
@@ -255,6 +261,15 @@ public class NavigationBehaviour : NetworkBehaviour
         if (NetworkManager != null)
         {
             Gizmos.DrawWireSphere(_serverPosition.Value, 1);
+            
+            if (_agent.path.corners.Length >= 1)
+            {
+                Gizmos.DrawLine(transform.position, _agent.path.corners[0]);
+                for (int i = 0; i < _agent.path.corners.Length - 1; i++)
+                {
+                    Gizmos.DrawLine(_agent.path.corners[i], _agent.path.corners[i + 1]);
+                }
+            }
         }
     }
 
