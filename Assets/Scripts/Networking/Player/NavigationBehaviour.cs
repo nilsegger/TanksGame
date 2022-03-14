@@ -16,8 +16,15 @@ public class NavigationBehaviour : NetworkBehaviour
     
     public GameObject m_DestinationMarker;
     private GameObject _destinationMarkerInstance;
-    
+
+    private NavMeshPath _path;
     private NavMeshAgent _agent;
+    
+    public float rotationSpeed = 45.0f;
+    public float movementSpeed = 3.0f;
+    public AnimationCurve turnCurve = AnimationCurve.Linear(0, 0, 1, 1);
+    
+    
     private NetworkVariable<Vector3> _navDestination;
     private NetworkVariable<Vector3> _serverPosition;
     
@@ -147,16 +154,16 @@ public class NavigationBehaviour : NetworkBehaviour
                 ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
             }
 
-            
-
         }
+        
+        FollowPath();
         
         ClientCheckServerOverrides();
     }
 
     private void ClientCheckServerOverrides()
     {
-        if(_agent.velocity.magnitude == 0.0f)
+        if(IsOwner && !isMoving())
         {
             _serverPositionOverride.Activate("stopped");
             _serverRotationOverride.Activate("stopped");
@@ -196,7 +203,9 @@ public class NavigationBehaviour : NetworkBehaviour
     private void ClientSetLocalNavDestination(Vector3 destination)
     {
         ClientPushNewNavDestinationServerRpc(destination);
-        _agent.SetDestination(destination);
+        
+        _path = new NavMeshPath();
+        _agent.CalculatePath(destination, _path);
         
         if(_destinationMarkerInstance == null) _destinationMarkerInstance = Instantiate(m_DestinationMarker);
         _destinationMarkerInstance.transform.position = destination;
@@ -221,14 +230,67 @@ public class NavigationBehaviour : NetworkBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, _ownerRotationTarget,
             m_ServerCorrectionRotationSpeed * Time.deltaTime);
         _serverRotation.Value = transform.rotation.eulerAngles.y;
+        
+        FollowPath();
     }
 
     private void OnClientChangedNavDestination(Vector3 oldValue, Vector3 newValue)
     {
         if (!IsOwner && newValue != Vector3.zero) // Sacrificing position because what are the chances that someone clicks Vector3.zero
         {
-            _agent.SetDestination(newValue);
+            _path = new NavMeshPath();
+            _agent.CalculatePath(newValue, _path);
         }
+    }
+
+    private bool isMoving()
+    {
+        if (_path != null && _path.corners.Length > 1)
+        {
+            var toCorner = _path.corners[1] - transform.position;
+            return toCorner.sqrMagnitude > 0.1;
+        }
+        
+        return false;
+    }
+    
+    private void FollowPath()
+    {
+        if (_path != null && _path.corners.Length > 1)
+        {
+            
+            if (!isMoving())
+            {
+                if (_path.corners.Length > 2)
+                {
+                    _agent.CalculatePath(_path.corners[_path.corners.Length - 1], _path);
+                }
+                else
+                {
+                    _path = null;
+                    return;
+                }
+            }
+
+            var toCorner = _path.corners[1] - transform.position;
+            RotateTowardsPath(toCorner, out float slowDown);
+            
+            var relativeSpeed = toCorner.normalized * movementSpeed * Time.deltaTime * slowDown;
+            // this clamps the forward movement vector to point if toCorner is already less
+            if (toCorner.sqrMagnitude < relativeSpeed.sqrMagnitude) relativeSpeed = toCorner;
+            _agent.Move(relativeSpeed); 
+        }
+    }
+    
+        // returns true if player is allowed to drive
+    private void RotateTowardsPath(Vector3 toCorner, out float slowDown)
+    {
+        float angle = Vector3.Angle(transform.forward, toCorner);
+        if (angle > 1.0f)
+        {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toCorner, Vector3.up), rotationSpeed * Time.deltaTime);
+        }
+        slowDown = turnCurve.Evaluate(1.0f / 180.0f * (180.0f - angle));
     }
 
     public void HaltAtPosition()
@@ -269,13 +331,13 @@ public class NavigationBehaviour : NetworkBehaviour
         {
             Gizmos.DrawWireSphere(_serverPosition.Value, 1);
             
-            if (_agent.path.corners.Length >= 1)
+            if (_path != null && _path.corners.Length > 1)
             {
-                Gizmos.DrawLine(transform.position, _agent.path.corners[0]);
-                for (int i = 0; i < _agent.path.corners.Length - 1; i++)
-                {
-                    Gizmos.DrawLine(_agent.path.corners[i], _agent.path.corners[i + 1]);
-                }
+               // Gizmos.DrawLine(transform.position, _path.corners[0]);
+               for (int i = 0; i < _path.corners.Length - 1; i++)
+               {
+                   Gizmos.DrawLine(_path.corners[i], _path.corners[i + 1]);
+               }
             }
         }
     }

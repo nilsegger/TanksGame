@@ -11,7 +11,7 @@ public class LocalTankBehaviour : MonoBehaviour
 
     public float rotationSpeed = 45.0f;
     public float movementSpeed = 3.0f;
-    public AnimationCurve turnCurve = AnimationCurve.Linear(0, 0, 0, 1);
+    public AnimationCurve turnCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
     public Camera m_Camera;
     // Start is called before the first frame update

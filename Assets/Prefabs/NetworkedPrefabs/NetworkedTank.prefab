@@ -509,6 +509,41 @@ MonoBehaviour:
   m_TouchBlock: 0.5
   m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
     type: 3}
+  rotationSpeed: 45
+  movementSpeed: 3
+  turnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.07269982
+      outSlope: 0.07269982
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.34375
+    - serializedVersion: 3
+      time: 0.90324533
+      value: 0.08423287
+      inSlope: 0.40396124
+      outSlope: 0.40396124
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0023052
+      value: 1
+      inSlope: 3.9984825
+      outSlope: 3.9984825
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.025000045
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_ServerCorrectionRotationSpeed: 15
 --- !u!114 &2833239079181423821
 MonoBehaviour:
