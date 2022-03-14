@@ -35,7 +35,6 @@ public class NavigationBehaviour : NetworkBehaviour
     {
         NetworkManager.Singleton.SceneManager.OnLoad += OnSceneLoad;
         _agent = gameObject.GetComponent<NavMeshAgent>();
-        PrepareWayMarker();
         
         _serverPositionOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 3.0f, MaxAllowedDelta = 3.0f});
         _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
@@ -76,13 +75,6 @@ public class NavigationBehaviour : NetworkBehaviour
                 ActivatePlayer();
             }
         }
-    }
-
-    private void PrepareWayMarker()
-    {
-        _destinationMarkerInstance = Instantiate(m_DestinationMarker);
-        _destinationMarkerInstance.SetActive(false);
-        DontDestroyOnLoad(_destinationMarkerInstance);
     }
     
     private void ActivatePlayer()
@@ -192,6 +184,8 @@ public class NavigationBehaviour : NetworkBehaviour
     {
         ClientPushNewNavDestinationServerRpc(destination);
         _agent.SetDestination(destination);
+        
+        if(_destinationMarkerInstance == null) _destinationMarkerInstance = Instantiate(m_DestinationMarker);
         _destinationMarkerInstance.transform.position = destination;
         _destinationMarkerInstance.SetActive(true);
     }

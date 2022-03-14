@@ -115,7 +115,7 @@ public class ShootBehaviour : NetworkBehaviour
         var shellBehaviour = shell.gameObject.GetComponent<NetworkedShellBehaviour>();
         shellBehaviour.SetSpawnTime(spawnTime);
     }
-
+    
     private IEnumerator WaitToUnlockMovement(float waitTime)
     {
         if (waitTime > 0.0f)
@@ -142,8 +142,16 @@ public class ShootBehaviour : NetworkBehaviour
         _turretRotationBehaviour.LockMovement();
         _turretRotationBehaviour.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);
 
+        StartShootAnimationClientRpc((float)atTime);
         StartCoroutine(WaitToUnlockMovement((float) waitTime));
 
         _cooldown = m_ShootCooldown;
+    }
+
+    [ClientRpc]
+    private void StartShootAnimationClientRpc(float finishAtTime)
+    {
+        if (IsOwner) return;
+        SetShootAnimation(finishAtTime - (float)NetworkManager.ServerTime.Time);
     }
 }

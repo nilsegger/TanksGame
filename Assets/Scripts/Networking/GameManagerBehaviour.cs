@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -24,12 +25,35 @@ public class GameManagerBehaviour : NetworkBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnAllClientsConnected;
             serverCamera.gameObject.SetActive(true);
             FindSpawnPosition();
-        } else if (NetworkManager.Singleton.IsClient)
+        } 
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!NetworkManager.Singleton.IsServer) return;
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnAllClientsConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!NetworkManager.Singleton.IsServer) return;
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnAllClientsConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
+    }
+
+    private void OnClientDisconnect(ulong @ulong)
+    {
+        if (NetworkManager.Singleton.ConnectedClients.Count == 1)
         {
-            
+            Debug.Log("All clients have disconnected.");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 
