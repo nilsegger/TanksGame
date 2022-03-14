@@ -41,7 +41,6 @@ GameObject:
   - component: {fileID: 3267625047395253426}
   - component: {fileID: 5344012382238158520}
   - component: {fileID: 6314763709464697998}
-  - component: {fileID: 8714361399839675590}
   m_Layer: 0
   m_Name: LocalTank
   m_TagString: Untagged
@@ -98,21 +97,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 591aa4f9173993148ae3292ced86473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeed: 45
+  movementSpeed: 5
+  maxRotatedAngleForMovement: 20
+  turnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.07269982
+      outSlope: 0.07269982
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.34375
+    - serializedVersion: 3
+      time: 0.90324533
+      value: 0.08423287
+      inSlope: 0.40396124
+      outSlope: 0.40396124
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0023052
+      value: 1
+      inSlope: 3.9984825
+      outSlope: 3.9984825
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.025000045
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   m_Camera: {fileID: 6222202590177752127}
---- !u!114 &8714361399839675590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6037361730396908157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d78cd0707e552a04a85f47617047fa38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fadeDistance: 1
-  visibilityRange: 15
 --- !u!1 &7332534558664380016
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +145,6 @@ GameObject:
   - component: {fileID: 23887695961361875}
   - component: {fileID: 6222202590177752127}
   - component: {fileID: 2454681700293533828}
-  - component: {fileID: 4525707867880488210}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -197,25 +217,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7332534558664380016}
   m_Enabled: 1
---- !u!114 &4525707867880488210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7332534558664380016}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 523790e69131b674391cda495bb38a50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 803979c026dc00748bec8f864945e94c, type: 2}
-  m_Casts: 50
-  m_AngleRange: 120
-  m_Range: 20
-  m_EyesTransform: {fileID: 8369357169226387436}
-  m_RayIgnoreLayers: 0200000007000000
-  m_DrawDebugRayHits: 0
 --- !u!1001 &1067143284204384034
 PrefabInstance:
   m_ObjectHideFlags: 0

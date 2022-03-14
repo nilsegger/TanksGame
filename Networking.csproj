@@ -60,12 +60,12 @@
      <Compile Include="Assets\Scripts\Networking\UI\LobbyUIBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\LobbyManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\NavigationBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\HealthBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\HitboxBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\GameManagerBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\ShaderBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\LookBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\NetworkedShellBehaviour.cs" />
-     <Compile Include="Assets\Scripts\Networking\Player\HealthBehaviour.cs" />
-     <Compile Include="Assets\Scripts\Networking\Player\HitboxBehaviour.cs" />
      <None Include="Assets\Scripts\Networking\Networking.asmdef" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.28f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
