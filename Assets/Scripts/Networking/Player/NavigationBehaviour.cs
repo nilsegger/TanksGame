@@ -2,6 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Quaternion = UnityEngine.Quaternion;
@@ -65,18 +66,11 @@ public class NavigationBehaviour : NetworkBehaviour
             _agent = gameObject.GetComponent<NavMeshAgent>();
         }
 
-        _navDestination.OnValueChanged += OnClientChangedNavDestination;
-
         if (NetworkManager.Singleton.IsClient && !IsOwner)
         {
             _serverPositionOverride.Activate("spawn", true);
             _serverRotationOverride.Activate("spawn", true);
         }
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        _navDestination.OnValueChanged -= OnClientChangedNavDestination;
     }
 
     private void OnSceneLoad(ulong clientid, string scenename, LoadSceneMode loadscenemode, AsyncOperation asyncoperation)
@@ -152,8 +146,6 @@ public class NavigationBehaviour : NetworkBehaviour
                 ClientSetLocalNavDestination(transform.position);
             }
 
-            
-
         }
         
         FollowPath();
@@ -192,7 +184,6 @@ public class NavigationBehaviour : NetworkBehaviour
         if(_serverPositionOverride.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
         {
             transform.position = result;
-            Debug.Log("Overriding Position");
         }
 
         if (_serverPositionOverride.IsOverrideDistance(lagOffset))
@@ -205,7 +196,6 @@ public class NavigationBehaviour : NetworkBehaviour
                 _serverRotation.Value, out float updatedRotation, rotationOffset, Time.deltaTime))
         {
             transform.rotation = Quaternion.Euler(0.0f, updatedRotation, 0.0f);
-            Debug.Log("Overriding Rotation");
         }
         
         Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), _serverRotationOverride.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
@@ -213,8 +203,6 @@ public class NavigationBehaviour : NetworkBehaviour
     
     private void ClientSetLocalNavDestination(Vector3 destination)
     {
-        ClientPushNewNavDestinationServerRpc(destination);
-        
         CalculateNewPath(destination);
         
         if(_destinationMarkerInstance == null) _destinationMarkerInstance = Instantiate(m_DestinationMarker);
@@ -257,56 +245,50 @@ public class NavigationBehaviour : NetworkBehaviour
 
     private void CalculateNewPath(Vector3 destination)
     {
+        Assert.IsTrue(IsOwner);
         _path ??= new NavMeshPath();
         _agent.CalculatePath(destination, _path);
-    }
-
-
-    private void OnClientChangedNavDestination(Vector3 oldValue, Vector3 newValue)
-    {
-        if (!IsOwner && newValue != Vector3.zero) // Sacrificing position because what are the chances that someone clicks Vector3.zero
-        {
-           CalculateNewPath(newValue); 
-        }
+        ClientPushNewNavDestinationServerRpc(NextPathPoint());
     }
 
     private bool isMoving()
     {
-        if (_path != null && _path.corners.Length > 1)
-        {
-            var toCorner = _path.corners[1] - transform.position;
-            return toCorner.sqrMagnitude > 0.01;
-        }
-        
-        return false;
+        var toCorner = NextPathPoint() - transform.position;
+        return toCorner.sqrMagnitude > 0.01;
     }
+
+    private Vector3 NextPathPoint()
+    {
+        if (IsOwner && _path != null && _path.corners.Length >= 2) return _path.corners[1];
+        else if (!IsOwner && _navDestination.Value != Vector3.zero) return _navDestination.Value;
+        else return transform.position;
+    } 
     
     private void FollowPath()
     {
-        if (_path != null && _path.corners.Length > 1)
+        if (IsOwner && !isMoving())
         {
-            
-            if (!isMoving())
+            if (_path != null && _path.corners.Length > 2)
             {
-                if (_path.corners.Length > 2)
-                {
-                    CalculateNewPath(_path.corners[_path.corners.Length - 1]);
-                }
-                else
-                {
-                    _path = null;
-                    return;
-                }
+                CalculateNewPath(_path.corners[_path.corners.Length - 1]);
             }
-
-            var toCorner = _path.corners[1] - transform.position;
-            RotateTowardsPath(toCorner, out float slowDown);
-            
-            var relativeSpeed = toCorner.normalized * movementSpeed * Time.deltaTime * slowDown;
-            // this clamps the forward movement vector to point if toCorner is already less
-            if (toCorner.sqrMagnitude < relativeSpeed.sqrMagnitude) relativeSpeed = toCorner;
-            _agent.Move(relativeSpeed); 
+            else
+            {
+                _path = null;
+                return;
+            }
+        } else if ((IsServer || !IsOwner) && !isMoving())
+        {
+            return;
         }
+
+        var toCorner = NextPathPoint() - transform.position;
+        RotateTowardsPath(toCorner, out float slowDown);
+
+        var relativeSpeed = toCorner.normalized * movementSpeed * Time.deltaTime * slowDown;
+        // this clamps the forward movement vector to point if toCorner is already less
+        if (toCorner.sqrMagnitude < relativeSpeed.sqrMagnitude) relativeSpeed = toCorner;
+        _agent.Move(relativeSpeed);
     }
     
         // returns true if player is allowed to drive
@@ -330,14 +312,12 @@ public class NavigationBehaviour : NetworkBehaviour
         var forward = position - transform.position;
         if (forward.magnitude <= maxCorrectionMagnitude)
         {
-            CalculateNewPath(position);
             _navDestination.Value = position;
         }
         else
         {
             forward.Normalize();
             var correctedPosition = transform.position + forward  * maxCorrectionMagnitude;
-            CalculateNewPath(correctedPosition);
             _navDestination.Value = correctedPosition;
         }
 
@@ -360,13 +340,16 @@ public class NavigationBehaviour : NetworkBehaviour
         
         Gizmos.DrawWireSphere(_serverPosition.Value, 1);
             
-        if (_path != null && _path.corners.Length > 1)
+        if (IsOwner && _path != null && _path.corners.Length > 1)
         {
             // Gizmos.DrawLine(transform.position, _path.corners[0]);
             for (int i = 0; i < _path.corners.Length - 1; i++)
             {
                 Gizmos.DrawLine(_path.corners[i], _path.corners[i + 1]);
             }
+        } else if (!IsOwner)
+        {
+            Gizmos.DrawLine(transform.position, _navDestination.Value);
         }
     }
 }
