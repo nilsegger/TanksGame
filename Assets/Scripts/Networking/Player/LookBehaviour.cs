@@ -12,8 +12,7 @@ public class LookBehaviour : NetworkBehaviour
 
     private NetworkVariable<float> _serverRotation = new NetworkVariable<float>(); // this is the local y rotation in euler
    
-    [SerializeField]
-    private NetworkServerOverrideFloat _serverRotationOverride = new NetworkServerOverrideFloat();
+    private NetworkServerOverrideDegrees _serverRotationOverride = new NetworkServerOverrideDegrees();
     
     private Quaternion _rotationDestination;
 

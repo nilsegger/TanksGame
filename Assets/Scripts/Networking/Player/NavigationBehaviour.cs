@@ -23,6 +23,9 @@ public class NavigationBehaviour : NetworkBehaviour
     public float rotationSpeed = 45.0f;
     public float movementSpeed = 3.0f;
     public AnimationCurve turnCurve = AnimationCurve.Linear(0, 0, 1, 1);
+
+    public float m_LockedMovementUpdateBufferTimeS = 0.1f;
+    private float _lockedMovementBufferCountdown = 0.0f;
     
     
     private NetworkVariable<Vector3> _navDestination;
@@ -35,7 +38,8 @@ public class NavigationBehaviour : NetworkBehaviour
     private Quaternion _ownerRotationTarget = Quaternion.identity;
     private float _clientLastRotation = 0.0f; // used to check whetever client needs to push new rotation to server
     
-    private NetworkServerOverrideFloat _serverRotationOverride = new NetworkServerOverrideFloat();
+    
+    private NetworkServerOverrideDegrees _serverRotationOverride = new NetworkServerOverrideDegrees();
 
     private bool _lockedMovement = false;
     void Start()
@@ -44,12 +48,12 @@ public class NavigationBehaviour : NetworkBehaviour
         _agent = gameObject.GetComponent<NavMeshAgent>();
         
         _serverPositionOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 3.0f, MaxAllowedDelta = 3.0f});
-        _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
+        _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0.1f});
         _serverPositionOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
         _serverPositionOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 1.0f});
         
         _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
-        _serverRotationOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0f});
+        _serverRotationOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0.5f});
         _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
         _serverRotationOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 10.0f});
     }
@@ -148,15 +152,20 @@ public class NavigationBehaviour : NetworkBehaviour
                 ClientSetLocalNavDestination(transform.position);
             }
 
+            
+
+        }
+        
+        FollowPath();
+
+        if (IsOwner)
+        {
             if (Math.Abs(_clientLastRotation - transform.rotation.eulerAngles.y) > 0.01)
             {
                 _clientLastRotation = transform.rotation.eulerAngles.y;
                 ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
             }
-
         }
-        
-        FollowPath();
         
         ClientCheckServerOverrides();
     }
@@ -183,6 +192,7 @@ public class NavigationBehaviour : NetworkBehaviour
         if(_serverPositionOverride.CheckForRequiredServerOverride(transform.position, _serverPosition.Value, out var result, lagOffset, Time.deltaTime))
         {
             transform.position = result;
+            Debug.Log("Overriding Position");
         }
 
         if (_serverPositionOverride.IsOverrideDistance(lagOffset))
@@ -195,6 +205,7 @@ public class NavigationBehaviour : NetworkBehaviour
                 _serverRotation.Value, out float updatedRotation, rotationOffset, Time.deltaTime))
         {
             transform.rotation = Quaternion.Euler(0.0f, updatedRotation, 0.0f);
+            Debug.Log("Overriding Rotation");
         }
         
         Debug.DrawLine(_serverPosition.Value, _serverPosition.Value + (Quaternion.Euler(0.0f, _serverRotation.Value, 0.0f) * Vector3.forward * 2.0f), _serverRotationOverride.IsOverrideDistance(rotationOffset) ? Color.red : Color.white);
@@ -204,8 +215,7 @@ public class NavigationBehaviour : NetworkBehaviour
     {
         ClientPushNewNavDestinationServerRpc(destination);
         
-        _path = new NavMeshPath();
-        _agent.CalculatePath(destination, _path);
+        CalculateNewPath(destination);
         
         if(_destinationMarkerInstance == null) _destinationMarkerInstance = Instantiate(m_DestinationMarker);
         _destinationMarkerInstance.transform.position = destination;
@@ -220,10 +230,19 @@ public class NavigationBehaviour : NetworkBehaviour
             _navDestination.Value = destination;
         }
     }
+    
+    [ServerRpc]
+    private void ClientPushRotationTargetServerRpc(float yRotation)
+    {
+        if (!GameManagerBehaviour.GameBegun) return;
+        _ownerRotationTarget = Quaternion.Euler(0.0f, yRotation, 0.0f);
+    }
 
     private void DoServerUpdate()
     {
         if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsServer) return;
+
+        if (_lockedMovement && _lockedMovementBufferCountdown <= 0.0f) return;
 
         _serverPosition.Value = transform.position;
 
@@ -232,14 +251,22 @@ public class NavigationBehaviour : NetworkBehaviour
         _serverRotation.Value = transform.rotation.eulerAngles.y;
         
         FollowPath();
+
+        if (_lockedMovementBufferCountdown > 0.0f) _lockedMovementBufferCountdown -= Time.deltaTime;
     }
+
+    private void CalculateNewPath(Vector3 destination)
+    {
+        _path ??= new NavMeshPath();
+        _agent.CalculatePath(destination, _path);
+    }
+
 
     private void OnClientChangedNavDestination(Vector3 oldValue, Vector3 newValue)
     {
         if (!IsOwner && newValue != Vector3.zero) // Sacrificing position because what are the chances that someone clicks Vector3.zero
         {
-            _path = new NavMeshPath();
-            _agent.CalculatePath(newValue, _path);
+           CalculateNewPath(newValue); 
         }
     }
 
@@ -248,7 +275,7 @@ public class NavigationBehaviour : NetworkBehaviour
         if (_path != null && _path.corners.Length > 1)
         {
             var toCorner = _path.corners[1] - transform.position;
-            return toCorner.sqrMagnitude > 0.1;
+            return toCorner.sqrMagnitude > 0.01;
         }
         
         return false;
@@ -263,7 +290,7 @@ public class NavigationBehaviour : NetworkBehaviour
             {
                 if (_path.corners.Length > 2)
                 {
-                    _agent.CalculatePath(_path.corners[_path.corners.Length - 1], _path);
+                    CalculateNewPath(_path.corners[_path.corners.Length - 1]);
                 }
                 else
                 {
@@ -295,7 +322,7 @@ public class NavigationBehaviour : NetworkBehaviour
 
     public void HaltAtPosition()
     {
-        _agent.SetDestination(transform.position);
+        if(_path != null) _path.ClearCorners();
     }
     
     public void UpdateDestinationForShot(Vector3 position, float maxCorrectionMagnitude)
@@ -303,16 +330,18 @@ public class NavigationBehaviour : NetworkBehaviour
         var forward = position - transform.position;
         if (forward.magnitude <= maxCorrectionMagnitude)
         {
-            _agent.SetDestination(position);
+            CalculateNewPath(position);
             _navDestination.Value = position;
         }
         else
         {
             forward.Normalize();
             var correctedPosition = transform.position + forward  * maxCorrectionMagnitude;
-            _agent.SetDestination(correctedPosition);
+            CalculateNewPath(correctedPosition);
             _navDestination.Value = correctedPosition;
         }
+
+        _lockedMovementBufferCountdown = m_LockedMovementUpdateBufferTimeS;
     }
 
     public void LockMovement()
@@ -327,27 +356,17 @@ public class NavigationBehaviour : NetworkBehaviour
 
     private void OnDrawGizmos()
     {
-        if (NetworkManager != null)
-        {
-            Gizmos.DrawWireSphere(_serverPosition.Value, 1);
+        if (NetworkManager == null) return;
+        
+        Gizmos.DrawWireSphere(_serverPosition.Value, 1);
             
-            if (_path != null && _path.corners.Length > 1)
+        if (_path != null && _path.corners.Length > 1)
+        {
+            // Gizmos.DrawLine(transform.position, _path.corners[0]);
+            for (int i = 0; i < _path.corners.Length - 1; i++)
             {
-               // Gizmos.DrawLine(transform.position, _path.corners[0]);
-               for (int i = 0; i < _path.corners.Length - 1; i++)
-               {
-                   Gizmos.DrawLine(_path.corners[i], _path.corners[i + 1]);
-               }
+                Gizmos.DrawLine(_path.corners[i], _path.corners[i + 1]);
             }
         }
     }
-
-    [ServerRpc]
-    private void ClientPushRotationTargetServerRpc(float yRotation)
-    {
-        if (!GameManagerBehaviour.GameBegun) return;
-        _ownerRotationTarget = Quaternion.Euler(0.0f, yRotation, 0.0f);
-    }
-    
-    
 }

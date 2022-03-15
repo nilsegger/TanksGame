@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -141,6 +142,33 @@ public class NetworkServerOverrideFloat : NetworkServerOverride<float>
     protected override float Interpolate(float target, float time)
     {
         InterpolatingTimer += time;
+        return Mathf.Lerp(InterpolatingStart, target, 1.0f / InterpolationDuration() * InterpolatingTimer);
+    }
+}
+
+public class NetworkServerOverrideDegrees : NetworkServerOverride<float>
+{
+    public NetworkServerOverrideDegrees()
+    {
+        InterpolatingStart = 0.0f;
+    }
+
+    protected override float Interpolate(float target, float time)
+    {
+        // Cases: 340 -> 20 (380)
+        // 20 -> 340 (-20)
+        Debug.Log(InterpolatingStart + "->" + target);
+        InterpolatingTimer += time;
+        var d = Mathf.Abs(InterpolatingStart - target);
+
+        if (Mathf.Abs(InterpolatingStart - (target + 360.0f)) < d)
+        {
+            return Mathf.Lerp(InterpolatingStart, target + 360.0f, 1.0f / InterpolationDuration() * InterpolatingTimer);
+        } else if (Mathf.Abs(InterpolatingStart - (target - 360.0f)) < d)
+        {
+            return Mathf.Lerp(InterpolatingStart, target - 360.0f, 1.0f / InterpolationDuration() * InterpolatingTimer);
+        }
+        
         return Mathf.Lerp(InterpolatingStart, target, 1.0f / InterpolationDuration() * InterpolatingTimer);
     }
 }
