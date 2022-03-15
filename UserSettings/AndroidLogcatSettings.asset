@@ -1,31 +1,13 @@
 {
     "m_SelectedDeviceId": "5200b2145a7d9443",
     "m_SelectedPackage": {
-        "deviceId": "5200b2145a7d9443",
-        "name": "com.EggerSoftwareDevelopment.Tanks",
-        "processId": 29662,
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 29799,
-            "exited": true
-        },
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 30801,
-            "exited": true
-        },
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 31191,
-            "exited": true
-        },
         {
             "deviceId": "5200b2145a7d9443",
             "name": "bitpit.launcher",
@@ -35,25 +17,37 @@
         {
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 1289,
-            "exited": true
-        },
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 3242,
-            "exited": true
-        },
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
             "processId": 27391,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
             "processId": 29662,
+            "exited": true
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 7636,
+            "exited": true
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 24227,
+            "exited": true
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 28805,
+            "exited": true
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 31071,
             "exited": false
         }
     ],

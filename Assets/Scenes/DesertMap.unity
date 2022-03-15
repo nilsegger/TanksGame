@@ -598,4 +598,4 @@ MonoBehaviour:
   m_GameUi: {fileID: 1360624111}
   m_Level: {fileID: 1470775646}
   serverCamera: {fileID: 462578698}
-  gameStartCountdownDurationS: 1
+  gameStartCountdownDurationS: 5
