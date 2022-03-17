@@ -9,8 +9,8 @@ public class ShootBehaviour : NetworkBehaviour
 
     public GameObject m_ShellPrefab;
     public GameObject m_ShellSpawnPosition;
-    public GameObject m_HitMarker;
-    public float m_HitmarkerMaxDistance;
+
+    public float m_MaxRangeHitRaycast = 22.0f;
 
     public Animator m_TurretAnimator;
     public GameObject m_Turret;
@@ -26,8 +26,6 @@ public class ShootBehaviour : NetworkBehaviour
     public float m_ShootWarmUp = 1.0f;
 
     private float _cooldown = 0.0f;
-
-    private GameObject _hitMarkerInstance;
 
     private NavigationBehaviour _tankMovementBehaviour;
     private LookBehaviour _turretRotationBehaviour;
@@ -82,21 +80,15 @@ public class ShootBehaviour : NetworkBehaviour
         if (!NetworkManager.Singleton.IsServer && !IsOwner) return;
         
         Ray ray = new Ray(m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.forward);
-        if (!Physics.Raycast(ray, out var hit, m_HitmarkerMaxDistance))
+        if (!Physics.Raycast(ray, out var hit, m_MaxRangeHitRaycast))
         {
-            if(_hitMarkerInstance != null) _hitMarkerInstance.SetActive(false);
             return;
         }
         
-        if (_hitMarkerInstance == null)
+        if (hit.collider.gameObject.CompareTag("HitboxPlayer"))
         {
-            _hitMarkerInstance = Instantiate(m_HitMarker, hit.point, Quaternion.LookRotation(hit.normal));
-        }
-        else
-        {
-            _hitMarkerInstance.SetActive(true);
-            _hitMarkerInstance.transform.position = hit.point;
-            _hitMarkerInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
+            var behaviour = hit.collider.gameObject.GetComponent<HitboxBehaviour>();
+            behaviour.SetTargeted();
         }
     }
 

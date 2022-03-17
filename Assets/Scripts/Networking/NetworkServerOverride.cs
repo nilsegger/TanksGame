@@ -154,9 +154,6 @@ public class NetworkServerOverrideDegrees : NetworkServerOverride<float>
 
     protected override float Interpolate(float target, float time)
     {
-        // Cases: 340 -> 20 (380)
-        // 20 -> 340 (-20)
-        Debug.Log(InterpolatingStart + "->" + target);
         InterpolatingTimer += time;
         var d = Mathf.Abs(InterpolatingStart - target);
 

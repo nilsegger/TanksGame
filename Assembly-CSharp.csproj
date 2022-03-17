@@ -47,6 +47,7 @@
      <None Include="Assets\Shaders\FogOfWarShader.shader" />
      <None Include="Assets\ParrelSync\VERSION.txt" />
      <None Include="Assets\Shaders\Custom-Mobile-TanksLit-OnlyDirectionalLights.shader" />
+     <None Include="Assets\Shaders\BlueprintShader.shader" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.2.15f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
