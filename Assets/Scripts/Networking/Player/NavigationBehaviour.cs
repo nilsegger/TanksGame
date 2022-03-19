@@ -141,7 +141,7 @@ public class NavigationBehaviour : NetworkBehaviour
                 _touchBlockCooldown -= Time.deltaTime;
             }
 
-            if (Input.GetKey("s") && !_lockedMovement)
+            if (Input.GetKey("x") && !_lockedMovement)
             {
                 ClientSetLocalNavDestination(transform.position);
             }
