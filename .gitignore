@@ -14,3 +14,4 @@ PlayFab.csproj
 PlayFabSDKEditor.csproj
 PlayFabEditorExtensions.csproj
 LocalMultiplayerAgentPublish/
+built-in-shaders/
