@@ -1,25 +1,13 @@
 {
     "m_SelectedDeviceId": "5200b2145a7d9443",
     "m_SelectedPackage": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "5200b2145a7d9443",
+        "name": "com.EggerSoftwareDevelopment.Tanks",
+        "processId": 14325,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "bitpit.launcher",
-            "processId": 22017,
-            "exited": false
-        },
-        {
-            "deviceId": "5200b2145a7d9443",
-            "name": "com.EggerSoftwareDevelopment.Tanks",
-            "processId": 27391,
-            "exited": true
-        },
         {
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
@@ -48,6 +36,24 @@
             "deviceId": "5200b2145a7d9443",
             "name": "com.EggerSoftwareDevelopment.Tanks",
             "processId": 31071,
+            "exited": true
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "bitpit.launcher",
+            "processId": 4425,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 11843,
+            "exited": false
+        },
+        {
+            "deviceId": "5200b2145a7d9443",
+            "name": "com.EggerSoftwareDevelopment.Tanks",
+            "processId": 14325,
             "exited": false
         }
     ],
