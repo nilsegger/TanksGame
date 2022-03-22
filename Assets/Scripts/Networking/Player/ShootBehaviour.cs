@@ -27,15 +27,14 @@ public class ShootBehaviour : NetworkBehaviour
 
     private float _cooldown = 0.0f;
 
-    private NavigationBehaviour _tankMovementBehaviour;
+    public PlayerNavigationServer serverNavigation;
+    public PlayerNavigationClient clientNavigation;
+    
     private LookBehaviour _turretRotationBehaviour;
     
     // Start is called before the first frame update
     void Start()
     {
-        _tankMovementBehaviour = GetComponent<NavigationBehaviour>();
-        Assert.IsNotNull(_tankMovementBehaviour);
-
         _turretRotationBehaviour = GetComponent<LookBehaviour>();
         Assert.IsNotNull(_turretRotationBehaviour);
         
@@ -56,9 +55,10 @@ public class ShootBehaviour : NetworkBehaviour
                 var shootShellAt = NetworkManager.LocalTime.Time + m_ShootWarmUp;
                 SetShootAnimation(m_ShootWarmUp); 
                 ShootServerRpc(shootShellAt, transform.position, m_Turret.transform.localRotation.eulerAngles.y);
+
+                clientNavigation.Halt();
+                clientNavigation.LockMovement();
                 
-                _tankMovementBehaviour.LockMovement();
-                _tankMovementBehaviour.HaltAtPosition();
                 _turretRotationBehaviour.LockMovement();
 
                 StartCoroutine(WaitToUnlockMovement((float)(shootShellAt - NetworkManager.LocalTime.Time)));
@@ -115,7 +115,8 @@ public class ShootBehaviour : NetworkBehaviour
             yield return new WaitForSeconds(waitTime);
         }
         
-        _tankMovementBehaviour.UnlockMovement(); 
+        clientNavigation.UnlockMovement();
+        serverNavigation.UnlockMovement();
         _turretRotationBehaviour.UnlockMovement();
     }
 
@@ -128,8 +129,8 @@ public class ShootBehaviour : NetworkBehaviour
         SetShootAnimation((float) waitTime);
         ServerSpawnShell((float) atTime);
         
-        _tankMovementBehaviour.LockMovement();
-        _tankMovementBehaviour.UpdateDestinationForShot(position, maxPositionCorrectionOnShootStop);
+        serverNavigation.LockMovement();
+        serverNavigation.UpdateDestinationForShot(position, maxPositionCorrectionOnShootStop);
         
         _turretRotationBehaviour.LockMovement();
         _turretRotationBehaviour.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);

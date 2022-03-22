@@ -83,11 +83,11 @@ public abstract class NetworkServerOverride<Type>
 
     protected abstract Type Interpolate(Type target, float time);
     
-    public bool CheckForRequiredServerOverride(Type current, Type server, out Type updated, float distance, float time)
+    public bool CheckForRequiredServerOverride(Type current, Type server, out Type updated, float distance)
     {
         if (IsInterpolating())
         {
-            updated = Interpolate(server, time);
+            updated = Interpolate(server, Time.deltaTime);
             return true;
         }
         
@@ -99,7 +99,7 @@ public abstract class NetworkServerOverride<Type>
         
         if (IsOverrideDistance(distance))
         {
-            StartCountingMismatch(time);
+            StartCountingMismatch(Time.deltaTime);
             if (ShouldOverride())
             {
                 updated = StartInterpolate(current, server, Time.deltaTime);

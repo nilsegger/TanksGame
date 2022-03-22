@@ -71,7 +71,7 @@ public class LookBehaviour : NetworkBehaviour
         _serverRotationOverride.Activate(IsOwner ? "moving" : "client");
 
         var angleOffset = Mathf.Abs(_serverRotation.Value - m_Turret.localRotation.eulerAngles.y);
-        if (_serverRotationOverride.CheckForRequiredServerOverride(m_Turret.transform.localRotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset, Time.deltaTime))
+        if (_serverRotationOverride.CheckForRequiredServerOverride(m_Turret.transform.localRotation.eulerAngles.y, _serverRotation.Value, out var updatedEulerAngle, angleOffset))
         {
             m_Turret.transform.localRotation= Quaternion.Euler(m_Turret.transform.localRotation.eulerAngles.x, updatedEulerAngle, m_Turret.transform.localRotation.eulerAngles.z);
         }

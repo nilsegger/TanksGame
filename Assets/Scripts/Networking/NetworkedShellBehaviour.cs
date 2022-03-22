@@ -172,7 +172,7 @@ public class NetworkedShellBehaviour : NetworkBehaviour
             }
 
             var distance = (_body.transform.position - _serverPosition.Value).magnitude;
-            if(_serverPositionOverride.CheckForRequiredServerOverride(_body.transform.position, _serverPosition.Value, out var updated, distance, Time.deltaTime))
+            if(_serverPositionOverride.CheckForRequiredServerOverride(_body.transform.position, _serverPosition.Value, out var updated, distance))
             {
                 _body.transform.position = updated;
             }

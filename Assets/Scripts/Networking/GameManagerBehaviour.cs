@@ -82,8 +82,8 @@ public class GameManagerBehaviour : NetworkBehaviour
             var prefab = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
             prefab.transform.position = spawn.position;
             prefab.transform.rotation = spawn.rotation;
-            var behaviour = prefab.GetComponent<NavigationBehaviour>();
-            behaviour.ServerOverridePositionClientRpc(spawn.position, spawn.rotation);
+            var behaviour = prefab.GetComponent<PlayerNavigationClient>();
+            behaviour.SetSpawnPositionClientRpc(spawn.position, spawn.forward);
         } 
         
         double beginCountdownAt = NetworkManager.ServerTime.Time + 3.0f;

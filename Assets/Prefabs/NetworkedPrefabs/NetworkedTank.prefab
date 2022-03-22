@@ -432,12 +432,13 @@ GameObject:
   - component: {fileID: 2809348059648790429}
   - component: {fileID: 2295937452536562292}
   - component: {fileID: 490414975486166804}
-  - component: {fileID: 3173230737340915809}
   - component: {fileID: 2833239079181423821}
   - component: {fileID: 2651293376397589743}
   - component: {fileID: 4943112123132789630}
   - component: {fileID: 3659811705724976603}
   - component: {fileID: 3609979415580744148}
+  - component: {fileID: 8535695250548643076}
+  - component: {fileID: 1088713574111058335}
   m_Layer: 0
   m_Name: NetworkedTank
   m_TagString: Untagged
@@ -501,59 +502,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &3173230737340915809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831853618556970855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52ec2cf14407f143948f8121f32b240, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PlayerCamera: {fileID: 3882965136097382486}
-  m_TouchBlock: 0.5
-  m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
-    type: 3}
-  rotationSpeed: 45
-  movementSpeed: 3
-  turnCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.07269982
-      outSlope: 0.07269982
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.34375
-    - serializedVersion: 3
-      time: 0.90324533
-      value: 0.08423287
-      inSlope: 0.40396124
-      outSlope: 0.40396124
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0023052
-      value: 1
-      inSlope: 3.9984825
-      outSlope: 3.9984825
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.025000045
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  m_LockedMovementUpdateBufferTimeS: 0.1
-  m_ServerCorrectionRotationSpeed: 15
 --- !u!114 &2833239079181423821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,6 +542,8 @@ MonoBehaviour:
   maxPositionCorrectionOnShootStop: 1
   m_ShootCooldown: 1.1
   m_ShootWarmUp: 1
+  serverNavigation: {fileID: 1088713574111058335}
+  clientNavigation: {fileID: 8535695250548643076}
 --- !u!114 &4943112123132789630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,6 +589,96 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 2241232474765193897}
+--- !u!114 &8535695250548643076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6333ef7c427b54cb7acd27681630d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 45
+  movementSpeed: 3
+  turnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  server: {fileID: 1088713574111058335}
+  m_PlayerCamera: {fileID: 3882965136097382486}
+  m_TouchBlock: 0.5
+  m_DestinationMarker: {fileID: 5499398447954386672, guid: de5de37a5cd48904d8ed650f358d9275,
+    type: 3}
+  agentDestination:
+    m_InternalValue: {x: 0, y: 0, z: 0}
+  serverPosition:
+    m_InternalValue: {x: 0, y: 0, z: 0}
+  serverRotation:
+    m_InternalValue: 0
+--- !u!114 &1088713574111058335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec71ce066e50d74a93ddc1216ff6f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 45
+  movementSpeed: 3
+  turnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  client: {fileID: 8535695250548643076}
+  m_ServerCorrectionRotationSpeed: 15
+  m_LockedMovementUpdateBufferTimeS: 0.1
 --- !u!1 &6013352664882136246
 GameObject:
   m_ObjectHideFlags: 0
