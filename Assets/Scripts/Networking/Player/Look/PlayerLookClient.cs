@@ -8,10 +8,10 @@ namespace Networking.Player.Look
         public ButtonPressBehaviour m_RotateLeftButton;
         public ButtonPressBehaviour m_RotateRightButton;
 
-        public PlayerLookServer server;
+        private PlayerLookServer _server;
 
         // Used to display server position in debug
-        public PlayerNavigationClient NavigationClient;
+        private PlayerNavigationClient _navigationClient;
     
         [HideInInspector]
         public NetworkVariable<float> serverRotation = new NetworkVariable<float>(); // this is the local y rotation in euler
@@ -20,6 +20,9 @@ namespace Networking.Player.Look
     
         private void Start()
         {
+            _server = GetComponent<PlayerLookServer>();
+            _navigationClient = GetComponent<PlayerNavigationClient>();
+            
             _serverRotationOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 2.0f, MaxAllowedDelta = 15.0f});
             _serverRotationOverride.AddSetting("spawn", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 0.0f, MaxAllowedDelta = 0f});
             _serverRotationOverride.AddSetting("client", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 5.0f});
@@ -44,21 +47,21 @@ namespace Networking.Player.Look
     
                 if (rotateLeft)
                 {
-                    m_Turret.Rotate(Vector3.up, -m_RotationSpeed * Time.deltaTime);
+                    m_Turret.Rotate(Vector3.up, -data.RotationSpeed * Time.deltaTime);
                 }
     
                 if (rotateRight)
                 {
-                    m_Turret.Rotate(Vector3.up, m_RotationSpeed * Time.deltaTime);
+                    m_Turret.Rotate(Vector3.up, data.RotationSpeed * Time.deltaTime);
                 }
     
                 if ((rotateLeft || rotateRight) && !(rotateLeft && rotateRight))
                 {
-                    server.ReceiveClientRotationServerRpc(m_Turret.localRotation.eulerAngles.y);
+                    _server.ReceiveClientRotationServerRpc(m_Turret.localRotation.eulerAngles.y);
                 }
             } else
             {
-                m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, ServerRotation(), m_RotationSpeed * Time.deltaTime);
+                m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, ServerRotation(), data.RotationSpeed * Time.deltaTime);
             }
             
             _serverRotationOverride.Activate(IsOwner ? "moving" : "client");
@@ -79,7 +82,7 @@ namespace Networking.Player.Look
     
         private Quaternion ServerGlobalRotation()
         {
-            return Quaternion.Euler(new Vector3(0.0f, NavigationClient.serverRotation.Value, 0.0f) + ServerRotation().eulerAngles);
+            return Quaternion.Euler(new Vector3(0.0f, _navigationClient.serverRotation.Value, 0.0f) + ServerRotation().eulerAngles);
         }
     }
 }

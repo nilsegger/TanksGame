@@ -4,17 +4,25 @@ using UnityEngine;
 
 public class PlayerNavigationServer : PlayerNavigationCommon
 {
-    public PlayerNavigationClient client;
+    private PlayerNavigationClient _client;
     public float m_ServerCorrectionRotationSpeed = 15.0f;
     private Quaternion _ownerRotationTarget = Quaternion.identity;
     
     // When shooting, server will still be allowed to update position for this amount of time
     public float m_LockedMovementUpdateBufferTimeS = 0.1f;
     private float _lockedMovementBufferCountdown = 0.0f;
+
+
+    protected override void Start()
+    {
+        base.Start();
+
+        _client = GetComponent<PlayerNavigationClient>();
+    }
     
     protected override Vector3 NextPathPoint()
     {
-        if (client.agentDestination.Value != Vector3.zero) return client.agentDestination.Value;
+        if (_client.agentDestination.Value != Vector3.zero) return _client.agentDestination.Value;
         return _agent.transform.position;
     }
 
@@ -24,12 +32,12 @@ public class PlayerNavigationServer : PlayerNavigationCommon
 
         if (_lockedMovement && _lockedMovementBufferCountdown <= 0.0f) return;
 
-        client.serverPosition.Value = transform.position;
+        _client.serverPosition.Value = transform.position;
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, _ownerRotationTarget,
             m_ServerCorrectionRotationSpeed * Time.deltaTime);
         
-        client.serverRotation.Value = transform.rotation.eulerAngles.y;
+        _client.serverRotation.Value = transform.rotation.eulerAngles.y;
         
         FollowPath();
 
@@ -41,7 +49,7 @@ public class PlayerNavigationServer : PlayerNavigationCommon
     {
         if (GameManagerBehaviour.GameBegun && !_lockedMovement)
         {
-            client.agentDestination.Value = destination;
+            _client.agentDestination.Value = destination;
         }
     }
     
@@ -57,13 +65,13 @@ public class PlayerNavigationServer : PlayerNavigationCommon
         var forward = position - transform.position;
         if (forward.magnitude <= maxCorrectionMagnitude)
         {
-            client.agentDestination.Value = position;
+            _client.agentDestination.Value = position;
         }
         else
         {
             forward.Normalize();
             var correctedPosition = transform.position + forward  * maxCorrectionMagnitude;
-            client.agentDestination.Value = correctedPosition;
+            _client.agentDestination.Value = correctedPosition;
         }
 
         _lockedMovementBufferCountdown = m_LockedMovementUpdateBufferTimeS;

@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerNavigationClient : PlayerNavigationCommon
 {
-    public PlayerNavigationServer server;
+    private PlayerNavigationServer _server;
     
     public Camera m_PlayerCamera;
     public float m_TouchBlock = 0.5f; // Blocks the next touch for 0.5f after lifting finger, since somehow they get registered even though it was an ui click.
@@ -34,7 +34,9 @@ public class PlayerNavigationClient : PlayerNavigationCommon
 
     protected override void Start()
     {
-        base.Start(); 
+        base.Start();
+
+        _server = GetComponent<PlayerNavigationServer>();
         
         _serverPositionOverride.AddSetting("moving", new NetworkServerOverrideSettings {InterpolationDuration = 1.0f, ResetPositionAfterMismatchTime = 3.0f, MaxAllowedDelta = 3.0f});
         _serverPositionOverride.AddSetting("stopped", new NetworkServerOverrideSettings {InterpolationDuration = .5f, ResetPositionAfterMismatchTime = 1.0f, MaxAllowedDelta = 0.1f});
@@ -167,7 +169,7 @@ public class PlayerNavigationClient : PlayerNavigationCommon
             if (Math.Abs(_clientLastRotation - transform.rotation.eulerAngles.y) > 0.01)
             {
                 _clientLastRotation = transform.rotation.eulerAngles.y;
-                server.ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
+                _server.ClientPushRotationTargetServerRpc(transform.rotation.eulerAngles.y);
             }
         }
         
@@ -222,7 +224,7 @@ public class PlayerNavigationClient : PlayerNavigationCommon
         Assert.IsTrue(IsOwner);
         _path ??= new NavMeshPath();
         _agent.CalculatePath(destination, _path);
-        server.ClientPushNewNavDestinationServerRpc(NextPathPoint());
+        _server.ClientPushNewNavDestinationServerRpc(NextPathPoint());
     }
 
     private void OnDrawGizmos()

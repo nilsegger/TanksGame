@@ -11,14 +11,18 @@ namespace Networking.Player.Shoot
         public Button m_ShootButton;
         private bool _shootButtonPressed = false;
 
-        public PlayerShootServer server;
+        private PlayerShootServer _server;
 
-        public PlayerNavigationClient clientNavigation;
-        public PlayerLookClient turretRotationClient;
+        private PlayerNavigationClient _clientNavigation;
+        private PlayerLookClient _turretRotationClient;
     
         // Start is called before the first frame update
         void Start()
         {
+            _server = GetComponent<PlayerShootServer>();
+            _clientNavigation = GetComponent<PlayerNavigationClient>();
+            _turretRotationClient = GetComponent<PlayerLookClient>();
+            
             m_ShootButton.onClick.AddListener(() => _shootButtonPressed = true) ;
         }
 
@@ -30,16 +34,16 @@ namespace Networking.Player.Shoot
             {
                 if ((Input.GetKey("space") || _shootButtonPressed) && _cooldown <= 0.0f)
                 {
-                    _cooldown = m_ShootCooldown;
+                    _cooldown = data.shootCooldown;
                     _shootButtonPressed = false;
-                    var shootShellAt = NetworkManager.LocalTime.Time + m_ShootWarmUp;
-                    SetShootAnimation(m_ShootWarmUp); 
-                    server.ShootServerRpc(shootShellAt, transform.position, m_Turret.transform.localRotation.eulerAngles.y);
+                    var shootShellAt = NetworkManager.LocalTime.Time + data.shootWarmUp;
+                    SetShootAnimation(data.shootWarmUp); 
+                    _server.ShootServerRpc(shootShellAt, transform.position, m_Turret.localRotation.eulerAngles.y);
 
-                    clientNavigation.Halt();
-                    clientNavigation.LockMovement();
+                    _clientNavigation.Halt();
+                    _clientNavigation.LockMovement();
                 
-                    turretRotationClient.LockMovement();
+                    _turretRotationClient.LockMovement();
 
                     StartCoroutine(WaitToUnlockMovement((float)(shootShellAt - NetworkManager.LocalTime.Time)));
                 }
@@ -59,8 +63,8 @@ namespace Networking.Player.Shoot
                 yield return new WaitForSeconds(waitTime);
             }
         
-            clientNavigation.UnlockMovement();
-            turretRotationClient.UnlockMovement();
+            _clientNavigation.UnlockMovement();
+            _turretRotationClient.UnlockMovement();
         }
 
         [ClientRpc]

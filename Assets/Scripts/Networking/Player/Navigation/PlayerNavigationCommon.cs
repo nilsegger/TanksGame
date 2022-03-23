@@ -1,6 +1,8 @@
+using Networking.Player.Look;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
@@ -9,10 +11,8 @@ namespace Networking.Player.Navigation
     public abstract class PlayerNavigationCommon : NetworkBehaviour 
     {
         protected NavMeshAgent _agent;
-    
-        public float rotationSpeed = 45.0f;
-        public float movementSpeed = 3.0f;
-        public AnimationCurve turnCurve = AnimationCurve.Linear(0, 0, 1, 1);
+
+        public PlayerNavigationData playerNavigationData; 
     
         protected bool _lockedMovement = false;
         
@@ -42,7 +42,7 @@ namespace Networking.Player.Navigation
             var toCorner = NextPathPoint() - _agent.transform.position;
             RotateTowardsPath(toCorner, out float slowDown);
 
-            var relativeSpeed = toCorner.normalized * movementSpeed * Time.deltaTime * slowDown;
+            var relativeSpeed = toCorner.normalized * playerNavigationData.movementSpeed * Time.deltaTime * slowDown;
             // this clamps the forward movement vector to point if toCorner is already less
             if (toCorner.sqrMagnitude < relativeSpeed.sqrMagnitude) relativeSpeed = toCorner;
             _agent.Move(relativeSpeed);
@@ -54,9 +54,9 @@ namespace Networking.Player.Navigation
             float angle = Vector3.Angle(transform.forward, toCorner);
             if (angle > 1.0f)
             {
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toCorner, Vector3.up), rotationSpeed * Time.deltaTime);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toCorner, Vector3.up), playerNavigationData.rotationSpeed * Time.deltaTime);
             }
-            slowDown = turnCurve.Evaluate(1.0f / 180.0f * (180.0f - angle));
+            slowDown = playerNavigationData.turnCurve.Evaluate(1.0f / 180.0f * (180.0f - angle));
         }
 
         public void LockMovement()
@@ -67,6 +67,12 @@ namespace Networking.Player.Navigation
         public void UnlockMovement()
         {
             _lockedMovement = false;
+        }
+        
+        private void OnValidate()
+        {
+            Assert.IsNotNull(gameObject.GetComponent<PlayerNavigationClient>());     
+            Assert.IsNotNull(gameObject.GetComponent<PlayerNavigationServer>());     
         }
     }
 }

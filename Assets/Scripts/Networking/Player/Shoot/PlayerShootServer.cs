@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Networking.Player.Look;
 using Unity.Netcode;
@@ -8,11 +9,18 @@ namespace Networking.Player.Shoot
     public class PlayerShootServer : PlayerShootCommon
     {
 
-        public PlayerShootClient client;
+        private PlayerShootClient _client;
 
-        public PlayerNavigationServer serverNavigation;
-        public PlayerLookServer turretRotationServer;
-    
+        private PlayerNavigationServer _serverNavigation;
+        private PlayerLookServer _turretRotationServer;
+
+        private void Start()
+        {
+            _client = GetComponent<PlayerShootClient>();
+            _serverNavigation = GetComponent<PlayerNavigationServer>();
+            _turretRotationServer = GetComponent<PlayerLookServer>();
+        }
+
         void Update()
         {
             if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsServer) return;
@@ -24,7 +32,7 @@ namespace Networking.Player.Shoot
 
         private void ServerSpawnShell(float spawnTime)
         {
-            var shell = NetworkPool.Singleton.GetNetworkObject(m_ShellPrefab, m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.rotation);
+            var shell = NetworkPool.Singleton.GetNetworkObject(data.shellPrefab, m_ShellSpawnPosition.transform.position, m_ShellSpawnPosition.transform.rotation);
             shell.SpawnWithOwnership(OwnerClientId);
         
             var shellBehaviour = shell.gameObject.GetComponent<NetworkedShellBehaviour>();
@@ -38,8 +46,8 @@ namespace Networking.Player.Shoot
                 yield return new WaitForSeconds(waitTime);
             }
         
-            serverNavigation.UnlockMovement();
-            turretRotationServer.UnlockMovement();
+            _serverNavigation.UnlockMovement();
+            _turretRotationServer.UnlockMovement();
         }
 
         [ServerRpc]
@@ -51,16 +59,16 @@ namespace Networking.Player.Shoot
             SetShootAnimation((float) waitTime);
             ServerSpawnShell((float) atTime);
         
-            serverNavigation.LockMovement();
-            serverNavigation.UpdateDestinationForShot(position, maxPositionCorrectionOnShootStop);
+            _serverNavigation.LockMovement();
+            _serverNavigation.UpdateDestinationForShot(position, data.maxPositionCorrectionOnShootStop);
         
-            turretRotationServer.LockMovement();
-            turretRotationServer.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);
+            _turretRotationServer.LockMovement();
+            _turretRotationServer.UpdateDestinationForShot(localRotationY, data.maxAngleCorrectionOnShootStop);
 
-            client.StartShootAnimationClientRpc((float)atTime);
+            _client.StartShootAnimationClientRpc((float)atTime);
             StartCoroutine(WaitToUnlockMovement((float) waitTime));
 
-            _cooldown = m_ShootCooldown;
+            _cooldown = data.shootCooldown;
         }
     }
 }

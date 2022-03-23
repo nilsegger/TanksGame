@@ -61,6 +61,9 @@
      <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootCommon.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootClient.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootServer.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Navigation\PlayerNavigationData.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Look\PlayerLookData.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootData.cs" />
      <None Include="Assets\Scripts\Networking\Networking.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.2.16f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
