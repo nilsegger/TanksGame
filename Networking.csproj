@@ -42,7 +42,6 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Networking\Player\Navigation\PlayerNavigationClient.cs" />
-     <Compile Include="Assets\Scripts\Networking\Player\ShootBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\Navigation\PlayerNavigationServer.cs" />
      <Compile Include="Assets\Scripts\Networking\UI\GameBasicUIBehaviour.cs" />
      <Compile Include="Assets\Scripts\Networking\NetworkServerOverride.cs" />
@@ -59,6 +58,9 @@
      <Compile Include="Assets\Scripts\Networking\Player\Look\PlayerLookCommon.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\Look\PlayerLookServer.cs" />
      <Compile Include="Assets\Scripts\Networking\Player\Look\PlayerLookClient.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootCommon.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootClient.cs" />
+     <Compile Include="Assets\Scripts\Networking\Player\Shoot\PlayerShootServer.cs" />
      <None Include="Assets\Scripts\Networking\Networking.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.2.16f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

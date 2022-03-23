@@ -432,7 +432,6 @@ GameObject:
   - component: {fileID: 2809348059648790429}
   - component: {fileID: 2295937452536562292}
   - component: {fileID: 490414975486166804}
-  - component: {fileID: 2651293376397589743}
   - component: {fileID: 4943112123132789630}
   - component: {fileID: 3659811705724976603}
   - component: {fileID: 3609979415580744148}
@@ -440,6 +439,8 @@ GameObject:
   - component: {fileID: 1088713574111058335}
   - component: {fileID: 1568393507513697711}
   - component: {fileID: 811874660396546094}
+  - component: {fileID: 4289851223390505389}
+  - component: {fileID: 9012295207653250054}
   m_Layer: 0
   m_Name: NetworkedTank
   m_TagString: Untagged
@@ -503,34 +504,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2651293376397589743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831853618556970855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c78326e0dee56864f8e8a50b8646b766, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShellPrefab: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b,
-    type: 3}
-  m_ShellSpawnPosition: {fileID: 7915208143245574508}
-  m_MaxRangeHitRaycast: 22
-  m_TurretAnimator: {fileID: 3568719474120513700}
-  m_Turret: {fileID: 6754181138115843024}
-  m_ShootAnimation: {fileID: 7400000, guid: a84e75e4fa960df4da6d689c4c386c26, type: 2}
-  m_ShootButton: {fileID: 1934619179219927593}
-  maxAngleCorrectionOnShootStop: 10
-  maxPositionCorrectionOnShootStop: 1
-  m_ShootCooldown: 1.1
-  m_ShootWarmUp: 1
-  serverNavigation: {fileID: 1088713574111058335}
-  clientNavigation: {fileID: 8535695250548643076}
-  _turretRotationClient: {fileID: 1568393507513697711}
-  _turretRotationServer: {fileID: 811874660396546094}
 --- !u!114 &4943112123132789630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,6 +674,59 @@ MonoBehaviour:
   m_Turret: {fileID: 2313485569068824781}
   m_RotationSpeed: 30
   client: {fileID: 1568393507513697711}
+--- !u!114 &4289851223390505389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d406b34a97750be45ad0154928c3765c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShellPrefab: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b,
+    type: 3}
+  m_ShellSpawnPosition: {fileID: 7915208143245574508}
+  m_MaxRangeHitRaycast: 22
+  m_TurretAnimator: {fileID: 3568719474120513700}
+  m_Turret: {fileID: 7631549078342564156}
+  m_ShootAnimation: {fileID: 7400000, guid: a84e75e4fa960df4da6d689c4c386c26, type: 2}
+  maxAngleCorrectionOnShootStop: 10
+  maxPositionCorrectionOnShootStop: 1
+  m_ShootCooldown: 3
+  m_ShootWarmUp: 1
+  m_ShootButton: {fileID: 1934619179219927593}
+  server: {fileID: 9012295207653250054}
+  clientNavigation: {fileID: 8535695250548643076}
+  turretRotationClient: {fileID: 1568393507513697711}
+--- !u!114 &9012295207653250054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb59fac9501758e4890ecdfacecf6f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShellPrefab: {fileID: 3791385765027189319, guid: 088574c40acf6994584261be9489f57b,
+    type: 3}
+  m_ShellSpawnPosition: {fileID: 7915208143245574508}
+  m_MaxRangeHitRaycast: 22
+  m_TurretAnimator: {fileID: 3568719474120513700}
+  m_Turret: {fileID: 7631549078342564156}
+  m_ShootAnimation: {fileID: 7400000, guid: a84e75e4fa960df4da6d689c4c386c26, type: 2}
+  maxAngleCorrectionOnShootStop: 10
+  maxPositionCorrectionOnShootStop: 1
+  m_ShootCooldown: 3
+  m_ShootWarmUp: 1
+  client: {fileID: 4289851223390505389}
+  serverNavigation: {fileID: 1088713574111058335}
+  turretRotationServer: {fileID: 811874660396546094}
 --- !u!1 &6013352664882136246
 GameObject:
   m_ObjectHideFlags: 0
