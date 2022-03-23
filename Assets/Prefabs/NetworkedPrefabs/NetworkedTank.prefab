@@ -432,13 +432,14 @@ GameObject:
   - component: {fileID: 2809348059648790429}
   - component: {fileID: 2295937452536562292}
   - component: {fileID: 490414975486166804}
-  - component: {fileID: 2833239079181423821}
   - component: {fileID: 2651293376397589743}
   - component: {fileID: 4943112123132789630}
   - component: {fileID: 3659811705724976603}
   - component: {fileID: 3609979415580744148}
   - component: {fileID: 8535695250548643076}
   - component: {fileID: 1088713574111058335}
+  - component: {fileID: 1568393507513697711}
+  - component: {fileID: 811874660396546094}
   m_Layer: 0
   m_Name: NetworkedTank
   m_TagString: Untagged
@@ -502,22 +503,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2833239079181423821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831853618556970855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dde9ecb194ac89842b5d92e8a55356db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Turret: {fileID: 2313485569068824781}
-  m_RotationSpeed: 30
-  m_RotateLeftButton: {fileID: 6127132158829251120}
-  m_RotateRightButton: {fileID: 4560913748584936816}
 --- !u!114 &2651293376397589743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,6 +529,8 @@ MonoBehaviour:
   m_ShootWarmUp: 1
   serverNavigation: {fileID: 1088713574111058335}
   clientNavigation: {fileID: 8535695250548643076}
+  _turretRotationClient: {fileID: 1568393507513697711}
+  _turretRotationServer: {fileID: 811874660396546094}
 --- !u!114 &4943112123132789630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -679,6 +666,41 @@ MonoBehaviour:
   client: {fileID: 8535695250548643076}
   m_ServerCorrectionRotationSpeed: 15
   m_LockedMovementUpdateBufferTimeS: 0.1
+--- !u!114 &1568393507513697711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a918c6eed4879ce4692d8cd950ba3d9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Turret: {fileID: 2313485569068824781}
+  m_RotationSpeed: 30
+  m_RotateLeftButton: {fileID: 6127132158829251120}
+  m_RotateRightButton: {fileID: 4560913748584936816}
+  server: {fileID: 811874660396546094}
+  NavigationClient: {fileID: 8535695250548643076}
+  serverRotation:
+    m_InternalValue: 0
+--- !u!114 &811874660396546094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831853618556970855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2031b54d1f16b8c4f8fde7eadb55f93b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Turret: {fileID: 2313485569068824781}
+  m_RotationSpeed: 30
+  client: {fileID: 1568393507513697711}
 --- !u!1 &6013352664882136246
 GameObject:
   m_ObjectHideFlags: 0

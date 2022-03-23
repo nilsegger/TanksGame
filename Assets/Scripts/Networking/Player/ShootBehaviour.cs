@@ -1,4 +1,5 @@
 using System.Collections;
+using Networking.Player.Look;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -30,14 +31,12 @@ public class ShootBehaviour : NetworkBehaviour
     public PlayerNavigationServer serverNavigation;
     public PlayerNavigationClient clientNavigation;
     
-    private LookBehaviour _turretRotationBehaviour;
+    public PlayerLookClient _turretRotationClient;
+    public PlayerLookServer _turretRotationServer;
     
     // Start is called before the first frame update
     void Start()
     {
-        _turretRotationBehaviour = GetComponent<LookBehaviour>();
-        Assert.IsNotNull(_turretRotationBehaviour);
-        
         m_ShootButton.onClick.AddListener(() => _shootButtonPressed = true) ;
     }
 
@@ -59,7 +58,7 @@ public class ShootBehaviour : NetworkBehaviour
                 clientNavigation.Halt();
                 clientNavigation.LockMovement();
                 
-                _turretRotationBehaviour.LockMovement();
+                _turretRotationClient.LockMovement();
 
                 StartCoroutine(WaitToUnlockMovement((float)(shootShellAt - NetworkManager.LocalTime.Time)));
             }
@@ -117,7 +116,9 @@ public class ShootBehaviour : NetworkBehaviour
         
         clientNavigation.UnlockMovement();
         serverNavigation.UnlockMovement();
-        _turretRotationBehaviour.UnlockMovement();
+        
+        _turretRotationClient.UnlockMovement();
+        _turretRotationServer.UnlockMovement();
     }
 
     [ServerRpc]
@@ -132,8 +133,8 @@ public class ShootBehaviour : NetworkBehaviour
         serverNavigation.LockMovement();
         serverNavigation.UpdateDestinationForShot(position, maxPositionCorrectionOnShootStop);
         
-        _turretRotationBehaviour.LockMovement();
-        _turretRotationBehaviour.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);
+        _turretRotationServer.LockMovement();
+        _turretRotationServer.UpdateDestinationForShot(localRotationY, maxAngleCorrectionOnShootStop);
 
         StartShootAnimationClientRpc((float)atTime);
         StartCoroutine(WaitToUnlockMovement((float) waitTime));
