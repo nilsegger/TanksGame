@@ -7,6 +7,8 @@ public class LobbyUIBehaviour : MonoBehaviour
     
     public Button m_PlayButton;
     public Button m_DisconnectButton;
+    public Button m_StartServer;
+    public Button m_ServerStartGame;
     public Text m_NetworkTypeText;
     public Text m_MissingPlayersCountText;
 
@@ -43,6 +45,16 @@ public class LobbyUIBehaviour : MonoBehaviour
         m_ServerPortInput.gameObject.SetActive(show);
     }
     
+    public void SetStartServerBtnVisibility(bool show)
+    {
+        m_StartServer.gameObject.SetActive(show);
+    }
+    
+    public void SetStartGameVisibility(bool show)
+    {
+        m_ServerStartGame.gameObject.SetActive(show);
+    }
+        
     public void SetDisconnectButtonVisibility(bool show)
     {
         // m_DisconnectButton.gameObject.SetActive(show);

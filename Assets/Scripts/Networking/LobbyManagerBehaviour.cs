@@ -47,6 +47,18 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.AddOnClickDisconnectListener(OnDisconnectClick);
         AddSpawnPoints();
         
+        lobbyUi.m_StartServer.onClick.AddListener(() =>
+        {
+            lobbyUi.SetNetworkStatusText("Starting server...");
+            lobbyUi.SetStartServerBtnVisibility(false);
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            if (lobbyUi.ServerPort(out var port))
+            {
+                transport.SetConnectionData(lobbyUi.ServerIp(), (ushort) port);
+                NetworkManager.Singleton.StartServer();
+            } else Debug.Log("error with port");
+        });
+        
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkManager.Singleton.OnServerStarted += OnServerStarted;
         
@@ -150,6 +162,7 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
         lobbyUi.SetPlayButtonVisibility(false);
         lobbyUi.SetDisconnectButtonVisibility(false);
+        lobbyUi.SetStartServerBtnVisibility(false);
         lobbyUi.SetNetworkStatusText("Connecting...");
         StartCoroutine(WaitToCheckIfConnected());
     }
@@ -190,10 +203,16 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.SetNetworkStatusText("SERVER");
         lobbyUi.SetPlayButtonVisibility(false);
         lobbyUi.SetDisconnectButtonVisibility(false);
+        lobbyUi.SetStartGameVisibility(true);
         
 #if UNITY_SERVER
         PlayFabMultiplayerAgentAPI.ReadyForPlayers();
 #endif
+        
+        lobbyUi.m_ServerStartGame.onClick.AddListener(() =>
+        {
+            NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
+        });
     } 
     
     private void OnClientConnect(ulong cliendId)
