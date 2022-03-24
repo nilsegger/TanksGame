@@ -23,11 +23,12 @@ public class GameManagerBehaviour : NetworkBehaviour
     
     void Start()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (!NetworkManager.Singleton.IsServer) return;
+        
+        if (!NetworkManager.Singleton.IsHost)
         {
             serverCamera.gameObject.SetActive(true);
-            FindSpawnPosition();
-        } 
+        }
     }
 
     public override void OnNetworkSpawn()
@@ -75,6 +76,8 @@ public class GameManagerBehaviour : NetworkBehaviour
         Debug.Log("All Clients have loaded the new scene");
         
         Assert.IsTrue(clientsTimedOut.Count == 0);
+        
+        FindSpawnPosition();
 
         foreach (var clientId in clientsCompleted)
         {

@@ -47,6 +47,9 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         lobbyUi.AddOnClickDisconnectListener(OnDisconnectClick);
         AddSpawnPoints();
         
+        NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+                
         lobbyUi.m_StartServer.onClick.AddListener(() =>
         {
             lobbyUi.SetNetworkStatusText("Starting server...");
@@ -59,8 +62,11 @@ public class LobbyManagerBehaviour : NetworkBehaviour
             } else Debug.Log("error with port");
         });
         
-        NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
-        NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+        lobbyUi.m_StartHost.onClick.AddListener(() =>
+        {
+            _approvedClients = new List<ulong>();
+            NetworkManager.Singleton.StartHost();
+        });
         
         #if UNITY_SERVER
             CheckToStartServer();
@@ -192,27 +198,30 @@ public class LobbyManagerBehaviour : NetworkBehaviour
         NetworkManager.Singleton.Shutdown();
     }
 
-    
-
     private void OnServerStarted()
     {
-        if (!NetworkManager.Singleton.IsServer) return;
-        
-        _approvedClients = new List<ulong>();
-        
-        lobbyUi.SetNetworkStatusText("SERVER");
-        lobbyUi.SetPlayButtonVisibility(false);
-        lobbyUi.SetDisconnectButtonVisibility(false);
-        lobbyUi.SetStartGameVisibility(true);
-        
-#if UNITY_SERVER
-        PlayFabMultiplayerAgentAPI.ReadyForPlayers();
-#endif
-        
-        lobbyUi.m_ServerStartGame.onClick.AddListener(() =>
+        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost)
+        {
+            _approvedClients = new List<ulong>();
+            lobbyUi.SetNetworkStatusText("SERVER");
+            lobbyUi.SetPlayButtonVisibility(false);
+            lobbyUi.SetDisconnectButtonVisibility(false);
+            lobbyUi.SetStartGameVisibility(true);
+            lobbyUi.SetHostBtnVisibility(false);
+            
+            #if UNITY_SERVER
+                    PlayFabMultiplayerAgentAPI.ReadyForPlayers();
+            #endif
+                    
+            lobbyUi.m_ServerStartGame.onClick.AddListener(() =>
+            {
+                NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
+            });
+            
+        } else if (NetworkManager.Singleton.IsHost)
         {
             NetworkManager.SceneManager.LoadScene("DesertMap", LoadSceneMode.Single);
-        });
+        }
     } 
     
     private void OnClientConnect(ulong cliendId)

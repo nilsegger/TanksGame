@@ -7,6 +7,7 @@ public class LobbyUIBehaviour : MonoBehaviour
     
     public Button m_PlayButton;
     public Button m_DisconnectButton;
+    public Button m_StartHost;
     public Button m_StartServer;
     public Button m_ServerStartGame;
     public Text m_NetworkTypeText;
@@ -53,6 +54,11 @@ public class LobbyUIBehaviour : MonoBehaviour
     public void SetStartGameVisibility(bool show)
     {
         m_ServerStartGame.gameObject.SetActive(show);
+    }
+    
+    public void SetHostBtnVisibility(bool show)
+    {
+        m_StartHost.gameObject.SetActive(show);
     }
         
     public void SetDisconnectButtonVisibility(bool show)

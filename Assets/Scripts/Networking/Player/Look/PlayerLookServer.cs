@@ -17,8 +17,14 @@ namespace Networking.Player.Look
         void Update()
         {
             if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsServer || _lockedMovement) return;
-    
-            m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, _clientRotation, data.RotationSpeed * Time.deltaTime);
+
+            // Dont update for host, this would lead to double speed, since client script does also update
+            if (!IsOwner)
+            {
+                m_Turret.localRotation = Quaternion.RotateTowards(m_Turret.localRotation, _clientRotation,
+                    data.RotationSpeed * Time.deltaTime);
+            }
+
             _client.serverRotation.Value = m_Turret.localRotation.eulerAngles.y;
         }
    

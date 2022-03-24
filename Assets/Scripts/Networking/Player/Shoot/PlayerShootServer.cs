@@ -60,10 +60,14 @@ namespace Networking.Player.Shoot
             ServerSpawnShell((float) atTime);
         
             _serverNavigation.LockMovement();
-            _serverNavigation.UpdateDestinationForShot(position, data.maxPositionCorrectionOnShootStop);
-        
             _turretRotationServer.LockMovement();
-            _turretRotationServer.UpdateDestinationForShot(localRotationY, data.maxAngleCorrectionOnShootStop);
+
+            // Host should not try to update itself
+            if (!IsOwner)
+            {
+                _serverNavigation.UpdateDestinationForShot(position, data.maxPositionCorrectionOnShootStop);
+                _turretRotationServer.UpdateDestinationForShot(localRotationY, data.maxAngleCorrectionOnShootStop);
+            }
 
             _client.StartShootAnimationClientRpc((float)atTime);
             StartCoroutine(WaitToUnlockMovement((float) waitTime));

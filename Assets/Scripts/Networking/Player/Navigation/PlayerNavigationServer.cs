@@ -12,7 +12,6 @@ public class PlayerNavigationServer : PlayerNavigationCommon
     public float m_LockedMovementUpdateBufferTimeS = 0.1f;
     private float _lockedMovementBufferCountdown = 0.0f;
 
-
     protected override void Start()
     {
         base.Start();
@@ -30,18 +29,21 @@ public class PlayerNavigationServer : PlayerNavigationCommon
     {
         if (!GameManagerBehaviour.GameBegun || !NetworkManager.Singleton.IsServer) return;
 
-        if (_lockedMovement && _lockedMovementBufferCountdown <= 0.0f) return;
+        // Case of host playing
+        if (!IsOwner)
+        {
+            if (_lockedMovement && _lockedMovementBufferCountdown <= 0.0f) return;
 
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, _ownerRotationTarget,
+                m_ServerCorrectionRotationSpeed * Time.deltaTime);
+
+            FollowPath();
+
+            if (_lockedMovementBufferCountdown > 0.0f) _lockedMovementBufferCountdown -= Time.deltaTime;
+        }
+        
         _client.serverPosition.Value = transform.position;
-
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, _ownerRotationTarget,
-            m_ServerCorrectionRotationSpeed * Time.deltaTime);
-        
         _client.serverRotation.Value = transform.rotation.eulerAngles.y;
-        
-        FollowPath();
-
-        if (_lockedMovementBufferCountdown > 0.0f) _lockedMovementBufferCountdown -= Time.deltaTime;
     }
 
     [ServerRpc]
